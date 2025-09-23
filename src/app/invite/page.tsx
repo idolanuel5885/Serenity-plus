@@ -1,17 +1,40 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import QRCode from 'qrcode'
 
 export default function InvitePage() {
   const [inviteCode, setInviteCode] = useState('ABC123') // In real app, this would be generated
   const [copied, setCopied] = useState(false)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(`${window.location.origin}/join/${inviteCode}`)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  useEffect(() => {
+    const generateQRCode = async () => {
+      try {
+        const inviteUrl = `${window.location.origin}/join/${inviteCode}`
+        const qrCodeDataUrl = await QRCode.toDataURL(inviteUrl, {
+          width: 192,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        })
+        setQrCodeDataUrl(qrCodeDataUrl)
+      } catch (error) {
+        console.error('Error generating QR code:', error)
+      }
+    }
+
+    generateQRCode()
+  }, [inviteCode])
 
   return (
     <div className="min-h-screen bg-white">
@@ -56,11 +79,19 @@ export default function InvitePage() {
           </p>
         </div>
 
-        {/* QR Code Placeholder */}
+        {/* QR Code */}
         <div className="text-center space-y-4">
           <h3 className="font-semibold">Or share via QR Code</h3>
-          <div className="w-48 h-48 mx-auto bg-gray-200 rounded-lg flex items-center justify-center">
-            <span className="text-gray-500">QR Code</span>
+          <div className="w-48 h-48 mx-auto bg-white rounded-lg border-2 border-gray-200 flex items-center justify-center">
+            {qrCodeDataUrl ? (
+              <img 
+                src={qrCodeDataUrl} 
+                alt="QR Code" 
+                className="w-44 h-44"
+              />
+            ) : (
+              <span className="text-gray-500">Generating QR Code...</span>
+            )}
           </div>
           <p className="text-sm text-gray-500">
             Scan this code with your phone's camera
