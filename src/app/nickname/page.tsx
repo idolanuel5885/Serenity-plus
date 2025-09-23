@@ -1,0 +1,79 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+
+export default function NicknamePage() {
+  const [nickname, setNickname] = useState('')
+  const [error, setError] = useState('')
+  const router = useRouter()
+
+  const validateNickname = (name: string) => {
+    if (name.length < 2) return 'Nickname must be at least 2 characters'
+    if (name.length > 20) return 'Nickname must be 20 characters or less'
+    if (!/^[a-zA-Z0-9\s]+$/.test(name)) return 'Nickname can only contain letters, numbers, and spaces'
+    return null
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const validationError = validateNickname(nickname)
+    
+    if (validationError) {
+      setError(validationError)
+      return
+    }
+
+    // Store nickname in localStorage
+    localStorage.setItem('userNickname', nickname)
+    
+    // Redirect to next step
+    router.push('/meditations-per-week')
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="px-6 py-4 border-b">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gray-300 rounded"></div>
+          <span className="font-bold text-lg">Serenity+</span>
+        </div>
+      </div>
+
+      <div className="px-6 py-8">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          What should we call you?
+        </h1>
+        <p className="text-sm text-gray-600 mb-8">
+          You can change this later.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <input
+              type="text"
+              placeholder="e.g., Ido"
+              value={nickname}
+              onChange={(e) => {
+                setNickname(e.target.value)
+                setError('')
+              }}
+              className="w-full p-4 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            />
+            {error && (
+              <p className="text-red-600 text-sm mt-2">{error}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={!nickname.trim()}
+            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            Continue
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}

@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "backup": "./scripts/backup.sh",
+    "recover": "./scripts/recover.sh",
+    "safety-check": "git status && echo 'Files are tracked in git'",
+    "auto-commit": "git add . && git commit -m 'Auto-commit: $(date)'"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
