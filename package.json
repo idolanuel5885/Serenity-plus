@@ -19,7 +19,11 @@
     "backup": "./scripts/backup.sh",
     "recover": "./scripts/recover.sh",
     "safety-check": "git status && echo 'Files are tracked in git'",
-    "auto-commit": "git add . && git commit -m 'Auto-commit: $(date)'"
+    "auto-commit": "git add . && git commit -m 'Auto-commit: $(date)'",
+    "health-check": "./scripts/health-check.sh",
+    "auto-recovery": "./scripts/auto-recovery.sh",
+    "monitor": "./scripts/monitor.sh",
+    "status": "curl -I http://localhost:3000 && echo 'Server is healthy'"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
