@@ -74,7 +74,7 @@ export default function Home() {
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gray-200 rounded"></div>
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
         <div className="flex gap-2">
