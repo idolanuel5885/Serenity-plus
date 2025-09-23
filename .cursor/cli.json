@@ -1,0 +1,13 @@
+{
+    "allowFileOperations": true,
+    "allowFileCreation": true,
+    "allowFileModification": true,
+    "allowFileDeletion": true,
+    "allowDirectoryOperations": true,
+    "workspaceAccess": "full",
+    "permissions": {
+      "read": true,
+      "write": true,
+      "execute": false
+    }
+  }
