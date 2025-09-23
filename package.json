@@ -25,7 +25,10 @@
     "monitor": "./scripts/monitor.sh",
     "status": "curl -I http://localhost:3000 && echo 'Server is healthy'",
     "fix-server": "./scripts/server-manager.sh",
-    "start": "./scripts/server-manager.sh && npm run dev"
+    "start": "./scripts/server-manager.sh && npm run dev",
+    "bulletproof": "./scripts/bulletproof-server.sh",
+    "server": "./scripts/bulletproof-server.sh",
+    "start-app": "./scripts/start-server.sh"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
