@@ -13,10 +13,10 @@ export default function WelcomePage() {
 
   useEffect(() => {
     const checkForInvite = async () => {
-      const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-      
-      if (pendingInviteCode) {
-        try {
+      try {
+        const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+        
+        if (pendingInviteCode) {
           const response = await fetch(`/api/invite?code=${pendingInviteCode}`)
           const result = await response.json()
           
@@ -26,15 +26,16 @@ export default function WelcomePage() {
               inviterImage: result.invitation.inviter.image
             })
           }
-        } catch (error) {
-          console.error('Error fetching invite data:', error)
         }
+      } catch (error) {
+        console.error('Error fetching invite data:', error)
+      } finally {
+        setLoading(false)
       }
-      
-      setLoading(false)
     }
 
-    checkForInvite()
+    // Small delay to ensure client-side hydration
+    setTimeout(checkForInvite, 100)
   }, [])
 
   if (loading) {
@@ -49,15 +50,15 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gray-300 rounded"></div>
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
 
-      <div className="px-6 py-8">
+      <div className="px-6 py-8 flex-1">
         {inviteData ? (
           <>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
@@ -125,9 +126,9 @@ export default function WelcomePage() {
         )}
       </div>
 
-      <div className="px-6 py-4 border-t">
+      <div className="px-6 py-4 border-t mt-auto">
         <div className="flex items-center justify-center gap-2">
-          <div className="w-6 h-6 bg-gray-300 rounded"></div>
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>

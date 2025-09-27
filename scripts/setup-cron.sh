@@ -17,3 +17,5 @@ echo "✅ Auto-commits scheduled every 4 hours"
 echo ""
 echo "To view scheduled jobs: crontab -l"
 echo "To remove scheduled jobs: crontab -r"
+
+

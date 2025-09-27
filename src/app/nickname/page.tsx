@@ -32,15 +32,15 @@ export default function NicknamePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-gray-300 rounded"></div>
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
 
-      <div className="px-6 py-8">
+      <div className="px-6 py-8 flex-1">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
           What should we call you?
         </h1>
@@ -73,6 +73,13 @@ export default function NicknamePage() {
             Continue
           </button>
         </form>
+      </div>
+
+      <div className="px-6 py-4 border-t mt-auto">
+        <div className="flex items-center justify-center gap-2">
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <span className="font-bold text-lg">Serenity+</span>
+        </div>
       </div>
     </div>
   )

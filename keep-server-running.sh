@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Simple server startup script that actually works
+# Simple script to keep the server running
 echo "🚀 Starting Serenity Plus Server"
 echo "================================"
 
@@ -9,7 +9,7 @@ pkill -f "next dev" || true
 sleep 2
 
 # Clean cache
-rm -rf .next node_modules/.cache
+rm -rf .next
 
 # Start server
 echo "🔄 Starting server..."
@@ -28,7 +28,18 @@ for i in {1..30}; do
         echo "   - Mobile: http://100.115.92.195:3000"
         echo ""
         echo "Press Ctrl+C to stop the server"
-        exit 0
+        
+        # Keep the script running to maintain the server
+        while true; do
+            sleep 10
+            if ! curl -s -f http://localhost:3000 > /dev/null 2>&1; then
+                echo "❌ Server went down, restarting..."
+                pkill -f "next dev" || true
+                sleep 2
+                npm run dev &
+                sleep 10
+            fi
+        done
     fi
     sleep 1
 done

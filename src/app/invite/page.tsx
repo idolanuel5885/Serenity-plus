@@ -53,7 +53,7 @@ export default function InvitePage() {
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-bold">Invite Your Meditation Partners</h2>
           <p className="text-gray-600">
-            Share this link with up to 3 people you'd like to meditate with regularly.
+            Share this link with up to 3 people you&apos;d like to meditate with regularly.
           </p>
         </div>
 

@@ -202,3 +202,5 @@ rm -rf .next && npm run dev
 ```
 
 Remember: You should never have to discover issues first! The monitoring system will catch and fix problems automatically.
+
+

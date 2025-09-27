@@ -64,3 +64,5 @@ else
     echo "💥 Server is still not working, manual intervention needed"
     exit 1
 fi
+
+

@@ -102,3 +102,5 @@
 - [ ] Efficient database queries
 - [ ] Optimized images and assets
 - [ ] Minimal bundle size
+
+

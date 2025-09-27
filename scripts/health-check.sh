@@ -92,3 +92,5 @@ df -h . | tail -1 | awk '{if ($5+0 > 90) print "❌ Disk space low: " $5; else p
 
 echo ""
 echo "🎯 Health check complete!"
+
+

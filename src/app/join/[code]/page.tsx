@@ -1,130 +1,97 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
 import Link from 'next/link'
 
+export async function generateStaticParams() {
+  return [
+    { code: 'demo123' },
+    { code: 'test456' },
+    { code: 'sample789' }
+  ]
+}
+
 export default function JoinPage() {
-  const params = useParams()
-  const [inviteData, setInviteData] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // In real app, this would fetch invite data from database
-    // For now, we'll simulate it
-    setTimeout(() => {
-      setInviteData({
-        inviterName: 'Sarah',
-        inviterImage: '/placeholder-avatar.jpg',
-        isValid: true
-      })
-      setLoading(false)
-    }, 1000)
-  }, [])
-
-  const handleAccept = () => {
-    // TODO: Create partnership in database
-    console.log('Accepting partnership invitation')
-    // Redirect to onboarding if user hasn't completed it, otherwise to home
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p>Loading invitation...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (!inviteData?.isValid) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center p-6">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-2xl">❌</span>
-          </div>
-          <h1 className="text-2xl font-bold text-red-600">Invalid Invitation</h1>
-          <p className="text-gray-600">
-            This invitation link is invalid or has expired.
-          </p>
-          <Link 
-            href="/"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-          >
-            Go to Home
-          </Link>
-        </div>
-      </div>
-    )
+  // Static version for export
+  const inviteData = {
+    inviterName: 'Sarah',
+    inviterImage: '/placeholder-avatar.jpg',
+    isValid: true
   }
 
   return (
     <div className="min-h-screen bg-white">
+      <div className="px-6 py-4 border-b">
+        <div className="flex items-center gap-2">
+          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <span className="font-bold text-lg">Serenity+</span>
+        </div>
+      </div>
+      
       <div className="p-6 space-y-8">
-        {/* Header */}
         <div className="text-center space-y-4">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <span className="text-3xl">🧘</span>
-          </div>
-          <h1 className="text-2xl font-bold">You're Invited!</h1>
-          <p className="text-gray-600">
-            {inviteData.inviterName} wants to be your meditation accountability partner
+          <h1 className="text-3xl font-bold text-gray-900">Join Meditation Partnership</h1>
+          <p className="text-lg text-gray-600">
+            You&apos;re joining {inviteData.inviterName}&apos;s meditation partnership.
           </p>
         </div>
 
-        {/* Inviter Info */}
-        <div className="bg-gray-50 rounded-lg p-6 text-center space-y-4">
-          <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto"></div>
+        <div className="bg-gray-50 rounded-lg p-6 space-y-4">
           <h2 className="text-xl font-semibold">{inviteData.inviterName}</h2>
-          <p className="text-gray-600">
-            Wants to meditate together and support each other's practice
-          </p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden">
+              {inviteData.inviterImage ? (
+                <img 
+                  src={inviteData.inviterImage} 
+                  alt={`${inviteData.inviterName}'s avatar`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-600">
+                    {inviteData.inviterName.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-medium">Meditation Partner</p>
+              <p className="text-sm text-gray-600">Ready to start your journey together</p>
+            </div>
+          </div>
         </div>
 
-        {/* What this means */}
         <div className="space-y-4">
-          <h3 className="font-semibold">What this means:</h3>
-          <ul className="space-y-2 text-sm text-gray-600">
-            <li className="flex items-start gap-2">
-              <span className="text-green-500 mt-1">✓</span>
-              You'll set your own meditation goals and schedule
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-500 mt-1">✓</span>
-              You'll track your progress together each week
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-500 mt-1">✓</span>
-              You'll support each other when motivation is low
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-green-500 mt-1">✓</span>
-              You'll celebrate each other's meditation sessions
-            </li>
-          </ul>
+          <h3 className="text-lg font-semibold">What happens next?</h3>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-blue-600 text-sm font-medium">1</span>
+              </div>
+              <p className="text-gray-600">Set up your meditation preferences</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-blue-600 text-sm font-medium">2</span>
+              </div>
+              <p className="text-gray-600">Start your meditation journey together</p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-blue-600 text-sm font-medium">3</span>
+              </div>
+              <p className="text-gray-600">Support each other&apos;s practice</p>
+            </div>
+          </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          <button
-            onClick={handleAccept}
-            className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors"
+        <div className="space-y-4">
+          <Link 
+            href="/welcome"
+            className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold text-center block hover:bg-blue-700 transition-colors"
           >
             Accept Partnership
-          </button>
-          <button className="w-full border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-            Decline
-          </button>
-        </div>
-
-        {/* Back to Home */}
-        <div className="text-center">
+          </Link>
           <Link 
             href="/"
-            className="text-blue-600 hover:text-blue-700 text-sm"
+            className="w-full bg-gray-100 text-gray-700 py-4 px-6 rounded-lg font-semibold text-center block hover:bg-gray-200 transition-colors"
           >
             Back to Home
           </Link>
@@ -133,6 +100,3 @@ export default function JoinPage() {
     </div>
   )
 }
-
-
-

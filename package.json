@@ -28,7 +28,11 @@
     "start": "./scripts/server-manager.sh && npm run dev",
     "bulletproof": "./scripts/bulletproof-server.sh",
     "server": "./scripts/bulletproof-server.sh",
-    "start-app": "./scripts/start-server.sh"
+    "start-app": "./scripts/start-server.sh",
+    "test-all": "./scripts/test-all-pages.sh",
+    "test-footer": "./scripts/test-footer-positioning.sh",
+    "mobile": "./scripts/start-mobile-dev.sh",
+    "verify": "./scripts/verify-server.sh"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",

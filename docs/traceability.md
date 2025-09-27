@@ -112,3 +112,5 @@
 - All page components - Optimization
 - `src/app/layout.tsx` - Asset optimization
 - `public/` - Asset optimization
+
+
