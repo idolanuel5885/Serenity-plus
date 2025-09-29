@@ -58,7 +58,7 @@ export default function NicknamePage() {
                 setNickname(e.target.value)
                 setError('')
               }}
-              className="w-full p-4 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full p-4 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent"
             />
             {error && (
               <p className="text-red-600 text-sm mt-2">{error}</p>

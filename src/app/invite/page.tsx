@@ -5,7 +5,7 @@ import Link from 'next/link'
 import QRCode from 'qrcode'
 
 export default function InvitePage() {
-  const [inviteCode, setInviteCode] = useState('ABC123') // In real app, this would be generated
+  const [inviteCode, setInviteCode] = useState('demo123') // Use predefined code for static export
   const [copied, setCopied] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
 
@@ -53,7 +53,7 @@ export default function InvitePage() {
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-bold">Invite Your Meditation Partners</h2>
           <p className="text-gray-600">
-            Share this link with up to 3 people you&apos;d like to meditate with regularly.
+            Share this link with a person you&apos;d like to meditate with.
           </p>
         </div>
 

@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import NotificationDemo from '../components/NotificationDemo'
 
 interface Partnership {
   id: string
@@ -23,31 +25,79 @@ export default function Home() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([])
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState<string | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
-    // Get user ID from localStorage (in production, use proper auth)
-    const storedUserId = localStorage.getItem('userId')
-    setUserId(storedUserId)
-    
-    if (storedUserId) {
-      fetchPartnerships(storedUserId)
-    } else {
-      setLoading(false)
-    }
-  }, [])
+    // Add a small delay to ensure proper initialization
+    const timer = setTimeout(() => {
+      try {
+        // Get user ID from localStorage (in production, use proper auth)
+        const storedUserId = localStorage.getItem('userId')
+        console.log('Homepage checking for userId:', storedUserId)
+        setUserId(storedUserId)
+        
+        if (storedUserId) {
+          console.log('User found, fetching partnerships')
+          fetchPartnerships(storedUserId)
+        } else {
+          console.log('No user found, redirecting to welcome')
+          // No user found, redirect to welcome page for onboarding
+          router.push('/welcome')
+        }
+      } catch (error) {
+        console.error('Error in homepage useEffect:', error)
+        // Fallback: redirect to welcome page
+        router.push('/welcome')
+      }
+    }, 200) // Increased delay to ensure meditation-length page has finished
+
+    return () => clearTimeout(timer)
+  }, [router])
+
+  // Show loading while checking for user
+  if (loading && !userId) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
 
   const fetchPartnerships = async (userId: string) => {
     try {
-      const response = await fetch(`/api/partnership?userId=${userId}`)
-      const result = await response.json()
-      
-      if (result.success) {
-        setPartnerships(result.partnerships)
+      // For static export, get partnerships from localStorage
+      const partnershipsData = localStorage.getItem('partnerships')
+      if (partnershipsData) {
+        const partnerships = JSON.parse(partnershipsData)
+        setPartnerships(partnerships)
       } else {
-        console.error('Failed to fetch partnerships:', result.error)
+        // Check if there's a partnership invite code
+        const inviteCode = localStorage.getItem('partnershipInviteCode')
+        if (inviteCode) {
+          // Create a mock partnership for demo
+          const mockPartnership = {
+            id: `partnership-${Date.now()}`,
+            partner: {
+              id: `partner-${Date.now()}`,
+              name: 'Your Partner',
+              email: 'partner@example.com',
+              image: '/icons/meditation-1.svg',
+              weeklyTarget: parseInt(localStorage.getItem('userWeeklyTarget') || '5')
+            },
+            userSits: 0,
+            partnerSits: 0,
+            weeklyGoal: parseInt(localStorage.getItem('userWeeklyTarget') || '5'),
+            score: 0,
+            currentWeekStart: new Date().toISOString()
+          }
+          setPartnerships([mockPartnership])
+          localStorage.setItem('partnerships', JSON.stringify([mockPartnership]))
+        }
       }
     } catch (error) {
       console.error('Error fetching partnerships:', error)
+      // Set empty partnerships on error
+      setPartnerships([])
     } finally {
       setLoading(false)
     }
@@ -98,9 +148,14 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* Notification Demo */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4">
+          <NotificationDemo />
+        </div>
+
         {/* Partners Summary */}
         <div className="bg-gray-50 rounded-lg p-4">
-          <h2 className="font-semibold mb-4">Partners summary</h2>
+          <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
           {loading ? (
             <div className="text-center py-4">
               <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>

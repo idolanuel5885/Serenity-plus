@@ -35,57 +35,34 @@ export default function MeditationLengthPage() {
     }
 
     try {
-      // Create user account
-      const response = await fetch('/api/onboarding', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: `user-${Date.now()}@example.com`, // Temporary email
-          name: nickname,
-          weeklyTarget: parseInt(weeklyTarget),
-          primaryWindow: '06:00–09:00',
-          timezone: 'GMT+0',
-          usualSitLength: parseInt(usualSitLength),
-          whyPractice: 'Mindfulness and stress relief',
-          supportNeeds: 'Gentle reminders'
-        })
-      })
-
-      const result = await response.json()
+      // For static export, create a mock user ID and store in localStorage
+      const userId = `user-${Date.now()}`
+      localStorage.setItem('userId', userId)
       
-      if (result.success) {
-        // Store user ID
-        localStorage.setItem('userId', result.user.id)
+      // Store all user data in localStorage for demo purposes
+      localStorage.setItem('userEmail', `user-${Date.now()}@example.com`)
+      localStorage.setItem('userName', nickname)
+      localStorage.setItem('userWeeklyTarget', weeklyTarget)
+      localStorage.setItem('userUsualSitLength', usualSitLength)
+      localStorage.setItem('userPrimaryWindow', '06:00–09:00')
+      localStorage.setItem('userTimezone', 'GMT+0')
+      localStorage.setItem('userWhyPractice', 'Mindfulness and stress relief')
+      localStorage.setItem('userSupportNeeds', 'Gentle reminders')
+      
+      // If there's a pending invite, store partnership info
+      if (pendingInviteCode) {
+        localStorage.setItem('partnershipInviteCode', pendingInviteCode)
+        localStorage.setItem('partnershipStatus', 'pending')
+        console.log('Partnership invite stored for demo')
         
-        // If there's a pending invite, create partnership
-        if (pendingInviteCode) {
-          const partnershipResponse = await fetch('/api/partnership', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              inviteCode: pendingInviteCode,
-              inviteeId: result.user.id
-            })
-          })
-          
-          const partnershipResult = await partnershipResponse.json()
-          if (partnershipResult.success) {
-            console.log('Partnership created successfully')
-          }
-          
-          // Clear pending invite
-          localStorage.removeItem('pendingInviteCode')
-        }
-        
-        // Redirect to homepage
-        router.push('/')
-      } else {
-        alert('Failed to create your account. Please try again.')
+        // Clear pending invite
+        localStorage.removeItem('pendingInviteCode')
       }
+      
+      console.log('User account created successfully (demo mode)')
+      
+      // Redirect to notifications page
+      router.push('/notifications')
     } catch (error) {
       console.error('Onboarding error:', error)
       alert('Failed to create your account. Please try again.')
@@ -114,7 +91,7 @@ export default function MeditationLengthPage() {
             <select
               value={selectedLength}
               onChange={(e) => setSelectedLength(parseInt(e.target.value))}
-              className="w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white"
+              className="w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
                 backgroundPosition: 'right 12px center',
@@ -123,7 +100,7 @@ export default function MeditationLengthPage() {
               }}
             >
               {meditationLengths.map(({ minutes, label }) => (
-                <option key={minutes} value={minutes}>
+                <option key={minutes} value={minutes} className="text-black">
                   {label}
                 </option>
               ))}

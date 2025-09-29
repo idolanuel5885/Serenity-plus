@@ -1,7 +1,7 @@
 # Serenity Plus Business Rules
 
 ## BR-001: User Onboarding Flow
-**Description**: New users must complete a 4-step onboarding process before accessing the main app.
+**Description**: New users must complete a 5-step onboarding process before accessing the main app.
 
 **Acceptance Criteria**:
 - [ ] Users without `userId` in localStorage are redirected to `/welcome`
@@ -9,6 +9,7 @@
 - [ ] Nickname screen validates 2-20 characters, letters/numbers/spaces only
 - [ ] Meditation frequency screen defaults to "5 times per week"
 - [ ] Meditation length screen defaults to "30 minutes"
+- [ ] Notifications screen requests permission for push notifications
 - [ ] All onboarding data is stored in localStorage and database
 - [ ] Users are redirected to homepage after completing onboarding
 

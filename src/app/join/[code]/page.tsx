@@ -8,12 +8,20 @@ export async function generateStaticParams() {
   ]
 }
 
-export default function JoinPage() {
-  // Static version for export
-  const inviteData = {
-    inviterName: 'Sarah',
-    inviterImage: '/placeholder-avatar.jpg',
-    isValid: true
+export default function JoinPage({ params }: { params: { code: string } }) {
+  const { code } = params
+  
+  // For static export, we'll use a simple mapping
+  // In a real app, this would be fetched from a database
+  const inviteDataMap: Record<string, { inviterName: string; inviterIcon: string }> = {
+    'demo123': { inviterName: 'Ido', inviterIcon: '/icons/meditation-1.svg' },
+    'test456': { inviterName: 'Alex', inviterIcon: '/icons/meditation-2.svg' },
+    'sample789': { inviterName: 'Jordan', inviterIcon: '/icons/meditation-3.svg' }
+  }
+  
+  const inviteData = inviteDataMap[code] || {
+    inviterName: 'Your Partner',
+    inviterIcon: '/icons/meditation-1.svg'
   }
 
   return (
@@ -36,20 +44,12 @@ export default function JoinPage() {
         <div className="bg-gray-50 rounded-lg p-6 space-y-4">
           <h2 className="text-xl font-semibold">{inviteData.inviterName}</h2>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden">
-              {inviteData.inviterImage ? (
-                <img 
-                  src={inviteData.inviterImage} 
-                  alt={`${inviteData.inviterName}'s avatar`}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                  <span className="text-sm font-medium text-gray-600">
-                    {inviteData.inviterName.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
+              <img 
+                src={inviteData.inviterIcon} 
+                alt={`${inviteData.inviterName}'s meditation icon`}
+                className="w-8 h-8"
+              />
             </div>
             <div>
               <p className="font-medium">Meditation Partner</p>
