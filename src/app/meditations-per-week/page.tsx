@@ -30,7 +30,8 @@ export default function MeditationsPerWeekPage() {
     e.preventDefault()
     
     // Store selection in localStorage
-    localStorage.setItem('weeklyTarget', selectedCount.toString())
+    localStorage.setItem('userWeeklyTarget', selectedCount.toString())
+    console.log('Stored weekly target:', selectedCount)
     
     // Redirect to next step
     router.push('/meditation-length')
