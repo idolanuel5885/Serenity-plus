@@ -68,7 +68,8 @@ export default function MeditationLengthPage() {
       localStorage.setItem('userId', userId)
       console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'))
       
-      // Create user in Firebase database
+      // Create user in Firebase database (optional - fallback to localStorage)
+      let firebaseUserId = null
       try {
         // Get the user's invite code from localStorage (created on invite page)
         const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -82,31 +83,33 @@ export default function MeditationLengthPage() {
           inviteCode: userInviteCode
         }
         
-        const firebaseUserId = await createUser(userData)
+        firebaseUserId = await createUser(userData)
         console.log('User created in Firebase with ID:', firebaseUserId)
         
         // Store Firebase user ID in localStorage for session management
         localStorage.setItem('firebaseUserId', firebaseUserId)
         localStorage.setItem('userId', firebaseUserId) // Keep for compatibility
-        
-        // Also store in localStorage for fallback compatibility
-        const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
-        const newUser = {
-          id: firebaseUserId,
-          name: nickname,
-          email: `user-${Date.now()}@example.com`,
-          weeklyTarget: parseInt(weeklyTarget),
-          image: '/icons/meditation-1.svg',
-          inviteCode: userInviteCode
-        }
-        allUsers.push(newUser)
-        localStorage.setItem('allUsers', JSON.stringify(allUsers))
-        console.log('User added to localStorage fallback:', newUser)
       } catch (firebaseError) {
-        console.error('Error creating user in Firebase:', firebaseError)
-        alert('Failed to create user account. Please try again.')
-        return
+        console.log('Firebase not configured, using localStorage fallback:', firebaseError)
+        // Create a fallback user ID
+        firebaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        localStorage.setItem('userId', firebaseUserId)
       }
+      
+      // Always store in localStorage for compatibility
+      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
+      const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      const newUser = {
+        id: firebaseUserId,
+        name: nickname,
+        email: `user-${Date.now()}@example.com`,
+        weeklyTarget: parseInt(weeklyTarget),
+        image: '/icons/meditation-1.svg',
+        inviteCode: userInviteCode
+      }
+      allUsers.push(newUser)
+      localStorage.setItem('allUsers', JSON.stringify(allUsers))
+      console.log('User added to localStorage:', newUser)
       
       // Redirect immediately - no setTimeout needed
       console.log('Redirecting to homepage...')
