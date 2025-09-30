@@ -164,14 +164,14 @@ export default function MeditationLengthPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6">
+        <div className="mt-6">
           <button
-            type="submit"
+            onClick={handleSubmit}
             className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"
           >
             Complete Setup
           </button>
-        </form>
+        </div>
       </div>
     </div>
   )
