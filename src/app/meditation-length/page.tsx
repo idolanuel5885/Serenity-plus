@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createUser } from '../../lib/database' // Import createUser
+// import { createUser } from '../../lib/database' // Import createUser - disabled for now
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(30)
@@ -73,33 +73,10 @@ export default function MeditationLengthPage() {
       localStorage.setItem('userId', userId)
       console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'))
       
-      // Create user in Firebase database (optional - fallback to localStorage)
-      let firebaseUserId = null
-      try {
-        // Get the user's invite code from localStorage (created on invite page)
-        const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        
-        const userData = {
-          name: nickname,
-          email: `user-${Date.now()}@example.com`,
-          weeklyTarget: parseInt(weeklyTarget),
-          usualSitLength: selectedLength,
-          image: '/icons/meditation-1.svg',
-          inviteCode: userInviteCode
-        }
-        
-        firebaseUserId = await createUser(userData)
-        console.log('User created in Firebase with ID:', firebaseUserId)
-        
-        // Store Firebase user ID in localStorage for session management
-        localStorage.setItem('firebaseUserId', firebaseUserId)
-        localStorage.setItem('userId', firebaseUserId) // Keep for compatibility
-      } catch (firebaseError) {
-        console.log('Firebase not configured, using localStorage fallback:', firebaseError)
-        // Create a fallback user ID
-        firebaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        localStorage.setItem('userId', firebaseUserId)
-      }
+      // Skip Firebase for now - use localStorage only
+      const firebaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      localStorage.setItem('userId', firebaseUserId)
+      console.log('User created with ID:', firebaseUserId)
       
       // Always store in localStorage for compatibility
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
