@@ -45,16 +45,16 @@ export default function MeditationsPerWeekPage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex-1">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          How many times a week do you want to meditate?
-        </h1>
-        <p className="text-sm text-gray-600 mb-8">
-          This will be your weekly commitment to yourself and to {partnerName ? partnerName : 'your future meditation partner'}
-        </p>
+      <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            How many times a week do you want to meditate?
+          </h1>
+          <p className="text-sm text-gray-600 mb-8">
+            This will be your weekly commitment to yourself and to {partnerName ? partnerName : 'your future meditation partner'}
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
+          <div className="flex-1">
             <select
               value={selectedCount}
               onChange={(e) => setSelectedCount(parseInt(e.target.value))}
@@ -73,7 +73,9 @@ export default function MeditationsPerWeekPage() {
               ))}
             </select>
           </div>
+        </div>
 
+        <form onSubmit={handleSubmit} className="mt-6">
           <button
             type="submit"
             className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"
@@ -81,13 +83,6 @@ export default function MeditationsPerWeekPage() {
             Continue
           </button>
         </form>
-      </div>
-
-      <div className="px-6 py-4 border-t mt-auto">
-        <div className="flex items-center justify-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
-          <span className="font-bold text-lg">Serenity+</span>
-        </div>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import QRCode from 'qrcode'
 
 export default function InvitePage() {
-  const [inviteCode, setInviteCode] = useState('demo123') // Use predefined code for static export
+  const [inviteCode, setInviteCode] = useState('')
   const [copied, setCopied] = useState(false)
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
 
@@ -14,6 +14,56 @@ export default function InvitePage() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  useEffect(() => {
+    const getInviteCode = async () => {
+      try {
+        const userId = localStorage.getItem('userId')
+        const userName = localStorage.getItem('userName') || localStorage.getItem('userNickname')
+        
+        if (userId && userName) {
+          // Check if user already has an invite code
+          let existingInviteCode = localStorage.getItem('userInviteCode')
+          
+          if (!existingInviteCode) {
+            // Create a new invite via API
+            const response = await fetch('/api/invite', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userId,
+                userName
+              })
+            })
+            
+            if (response.ok) {
+              const data = await response.json()
+              existingInviteCode = data.inviteCode
+              localStorage.setItem('userInviteCode', data.inviteCode)
+              console.log('Created new invite code via API:', data.inviteCode)
+            } else {
+              throw new Error('Failed to create invite')
+            }
+          } else {
+            console.log('Using existing invite code:', existingInviteCode)
+          }
+          
+          setInviteCode(existingInviteCode || 'demo123')
+        } else {
+          // Fallback to demo code
+          setInviteCode('demo123')
+        }
+      } catch (error) {
+        console.error('Error getting invite code:', error)
+        // Fallback to demo code
+        setInviteCode('demo123')
+      }
+    }
+
+    getInviteCode()
+  }, [])
 
   useEffect(() => {
     const generateQRCode = async () => {
@@ -33,7 +83,9 @@ export default function InvitePage() {
       }
     }
 
-    generateQRCode()
+    if (inviteCode) {
+      generateQRCode()
+    }
   }, [inviteCode])
 
   return (

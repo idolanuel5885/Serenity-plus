@@ -1,28 +1,47 @@
-import Link from 'next/link'
+'use client'
 
-export async function generateStaticParams() {
-  return [
-    { code: 'demo123' },
-    { code: 'test456' },
-    { code: 'sample789' }
-  ]
-}
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
 
 export default function JoinPage({ params }: { params: { code: string } }) {
   const { code } = params
-  
-  // For static export, we'll use a simple mapping
-  // In a real app, this would be fetched from a database
-  const inviteDataMap: Record<string, { inviterName: string; inviterIcon: string }> = {
-    'demo123': { inviterName: 'Ido', inviterIcon: '/icons/meditation-1.svg' },
-    'test456': { inviterName: 'Alex', inviterIcon: '/icons/meditation-2.svg' },
-    'sample789': { inviterName: 'Jordan', inviterIcon: '/icons/meditation-3.svg' }
-  }
-  
-  const inviteData = inviteDataMap[code] || {
-    inviterName: 'Your Partner',
-    inviterIcon: '/icons/meditation-1.svg'
-  }
+  const [inviterName, setInviterName] = useState('Your Partner')
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const getInviterInfo = async () => {
+      try {
+        // Store the invite code for later use
+        localStorage.setItem('pendingInviteCode', code)
+        
+        if (code.includes('invite-')) {
+          // This is a real invite code - fetch inviter info from API
+          const response = await fetch(`/api/invite?code=${code}`)
+          if (response.ok) {
+            const data = await response.json()
+            setInviterName(data.invitation.inviter.name)
+          } else {
+            setInviterName('Your Partner')
+          }
+        } else {
+          // Handle demo codes
+          const demoNames: Record<string, string> = {
+            'demo123': 'Ido',
+            'test456': 'Alex', 
+            'sample789': 'Jordan'
+          }
+          setInviterName(demoNames[code] || 'Your Partner')
+        }
+      } catch (error) {
+        console.error('Error getting inviter info:', error)
+        setInviterName('Your Partner')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    getInviterInfo()
+  }, [code])
 
   return (
     <div className="min-h-screen bg-white">
@@ -37,17 +56,17 @@ export default function JoinPage({ params }: { params: { code: string } }) {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-gray-900">Join Meditation Partnership</h1>
           <p className="text-lg text-gray-600">
-            You&apos;re joining {inviteData.inviterName}&apos;s meditation partnership.
+            You&apos;re joining {inviterName}&apos;s meditation partnership.
           </p>
         </div>
 
         <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-          <h2 className="text-xl font-semibold">{inviteData.inviterName}</h2>
+          <h2 className="text-xl font-semibold">{inviterName}</h2>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
               <img 
-                src={inviteData.inviterIcon} 
-                alt={`${inviteData.inviterName}'s meditation icon`}
+                src="/icons/meditation-1.svg" 
+                alt="Partner's meditation icon"
                 className="w-8 h-8"
               />
             </div>
@@ -83,12 +102,22 @@ export default function JoinPage({ params }: { params: { code: string } }) {
         </div>
 
         <div className="space-y-4">
-          <Link 
-            href="/welcome"
-            className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold text-center block hover:bg-blue-700 transition-colors"
-          >
-            Accept Partnership
-          </Link>
+          <form action={`/welcome?invite=${code}`} method="get">
+            <input type="hidden" name="invite" value={code} />
+            <button 
+              type="submit"
+              onClick={() => {
+                // Store the invite code for partnership linking
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('pendingInviteCode', code)
+                  console.log('Stored invite code for partnership:', code)
+                }
+              }}
+              className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold text-center block hover:bg-blue-700 transition-colors"
+            >
+              Accept Partnership
+            </button>
+          </form>
           <Link 
             href="/"
             className="w-full bg-gray-100 text-gray-700 py-4 px-6 rounded-lg font-semibold text-center block hover:bg-gray-200 transition-colors"

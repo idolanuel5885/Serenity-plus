@@ -44,31 +44,25 @@ export default function TimerPage() {
           return
         }
 
-        // Fetch user data
-        const userResponse = await fetch(`/api/user?userId=${userId}`)
-        const userResult = await userResponse.json()
+        // Get user data from localStorage (for static export)
+        const userName = localStorage.getItem('userName') || 'You'
+        const usualSitLength = parseInt(localStorage.getItem('userUsualSitLength') || '15')
         
-        if (userResult.success) {
-          const userData = {
-            id: userResult.user.id,
-            name: userResult.user.name || 'You',
-            usualSitLength: userResult.user.usualSitLength
-          }
-          
-          setUser(userData)
-          setTimeLeft(userData.usualSitLength * 60) // Convert minutes to seconds
-        } else {
-          // Fallback to default if user not found
-          setUser({ id: userId, name: 'You', usualSitLength: 15 })
-          setTimeLeft(15 * 60)
+        const userData = {
+          id: userId,
+          name: userName,
+          usualSitLength: usualSitLength
         }
-
-        // Fetch partnerships data
-        const partnershipsResponse = await fetch(`/api/partnership?userId=${userId}`)
-        const partnershipsResult = await partnershipsResponse.json()
         
-        if (partnershipsResult.success) {
-          setPartnerships(partnershipsResult.partnerships)
+        setUser(userData)
+        setTimeLeft(usualSitLength * 60) // Convert minutes to seconds
+        console.log('Timer set to:', usualSitLength, 'minutes')
+
+        // Get partnerships from localStorage
+        const partnershipsData = localStorage.getItem('partnerships')
+        if (partnershipsData) {
+          const partnerships = JSON.parse(partnershipsData)
+          setPartnerships(partnerships)
         }
       } catch (error) {
         console.error('Error fetching data:', error)

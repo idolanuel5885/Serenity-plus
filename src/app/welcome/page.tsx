@@ -14,16 +14,24 @@ export default function WelcomePage() {
   useEffect(() => {
     const checkForInvite = async () => {
       try {
-        const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+        // Check URL parameters first
+        const urlParams = new URLSearchParams(window.location.search)
+        const inviteCode = urlParams.get('invite')
         
-        if (pendingInviteCode) {
-          const response = await fetch(`/api/invite?code=${pendingInviteCode}`)
-          const result = await response.json()
-          
-          if (result.success) {
+        if (inviteCode) {
+          // Store the invite code for later use
+          localStorage.setItem('pendingInviteCode', inviteCode)
+          setInviteData({
+            inviterName: 'Your Partner',
+            inviterImage: '/icons/meditation-1.svg'
+          })
+        } else {
+          // Check localStorage for existing invite
+          const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+          if (pendingInviteCode) {
             setInviteData({
-              inviterName: result.invitation.inviter.name,
-              inviterImage: result.invitation.inviter.image
+              inviterName: 'Your Partner',
+              inviterImage: '/icons/meditation-1.svg'
             })
           }
         }

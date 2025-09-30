@@ -40,16 +40,16 @@ export default function NicknamePage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex-1">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          What should we call you?
-        </h1>
-        <p className="text-sm text-gray-600 mb-8">
-          You can change this later.
-        </p>
+      <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
+        <div className="flex-1 flex flex-col">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            What should we call you?
+          </h1>
+          <p className="text-sm text-gray-600 mb-8">
+            You can change this later.
+          </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
+          <div className="flex-1">
             <input
               type="text"
               placeholder="e.g., Ido"
@@ -64,7 +64,9 @@ export default function NicknamePage() {
               <p className="text-red-600 text-sm mt-2">{error}</p>
             )}
           </div>
+        </div>
 
+        <form onSubmit={handleSubmit} className="mt-6">
           <button
             type="submit"
             disabled={!nickname.trim()}
@@ -73,13 +75,6 @@ export default function NicknamePage() {
             Continue
           </button>
         </form>
-      </div>
-
-      <div className="px-6 py-4 border-t mt-auto">
-        <div className="flex items-center justify-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
-          <span className="font-bold text-lg">Serenity+</span>
-        </div>
       </div>
     </div>
   )
