@@ -20,17 +20,22 @@ export default function MeditationLengthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Complete Setup button clicked!')
     
     // Store selection in localStorage
     localStorage.setItem('usualSitLength', selectedLength.toString())
+    console.log('Stored meditation length:', selectedLength)
     
     // Get all stored data
     const nickname = localStorage.getItem('userNickname')
-    const weeklyTarget = localStorage.getItem('weeklyTarget')
+    const weeklyTarget = localStorage.getItem('userWeeklyTarget')
     const usualSitLength = localStorage.getItem('usualSitLength')
     const pendingInviteCode = localStorage.getItem('pendingInviteCode')
     
+    console.log('Retrieved data:', { nickname, weeklyTarget, usualSitLength, pendingInviteCode })
+    
     if (!nickname || !weeklyTarget || !usualSitLength) {
+      console.error('Missing required data:', { nickname, weeklyTarget, usualSitLength })
       alert('Missing required data. Please start over.')
       return
     }
