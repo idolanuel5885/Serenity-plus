@@ -76,8 +76,10 @@ export default function MeditationLengthPage() {
       // Create user in Supabase database
       let supabaseUserId = null
       try {
-        // Get the user's invite code from localStorage (created on invite page)
-        const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
+        const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+        const userInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        console.log('Using invite code for user creation:', userInviteCode)
         
         const userData = {
           name: nickname,
@@ -103,14 +105,14 @@ export default function MeditationLengthPage() {
       
       // Always store in localStorage for compatibility
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
-      const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      const finalUserInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const newUser = {
         id: supabaseUserId,
         name: nickname,
         email: `user-${Date.now()}@example.com`,
         weeklytarget: parseInt(weeklyTarget),
         image: '/icons/meditation-1.svg',
-        invitecode: userInviteCode
+        invitecode: finalUserInviteCode
       }
       allUsers.push(newUser)
       localStorage.setItem('allUsers', JSON.stringify(allUsers))
