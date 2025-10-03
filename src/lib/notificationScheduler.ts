@@ -32,7 +32,7 @@ export class NotificationScheduler {
     const template = NOTIFICATION_TEMPLATES.partner_meditation(meditatorName)
     
     // Send immediate notification to partner
-    await this.sendNotification(partner.fcmToken, template.title, template.body, template.clickAction)
+    await this.sendNotification(partner.fcmToken, template.title, template.body)
   }
 
   // 2. One sitting left (next day at 8AM)
@@ -59,7 +59,7 @@ export class NotificationScheduler {
     const template = NOTIFICATION_TEMPLATES.weekly_goal_complete(completerName)
     
     // Send immediate notification to partner
-    await this.sendNotification(partner.fcmToken, template.title, template.body, template.clickAction)
+    await this.sendNotification(partner.fcmToken, template.title, template.body)
   }
 
   // 4. New week started
@@ -100,7 +100,7 @@ export class NotificationScheduler {
       
       // For demo purposes, send immediately (remove in production)
       setTimeout(async () => {
-        await this.sendNotification(token, title, body, clickAction)
+        await this.sendNotification(token, title, body)
       }, 2000) // 2 second delay for demo
     } catch (error) {
       console.error('Error scheduling notification:', error)
