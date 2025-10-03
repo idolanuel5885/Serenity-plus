@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-// import { createUser } from '../../lib/database' // Import createUser - using API instead
+import { createUser } from '../../lib/database' // Import createUser
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(30)
@@ -73,8 +73,8 @@ export default function MeditationLengthPage() {
       localStorage.setItem('userId', userId)
       console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'))
       
-      // Create user via API (no Firebase/CSP issues)
-      let apiUserId = null
+      // Create user in Firebase database
+      let firebaseUserId = null
       try {
         // Get the user's invite code from localStorage (created on invite page)
         const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -88,37 +88,24 @@ export default function MeditationLengthPage() {
           inviteCode: userInviteCode
         }
         
-        const response = await fetch('/api/user', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(userData)
-        })
+        firebaseUserId = await createUser(userData)
+        console.log('User created in Firebase with ID:', firebaseUserId)
         
-        if (response.ok) {
-          const result = await response.json()
-          apiUserId = result.user.id
-          console.log('User created via API with ID:', apiUserId)
-          
-          // Store API user ID in localStorage for session management
-          localStorage.setItem('apiUserId', apiUserId)
-          localStorage.setItem('userId', apiUserId) // Keep for compatibility
-        } else {
-          throw new Error('API request failed')
-        }
-      } catch (apiError) {
-        console.log('API error, using localStorage fallback:', apiError)
+        // Store Firebase user ID in localStorage for session management
+        localStorage.setItem('firebaseUserId', firebaseUserId)
+        localStorage.setItem('userId', firebaseUserId) // Keep for compatibility
+      } catch (firebaseError) {
+        console.log('Firebase error, using localStorage fallback:', firebaseError)
         // Create a fallback user ID
-        apiUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        localStorage.setItem('userId', apiUserId)
+        firebaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        localStorage.setItem('userId', firebaseUserId)
       }
       
       // Always store in localStorage for compatibility
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
       const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const newUser = {
-        id: apiUserId,
+        id: firebaseUserId,
         name: nickname,
         email: `user-${Date.now()}@example.com`,
         weeklyTarget: parseInt(weeklyTarget),

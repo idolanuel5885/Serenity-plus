@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-// import { getUserPartnerships, createPartnershipsForUser } from '../lib/database' // Using API instead
+import { getUserPartnerships, createPartnershipsForUser } from '../lib/database'
 
 interface Partnership {
   id: string
@@ -31,18 +31,40 @@ export default function Home() {
     try {
       console.log('Fetching partnerships for userId:', userId)
       
-      // Use API instead of Firebase to avoid CSP issues
+      // Try Firebase first, fallback to localStorage if Firebase not configured
       try {
-        // Get existing partnerships from API
-        const response = await fetch(`/api/partnerships?userId=${userId}`)
-        if (response.ok) {
-          const result = await response.json()
-          const existingPartnerships = result.partnerships || []
-          console.log('Existing partnerships from API:', existingPartnerships)
+        // Get existing partnerships from database
+        const existingPartnerships = await getUserPartnerships(userId)
+        console.log('Existing partnerships:', existingPartnerships)
+        
+        if (existingPartnerships.length > 0) {
+          // Convert database partnerships to UI format
+          const partnerships = existingPartnerships.map(partnership => ({
+            id: partnership.id,
+            partner: {
+              id: partnership.partnerId,
+              name: partnership.partnerName,
+              email: partnership.partnerEmail,
+              image: partnership.partnerImage || '/icons/meditation-1.svg',
+              weeklyTarget: partnership.partnerWeeklyTarget
+            },
+            userSits: partnership.userSits,
+            partnerSits: partnership.partnerSits,
+            weeklyGoal: partnership.weeklyGoal,
+            score: partnership.score,
+            currentWeekStart: partnership.currentWeekStart.toISOString()
+          }))
           
-          if (existingPartnerships.length > 0) {
-            // Convert API partnerships to UI format
-            const partnerships = existingPartnerships.map((partnership: any) => ({
+          console.log('Found existing partnerships:', partnerships)
+          setPartnerships(partnerships)
+        } else {
+          // No existing partnerships, try to create new ones
+          console.log('No existing partnerships, creating new ones...')
+          const inviteCode = localStorage.getItem('pendingInviteCode')
+          const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined)
+          
+          if (newPartnerships.length > 0) {
+            const partnerships = newPartnerships.map(partnership => ({
               id: partnership.id,
               partner: {
                 id: partnership.partnerId,
@@ -51,24 +73,22 @@ export default function Home() {
                 image: partnership.partnerImage || '/icons/meditation-1.svg',
                 weeklyTarget: partnership.partnerWeeklyTarget
               },
-              userSits: partnership.userSits || 0,
-              partnerSits: partnership.partnerSits || 0,
-              weeklyGoal: partnership.weeklyGoal || 5,
-              score: partnership.score || 0,
-              currentWeekStart: partnership.currentWeekStart || new Date().toISOString()
+              userSits: partnership.userSits,
+              partnerSits: partnership.partnerSits,
+              weeklyGoal: partnership.weeklyGoal,
+              score: partnership.score,
+              currentWeekStart: partnership.currentWeekStart.toISOString()
             }))
             
-            console.log('Found existing partnerships:', partnerships)
+            console.log('Created new partnerships:', partnerships)
             setPartnerships(partnerships)
           } else {
-            console.log('No existing partnerships, showing empty partnerships')
+            console.log('No other users found, showing empty partnerships')
             setPartnerships([])
           }
-        } else {
-          throw new Error('API request failed')
         }
-      } catch (apiError) {
-        console.log('API error, falling back to localStorage:', apiError)
+      } catch (firebaseError) {
+        console.log('Firebase not configured, falling back to localStorage')
         
         // Fallback to localStorage approach
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
