@@ -67,9 +67,6 @@ export default function MeditationLengthPage() {
         localStorage.setItem('partnershipInviteCode', pendingInviteCode)
         localStorage.setItem('partnershipStatus', 'pending')
         console.log('Partnership invite stored for demo')
-        
-        // Clear pending invite
-        localStorage.removeItem('pendingInviteCode')
       }
       
       console.log('User account created successfully (demo mode)')
@@ -111,6 +108,12 @@ export default function MeditationLengthPage() {
         // Store Supabase user ID in localStorage for session management
         localStorage.setItem('supabaseUserId', supabaseUserId)
         localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
+        
+        // Clear pending invite after successful user creation
+        if (pendingInviteCode) {
+          localStorage.removeItem('pendingInviteCode')
+          console.log('Cleared pendingInviteCode after user creation')
+        }
       } catch (supabaseError) {
         console.log('Supabase error, using localStorage fallback:', supabaseError)
         console.error('Supabase error details:', supabaseError)
