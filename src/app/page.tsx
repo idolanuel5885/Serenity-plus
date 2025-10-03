@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-// import { getUserPartnerships, createPartnershipsForUser } from '../lib/database' // Disabled due to CSP issues
+import { getUserPartnerships, createPartnershipsForUser } from '../lib/database'
 
 interface Partnership {
   id: string
@@ -31,8 +31,64 @@ export default function Home() {
     try {
       console.log('Fetching partnerships for userId:', userId)
       
-      // Firebase disabled due to CSP issues - use localStorage only
-      console.log('Using localStorage fallback for partnerships')
+      // Try Firebase first, fallback to localStorage if Firebase not configured
+      try {
+        // Get existing partnerships from database
+        const existingPartnerships = await getUserPartnerships(userId)
+        console.log('Existing partnerships:', existingPartnerships)
+        
+        if (existingPartnerships.length > 0) {
+          // Convert database partnerships to UI format
+          const partnerships = existingPartnerships.map(partnership => ({
+            id: partnership.id,
+            partner: {
+              id: partnership.partnerId,
+              name: partnership.partnerName,
+              email: partnership.partnerEmail,
+              image: partnership.partnerImage || '/icons/meditation-1.svg',
+              weeklyTarget: partnership.partnerWeeklyTarget
+            },
+            userSits: partnership.userSits,
+            partnerSits: partnership.partnerSits,
+            weeklyGoal: partnership.weeklyGoal,
+            score: partnership.score,
+            currentWeekStart: partnership.currentWeekStart.toISOString()
+          }))
+          
+          console.log('Found existing partnerships:', partnerships)
+          setPartnerships(partnerships)
+        } else {
+          // No existing partnerships, try to create new ones
+          console.log('No existing partnerships, creating new ones...')
+          const inviteCode = localStorage.getItem('pendingInviteCode')
+          const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined)
+          
+          if (newPartnerships.length > 0) {
+            const partnerships = newPartnerships.map(partnership => ({
+              id: partnership.id,
+              partner: {
+                id: partnership.partnerId,
+                name: partnership.partnerName,
+                email: partnership.partnerEmail,
+                image: partnership.partnerImage || '/icons/meditation-1.svg',
+                weeklyTarget: partnership.partnerWeeklyTarget
+              },
+              userSits: partnership.userSits,
+              partnerSits: partnership.partnerSits,
+              weeklyGoal: partnership.weeklyGoal,
+              score: partnership.score,
+              currentWeekStart: partnership.currentWeekStart.toISOString()
+            }))
+            
+            console.log('Created new partnerships:', partnerships)
+            setPartnerships(partnerships)
+          } else {
+            console.log('No other users found, showing empty partnerships')
+            setPartnerships([])
+          }
+        }
+      } catch (firebaseError) {
+        console.log('Firebase not configured, falling back to localStorage')
         
         // Fallback to localStorage approach
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
