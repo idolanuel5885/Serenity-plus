@@ -26,6 +26,23 @@ export default function InvitePage() {
           let existingInviteCode = localStorage.getItem('userInviteCode')
           
           if (!existingInviteCode) {
+            // First, try to get the user's existing invite code from the database
+            try {
+              const userResponse = await fetch(`/api/user?userId=${userId}`)
+              if (userResponse.ok) {
+                const userData = await userResponse.json()
+                if (userData.user && userData.user.invitecode) {
+                  existingInviteCode = userData.user.invitecode
+                  localStorage.setItem('userInviteCode', existingInviteCode)
+                  console.log('=== INVITE PAGE: Found existing user invite code ===', existingInviteCode)
+                }
+              }
+            } catch (error) {
+              console.error('Error fetching user invite code:', error)
+            }
+          }
+          
+          if (!existingInviteCode) {
             // Create a new invite via API
             const response = await fetch('/api/invite', {
               method: 'POST',
@@ -44,6 +61,7 @@ export default function InvitePage() {
               localStorage.setItem('userInviteCode', data.inviteCode)
               console.log('=== INVITE PAGE: Stored userInviteCode ===', data.inviteCode)
               console.log('Created new invite code via API:', data.inviteCode)
+              
             } else {
               throw new Error('Failed to create invite')
             }
