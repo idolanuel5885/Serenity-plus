@@ -102,6 +102,7 @@ export async function createPartnershipsForUser(userId: string, inviteCode?: str
       .eq('invitecode', inviteCode || '')
 
     console.log('Found other users with matching invite code:', otherUsers)
+    console.log('Number of other users found:', otherUsers?.length || 0)
     if (usersError) {
       console.error('Error finding other users:', usersError)
       throw usersError

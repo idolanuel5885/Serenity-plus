@@ -67,6 +67,7 @@ export default function Home() {
           console.log('All localStorage keys:', Object.keys(localStorage))
           console.log('pendingInviteCode:', pendingInviteCode)
           console.log('userInviteCode:', userInviteCode)
+          console.log('=== CALLING createPartnershipsForUser ===', { userId, inviteCode })
           const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined)
           
           if (newPartnerships.length > 0) {
