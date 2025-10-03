@@ -21,6 +21,7 @@ export default function WelcomePage() {
         if (inviteCode) {
           // Store the invite code for later use
           localStorage.setItem('pendingInviteCode', inviteCode)
+          console.log('Welcome page: Stored pendingInviteCode from URL:', inviteCode)
           setInviteData({
             inviterName: 'Your Partner',
             inviterImage: '/icons/meditation-1.svg'
@@ -28,6 +29,7 @@ export default function WelcomePage() {
         } else {
           // Check localStorage for existing invite
           const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+          console.log('Welcome page: Found existing pendingInviteCode:', pendingInviteCode)
           if (pendingInviteCode) {
             setInviteData({
               inviterName: 'Your Partner',
