@@ -118,7 +118,7 @@ export default function MeditationLengthPage() {
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
       const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const newUser = {
-        id: firebaseUserId,
+        id: apiUserId,
         name: nickname,
         email: `user-${Date.now()}@example.com`,
         weeklyTarget: parseInt(weeklyTarget),
