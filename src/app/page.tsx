@@ -42,7 +42,7 @@ export default function Home() {
           
           if (existingPartnerships.length > 0) {
             // Convert API partnerships to UI format
-            const partnerships = existingPartnerships.map(partnership => ({
+            const partnerships = existingPartnerships.map((partnership: any) => ({
               id: partnership.id,
               partner: {
                 id: partnership.partnerId,
