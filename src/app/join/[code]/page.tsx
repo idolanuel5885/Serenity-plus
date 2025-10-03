@@ -36,7 +36,7 @@ export default function JoinPage({ params }: { params: { code: string } }) {
         console.error('Error getting inviter info:', error)
         setInviterName('Your Partner')
       } finally {
-        setLoading(false)
+        // Loading state removed
       }
     }
 
