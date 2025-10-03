@@ -14,9 +14,9 @@ export async function POST(request: NextRequest) {
     // Check if user already has an active invite
     const { data: existingInvite, error } = await supabase
       .from('invites')
-      .select('inviteCode, id')
-      .eq('userId', userId)
-      .eq('isActive', true)
+      .select('invitecode, id')
+      .eq('userid', userId)
+      .eq('isactive', true)
       .single()
     
     console.log('Existing invite check result:', { existingInvite, error })
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     
     if (existingInvite) {
       // User already has an active invite, reuse it
-      inviteCode = existingInvite.inviteCode
+      inviteCode = existingInvite.invitecode
       inviteId = existingInvite.id
       console.log('Reusing existing invite code:', inviteCode)
     } else {
@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
       
       // Store the invite in Supabase
       const inviteData = {
-        userId,
-        userName,
-        inviteCode,
-        isActive: true
+        userid: userId,
+        username: userName,
+        invitecode: inviteCode,
+        isactive: true
       }
       
       const { data, error } = await supabase
@@ -79,9 +79,9 @@ export async function GET(request: NextRequest) {
     // Find the invite in Supabase
     const { data: inviteData, error } = await supabase
       .from('invites')
-      .select('userName, userId')
-      .eq('inviteCode', inviteCode)
-      .eq('isActive', true)
+      .select('username, userid')
+      .eq('invitecode', inviteCode)
+      .eq('isactive', true)
       .single()
     
     if (error || !inviteData) {
@@ -92,8 +92,8 @@ export async function GET(request: NextRequest) {
       success: true, 
       invitation: {
         inviter: {
-          name: inviteData.userName,
-          id: inviteData.userId
+          name: inviteData.username,
+          id: inviteData.userid
         }
       }
     })
