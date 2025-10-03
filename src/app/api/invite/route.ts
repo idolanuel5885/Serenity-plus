@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an active invite
-    const { data: existingInvite, error: checkError } = await supabase
+    const { data: existingInvite, error } = await supabase
       .from('invites')
       .select('inviteCode, id')
       .eq('userId', userId)

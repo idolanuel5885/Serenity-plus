@@ -42,17 +42,17 @@ export default function Home() {
           const partnerships = existingPartnerships.map(partnership => ({
             id: partnership.id,
             partner: {
-              id: partnership.partnerId,
-              name: partnership.partnerName,
-              email: partnership.partnerEmail,
-              image: partnership.partnerImage || '/icons/meditation-1.svg',
-              weeklyTarget: partnership.partnerWeeklyTarget
+              id: partnership.partnerid,
+              name: partnership.partnername,
+              email: partnership.partneremail,
+              image: partnership.partnerimage || '/icons/meditation-1.svg',
+              weeklyTarget: partnership.partnerweeklytarget
             },
-            userSits: partnership.userSits,
-            partnerSits: partnership.partnerSits,
-            weeklyGoal: partnership.weeklyGoal,
+            userSits: partnership.usersits,
+            partnerSits: partnership.partnersits,
+            weeklyGoal: partnership.weeklygoal,
             score: partnership.score,
-            currentWeekStart: partnership.currentWeekStart
+            currentWeekStart: partnership.currentweekstart
           }))
           
           console.log('Found existing partnerships:', partnerships)
@@ -67,17 +67,17 @@ export default function Home() {
             const partnerships = newPartnerships.map(partnership => ({
               id: partnership.id,
               partner: {
-                id: partnership.partnerId,
-                name: partnership.partnerName,
-                email: partnership.partnerEmail,
-                image: partnership.partnerImage || '/icons/meditation-1.svg',
-                weeklyTarget: partnership.partnerWeeklyTarget
+                id: partnership.partnerid,
+                name: partnership.partnername,
+                email: partnership.partneremail,
+                image: partnership.partnerimage || '/icons/meditation-1.svg',
+                weeklyTarget: partnership.partnerweeklytarget
               },
-              userSits: partnership.userSits,
-              partnerSits: partnership.partnerSits,
-              weeklyGoal: partnership.weeklyGoal,
+              userSits: partnership.usersits,
+              partnerSits: partnership.partnersits,
+              weeklyGoal: partnership.weeklygoal,
               score: partnership.score,
-              currentWeekStart: partnership.currentWeekStart
+              currentWeekStart: partnership.currentweekstart
             }))
             
             console.log('Created new partnerships:', partnerships)
@@ -87,8 +87,8 @@ export default function Home() {
             setPartnerships([])
           }
         }
-      } catch (supabaseError) {
-        console.log('Supabase not configured, falling back to localStorage')
+        } catch (error) {
+          console.log('Supabase not configured, falling back to localStorage')
         
         // Fallback to localStorage approach
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
