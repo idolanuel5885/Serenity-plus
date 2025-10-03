@@ -1,12 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function NicknamePage() {
   const [nickname, setNickname] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
+
+  useEffect(() => {
+    // Debug: Check if pendingInviteCode exists when user reaches nickname page
+    const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+    console.log('Nickname page: pendingInviteCode exists:', pendingInviteCode)
+    console.log('Nickname page: All localStorage keys:', Object.keys(localStorage))
+  }, [])
 
   const validateNickname = (name: string) => {
     if (name.length < 2) return 'Nickname must be at least 2 characters'
