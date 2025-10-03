@@ -92,6 +92,8 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
 
 export async function createPartnershipsForUser(userId: string, inviteCode?: string): Promise<Partnership[]> {
   try {
+    console.log('createPartnershipsForUser called with:', { userId, inviteCode })
+    
     // Find other users with matching invite codes
     const { data: otherUsers, error: usersError } = await supabase
       .from('users')
@@ -99,7 +101,11 @@ export async function createPartnershipsForUser(userId: string, inviteCode?: str
       .neq('id', userId)
       .eq('invitecode', inviteCode || '')
 
-    if (usersError) throw usersError
+    console.log('Found other users with matching invite code:', otherUsers)
+    if (usersError) {
+      console.error('Error finding other users:', usersError)
+      throw usersError
+    }
 
     const partnerships: Partnership[] = []
     

@@ -60,7 +60,10 @@ export default function Home() {
         } else {
           // No existing partnerships, try to create new ones
           console.log('No existing partnerships, creating new ones...')
-          const inviteCode = localStorage.getItem('pendingInviteCode')
+          const pendingInviteCode = localStorage.getItem('pendingInviteCode')
+          const userInviteCode = localStorage.getItem('userInviteCode')
+          const inviteCode = pendingInviteCode || userInviteCode
+          console.log('Using invite code for partnership creation:', inviteCode)
           const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined)
           
           if (newPartnerships.length > 0) {
