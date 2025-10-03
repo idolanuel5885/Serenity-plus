@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '../../../../firebase-config'
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
+import { supabase } from '../../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,18 +10,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if partnership already exists
-    const existingQuery = query(
-      collection(db, 'partnerships'), 
-      where('userId', '==', userId), 
-      where('partnerId', '==', partnerId)
-    )
-    const existingSnapshot = await getDocs(existingQuery)
+    const { data: existingPartnership, error: checkError } = await supabase
+      .from('partnerships')
+      .select('id')
+      .eq('userId', userId)
+      .eq('partnerId', partnerId)
+      .single()
     
-    if (!existingSnapshot.empty) {
+    if (existingPartnership) {
       return NextResponse.json({ 
         success: true, 
         message: 'Partnership already exists',
-        partnershipId: existingSnapshot.docs[0].id
+        partnershipId: existingPartnership.id
       })
     }
 
@@ -30,19 +29,28 @@ export async function POST(request: NextRequest) {
     const partnershipData = {
       userId,
       partnerId,
-      createdAt: new Date(),
+      partnerName: 'Partner', // Will be updated when we have partner info
+      partnerEmail: 'partner@example.com',
+      partnerImage: '/icons/meditation-1.svg',
+      partnerWeeklyTarget: 5,
       userSits: 0,
       partnerSits: 0,
       weeklyGoal: 5, // Default goal
       score: 0,
-      currentWeekStart: new Date()
+      currentWeekStart: new Date().toISOString()
     }
     
-    const docRef = await addDoc(collection(db, 'partnerships'), partnershipData)
+    const { data, error } = await supabase
+      .from('partnerships')
+      .insert([partnershipData])
+      .select()
+      .single()
+
+    if (error) throw error
     
     return NextResponse.json({ 
       success: true, 
-      partnershipId: docRef.id 
+      partnershipId: data.id 
     })
   } catch (error) {
     console.error('Error creating partnership:', error)
@@ -60,17 +68,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all partnerships for this user
-    const q = query(collection(db, 'partnerships'), where('userId', '==', userId))
-    const querySnapshot = await getDocs(q)
-    
-    const partnerships = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    }))
+    const { data: partnerships, error } = await supabase
+      .from('partnerships')
+      .select('*')
+      .eq('userId', userId)
+
+    if (error) throw error
     
     return NextResponse.json({ 
       success: true, 
-      partnerships 
+      partnerships: partnerships || []
     })
   } catch (error) {
     console.error('Error fetching partnerships:', error)

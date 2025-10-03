@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '../../../../firebase-config'
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
+import { supabase } from '../../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,43 +10,48 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an active invite
-    const existingInviteQuery = query(
-      collection(db, 'invites'), 
-      where('userId', '==', userId), 
-      where('isActive', '==', true)
-    )
-    const existingInviteSnapshot = await getDocs(existingInviteQuery)
+    const { data: existingInvite, error: checkError } = await supabase
+      .from('invites')
+      .select('inviteCode, id')
+      .eq('userId', userId)
+      .eq('isActive', true)
+      .single()
     
     let inviteCode
-    let docRef
+    let inviteId
     
-    if (!existingInviteSnapshot.empty) {
+    if (existingInvite) {
       // User already has an active invite, reuse it
-      const existingInvite = existingInviteSnapshot.docs[0]
-      inviteCode = existingInvite.data().inviteCode
-      docRef = existingInvite.ref
+      inviteCode = existingInvite.inviteCode
+      inviteId = existingInvite.id
       console.log('Reusing existing invite code:', inviteCode)
     } else {
       // Create a new unique invite code
       inviteCode = `invite-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`
       
-      // Store the invite in Firebase
+      // Store the invite in Supabase
       const inviteData = {
         userId,
         userName,
         inviteCode,
-        createdAt: new Date(),
         isActive: true
       }
       
-      docRef = await addDoc(collection(db, 'invites'), inviteData)
+      const { data, error } = await supabase
+        .from('invites')
+        .insert([inviteData])
+        .select()
+        .single()
+
+      if (error) throw error
+      inviteId = data.id
       console.log('Created new invite code:', inviteCode)
     }
     
     return NextResponse.json({ 
       success: true, 
       inviteCode,
-      inviteId: docRef.id 
+      inviteId 
     })
   } catch (error) {
     console.error('Error creating invite:', error)
@@ -64,15 +68,17 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing invite code' }, { status: 400 })
     }
 
-    // Find the invite in Firebase
-    const q = query(collection(db, 'invites'), where('inviteCode', '==', inviteCode), where('isActive', '==', true))
-    const querySnapshot = await getDocs(q)
+    // Find the invite in Supabase
+    const { data: inviteData, error } = await supabase
+      .from('invites')
+      .select('userName, userId')
+      .eq('inviteCode', inviteCode)
+      .eq('isActive', true)
+      .single()
     
-    if (querySnapshot.empty) {
+    if (error || !inviteData) {
       return NextResponse.json({ error: 'Invalid invite code' }, { status: 404 })
     }
-    
-    const inviteData = querySnapshot.docs[0].data()
     
     return NextResponse.json({ 
       success: true, 
