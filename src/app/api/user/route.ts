@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+interface User {
+  id: string
+  name: string
+  email: string
+  weeklyTarget: number
+  usualSitLength: number
+  image: string
+  inviteCode: string
+  createdAt: string
+}
+
 // Simple in-memory storage for now (replace with real database later)
-const users: any[] = []
+const users: User[] = []
 
 export async function POST(request: NextRequest) {
   try {

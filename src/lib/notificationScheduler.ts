@@ -70,17 +70,17 @@ export class NotificationScheduler {
     // Send to both users
     if (user.fcmToken) {
       const template = NOTIFICATION_TEMPLATES.new_week_start(partner.name)
-      await this.sendNotification(user.fcmToken, template.title, template.body, template.clickAction)
+      await this.sendNotification(user.fcmToken, template.title, template.body)
     }
     
     if (partner.fcmToken) {
       const template = NOTIFICATION_TEMPLATES.new_week_start(user.name)
-      await this.sendNotification(partner.fcmToken, template.title, template.body, template.clickAction)
+      await this.sendNotification(partner.fcmToken, template.title, template.body)
     }
   }
 
   // Helper method to send immediate notification
-  private async sendNotification(token: string, title: string, body: string, _clickAction: string) {
+  private async sendNotification(token: string, title: string, body: string) {
     try {
       // For now, use the test notification function
       // In production, this would send via Firebase Cloud Messaging

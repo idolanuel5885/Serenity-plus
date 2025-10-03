@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 export default function JoinPage({ params }: { params: { code: string } }) {
   const { code } = params
   const [inviterName, setInviterName] = useState('Your Partner')
-  const [loading] = useState(true)
+  // const [loading] = useState(true) // Unused for now
 
   useEffect(() => {
     const getInviterInfo = async () => {

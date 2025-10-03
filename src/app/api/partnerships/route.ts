@@ -1,7 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+interface Partnership {
+  id: string
+  userId: string
+  partnerId: string
+  partnerName: string
+  partnerEmail: string
+  partnerImage: string
+  partnerWeeklyTarget: number
+  userSits: number
+  partnerSits: number
+  weeklyGoal: number
+  score: number
+  currentWeekStart: string
+  createdAt: string
+}
+
 // Simple in-memory storage for partnerships
-const partnerships: any[] = []
+const partnerships: Partnership[] = []
 
 export async function POST(request: NextRequest) {
   try {
