@@ -85,7 +85,7 @@ export default function MeditationLengthPage() {
         // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
         const pendingInviteCode = localStorage.getItem('pendingInviteCode')
         const userInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        console.log('Invite code debugging:', {
+        console.log('=== USER CREATION: Invite code debugging ===', {
           pendingInviteCode,
           userInviteCode: localStorage.getItem('userInviteCode'),
           finalInviteCode: userInviteCode,
