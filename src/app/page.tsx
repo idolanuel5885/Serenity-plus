@@ -31,7 +31,7 @@ export default function Home() {
     try {
       console.log('Fetching partnerships for userId:', userId)
       
-      // Try Firebase first, fallback to localStorage if Firebase not configured
+      // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
         // Get existing partnerships from database
         const existingPartnerships = await getUserPartnerships(userId)
@@ -179,7 +179,7 @@ export default function Home() {
           localStorage.removeItem('userNickname')
           localStorage.removeItem('userWeeklyTarget')
           localStorage.removeItem('userUsualSitLength')
-          localStorage.removeItem('firebaseUserId')
+          localStorage.removeItem('supabaseUserId')
           localStorage.removeItem('allUsers')
           localStorage.removeItem('pendingInviteCode')
           localStorage.removeItem('partnershipInviteCode')

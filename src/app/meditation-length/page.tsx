@@ -73,8 +73,8 @@ export default function MeditationLengthPage() {
       localStorage.setItem('userId', userId)
       console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'))
       
-      // Create user in Firebase database
-      let firebaseUserId = null
+      // Create user in Supabase database
+      let supabaseUserId = null
       try {
         // Get the user's invite code from localStorage (created on invite page)
         const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
@@ -82,35 +82,35 @@ export default function MeditationLengthPage() {
         const userData = {
           name: nickname,
           email: `user-${Date.now()}@example.com`,
-          weeklyTarget: parseInt(weeklyTarget),
-          usualSitLength: selectedLength,
+          weeklytarget: parseInt(weeklyTarget),
+          usualsitlength: selectedLength,
           image: '/icons/meditation-1.svg',
-          inviteCode: userInviteCode
+          invitecode: userInviteCode
         }
         
-        firebaseUserId = await createUser(userData)
-        console.log('User created in Firebase with ID:', firebaseUserId)
+        supabaseUserId = await createUser(userData)
+        console.log('User created in Supabase with ID:', supabaseUserId)
         
-        // Store Firebase user ID in localStorage for session management
-        localStorage.setItem('firebaseUserId', firebaseUserId)
-        localStorage.setItem('userId', firebaseUserId) // Keep for compatibility
-      } catch (firebaseError) {
-        console.log('Firebase error, using localStorage fallback:', firebaseError)
+        // Store Supabase user ID in localStorage for session management
+        localStorage.setItem('supabaseUserId', supabaseUserId)
+        localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
+      } catch (supabaseError) {
+        console.log('Supabase error, using localStorage fallback:', supabaseError)
         // Create a fallback user ID
-        firebaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        localStorage.setItem('userId', firebaseUserId)
+        supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        localStorage.setItem('userId', supabaseUserId)
       }
       
       // Always store in localStorage for compatibility
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
       const userInviteCode = localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       const newUser = {
-        id: firebaseUserId,
+        id: supabaseUserId,
         name: nickname,
         email: `user-${Date.now()}@example.com`,
-        weeklyTarget: parseInt(weeklyTarget),
+        weeklytarget: parseInt(weeklyTarget),
         image: '/icons/meditation-1.svg',
-        inviteCode: userInviteCode
+        invitecode: userInviteCode
       }
       allUsers.push(newUser)
       localStorage.setItem('allUsers', JSON.stringify(allUsers))

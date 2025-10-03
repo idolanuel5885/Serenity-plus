@@ -4,30 +4,30 @@ export interface User {
   id: string
   name: string
   email: string
-  weeklyTarget: number
-  usualSitLength: number
+  weeklytarget: number
+  usualsitlength: number
   image: string
-  inviteCode: string
-  createdAt: string
+  invitecode: string
+  createdat: string
 }
 
 export interface Partnership {
   id: string
-  userId: string
-  partnerId: string
-  partnerName: string
-  partnerEmail: string
-  partnerImage: string
-  partnerWeeklyTarget: number
-  userSits: number
-  partnerSits: number
-  weeklyGoal: number
+  userid: string
+  partnerid: string
+  partnername: string
+  partneremail: string
+  partnerimage: string
+  partnerweeklytarget: number
+  usersits: number
+  partnersits: number
+  weeklygoal: number
   score: number
-  currentWeekStart: string
-  createdAt: string
+  currentweekstart: string
+  createdat: string
 }
 
-export async function createUser(userData: Omit<User, 'id' | 'createdAt'>): Promise<string> {
+export async function createUser(userData: Omit<User, 'id' | 'createdat'>): Promise<string> {
   try {
     const { data, error } = await supabase
       .from('users')
@@ -59,7 +59,7 @@ export async function getUser(userId: string): Promise<User | null> {
   }
 }
 
-export async function createPartnership(partnershipData: Omit<Partnership, 'id' | 'createdAt'>): Promise<string> {
+export async function createPartnership(partnershipData: Omit<Partnership, 'id' | 'createdat'>): Promise<string> {
   try {
     const { data, error } = await supabase
       .from('partnerships')
@@ -80,7 +80,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
     const { data, error } = await supabase
       .from('partnerships')
       .select('*')
-      .eq('userId', userId)
+      .eq('userid', userId)
 
     if (error) throw error
     return data || []
@@ -97,7 +97,7 @@ export async function createPartnershipsForUser(userId: string, inviteCode?: str
       .from('users')
       .select('*')
       .neq('id', userId)
-      .eq('inviteCode', inviteCode || '')
+      .eq('invitecode', inviteCode || '')
 
     if (usersError) throw usersError
 
@@ -105,24 +105,24 @@ export async function createPartnershipsForUser(userId: string, inviteCode?: str
     
     for (const otherUser of otherUsers || []) {
       const partnershipData = {
-        userId,
-        partnerId: otherUser.id,
-        partnerName: otherUser.name,
-        partnerEmail: otherUser.email,
-        partnerImage: otherUser.image,
-        partnerWeeklyTarget: otherUser.weeklyTarget,
-        userSits: 0,
-        partnerSits: 0,
-        weeklyGoal: 5,
+        userid: userId,
+        partnerid: otherUser.id,
+        partnername: otherUser.name,
+        partneremail: otherUser.email,
+        partnerimage: otherUser.image,
+        partnerweeklytarget: otherUser.weeklytarget,
+        usersits: 0,
+        partnersits: 0,
+        weeklygoal: 5,
         score: 0,
-        currentWeekStart: new Date().toISOString()
+        currentweekstart: new Date().toISOString()
       }
 
       const partnershipId = await createPartnership(partnershipData)
       partnerships.push({
         id: partnershipId,
         ...partnershipData,
-        createdAt: new Date().toISOString()
+        createdat: new Date().toISOString()
       })
     }
 
