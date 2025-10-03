@@ -79,7 +79,12 @@ export default function MeditationLengthPage() {
         // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
         const pendingInviteCode = localStorage.getItem('pendingInviteCode')
         const userInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        console.log('Using invite code for user creation:', userInviteCode)
+        console.log('Invite code debugging:', {
+          pendingInviteCode,
+          userInviteCode: localStorage.getItem('userInviteCode'),
+          finalInviteCode: userInviteCode,
+          allLocalStorage: Object.keys(localStorage)
+        })
         
         const userData = {
           name: nickname,
@@ -90,6 +95,7 @@ export default function MeditationLengthPage() {
           invitecode: userInviteCode
         }
         
+        console.log('Creating user with data:', userData)
         supabaseUserId = await createUser(userData)
         console.log('User created in Supabase with ID:', supabaseUserId)
         
