@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '../../../lib/supabase'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  weeklyTarget: number
-  usualSitLength: number
-  image: string
-  inviteCode: string
-  createdAt: string
-}
-
 export async function POST(request: NextRequest) {
   try {
     const userData = await request.json()

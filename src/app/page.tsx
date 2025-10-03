@@ -52,7 +52,7 @@ export default function Home() {
             partnerSits: partnership.partnerSits,
             weeklyGoal: partnership.weeklyGoal,
             score: partnership.score,
-            currentWeekStart: partnership.currentWeekStart.toISOString()
+            currentWeekStart: partnership.currentWeekStart
           }))
           
           console.log('Found existing partnerships:', partnerships)
@@ -77,7 +77,7 @@ export default function Home() {
               partnerSits: partnership.partnerSits,
               weeklyGoal: partnership.weeklyGoal,
               score: partnership.score,
-              currentWeekStart: partnership.currentWeekStart.toISOString()
+              currentWeekStart: partnership.currentWeekStart
             }))
             
             console.log('Created new partnerships:', partnerships)
@@ -87,8 +87,8 @@ export default function Home() {
             setPartnerships([])
           }
         }
-      } catch (firebaseError) {
-        console.log('Firebase not configured, falling back to localStorage')
+      } catch (supabaseError) {
+        console.log('Supabase not configured, falling back to localStorage')
         
         // Fallback to localStorage approach
         const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
