@@ -42,6 +42,7 @@ export default function InvitePage() {
               const data = await response.json()
               existingInviteCode = data.inviteCode
               localStorage.setItem('userInviteCode', data.inviteCode)
+              console.log('=== INVITE PAGE: Stored userInviteCode ===', data.inviteCode)
               console.log('Created new invite code via API:', data.inviteCode)
             } else {
               throw new Error('Failed to create invite')
