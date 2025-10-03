@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if partnership already exists
-    const { data: existingPartnership, error } = await supabase
+    const { data: existingPartnership, error: checkError } = await supabase
       .from('partnerships')
       .select('id')
       .eq('userId', userId)
@@ -40,13 +40,13 @@ export async function POST(request: NextRequest) {
       currentWeekStart: new Date().toISOString()
     }
     
-    const { data, error } = await supabase
+    const { data, error: createError } = await supabase
       .from('partnerships')
       .insert([partnershipData])
       .select()
       .single()
 
-    if (error) throw error
+    if (createError) throw createError
     
     return NextResponse.json({ 
       success: true, 
@@ -68,12 +68,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all partnerships for this user
-    const { data: partnerships, error } = await supabase
+    const { data: partnerships, error: fetchError } = await supabase
       .from('partnerships')
       .select('*')
       .eq('userId', userId)
 
-    if (error) throw error
+    if (fetchError) throw fetchError
     
     return NextResponse.json({ 
       success: true, 
