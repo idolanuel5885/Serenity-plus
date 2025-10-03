@@ -102,8 +102,10 @@ export default function MeditationLengthPage() {
         }
         
         console.log('Creating user with data:', userData)
+        console.log('About to call createUser with invite code:', userData.invitecode)
         supabaseUserId = await createUser(userData)
         console.log('User created in Supabase with ID:', supabaseUserId)
+        console.log('User created with invite code:', userData.invitecode)
         
         // Store Supabase user ID in localStorage for session management
         localStorage.setItem('supabaseUserId', supabaseUserId)
