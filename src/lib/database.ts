@@ -59,7 +59,7 @@ export const createUser = async (userData: Omit<User, 'id' | 'createdAt' | 'upda
     return userRef.id;
   } catch (error) {
     console.error('Error creating user:', error);
-    console.error('Error details:', error.message);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
     throw error;
   }
 };
