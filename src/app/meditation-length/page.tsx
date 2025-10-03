@@ -24,8 +24,8 @@ export default function MeditationLengthPage() {
     { minutes: 60, label: '60 minutes' }
   ]
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    console.log('=== COMPLETE SETUP BUTTON CLICKED ===')
     console.log('Complete Setup button clicked!')
     
     // Store selection in localStorage
