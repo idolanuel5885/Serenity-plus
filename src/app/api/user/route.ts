@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '../../../lib/supabase'
 
 interface User {
   id: string
@@ -11,26 +12,22 @@ interface User {
   createdAt: string
 }
 
-// Simple in-memory storage for now (replace with real database later)
-const users: User[] = []
-
 export async function POST(request: NextRequest) {
   try {
     const userData = await request.json()
     
-    // Create a simple user object
-    const newUser = {
-      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      ...userData,
-      createdAt: new Date().toISOString()
-    }
+    // Create user in Supabase
+    const { data, error } = await supabase
+      .from('users')
+      .insert([userData])
+      .select()
+      .single()
+
+    if (error) throw error
     
-    users.push(newUser)
+    console.log('User created in Supabase:', data)
     
-    console.log('User created:', newUser)
-    console.log('All users:', users)
-    
-    return NextResponse.json({ success: true, user: newUser })
+    return NextResponse.json({ success: true, user: data })
   } catch (error) {
     console.error('Error creating user:', error)
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
@@ -43,11 +40,22 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId')
     
     if (userId) {
-      const user = users.find(u => u.id === userId)
-      return NextResponse.json({ success: true, user })
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+
+      if (error) throw error
+      return NextResponse.json({ success: true, user: data })
     }
     
-    return NextResponse.json({ success: true, users })
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+
+    if (error) throw error
+    return NextResponse.json({ success: true, users: data })
   } catch (error) {
     console.error('Error fetching users:', error)
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })

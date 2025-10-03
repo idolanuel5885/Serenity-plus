@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { getUserPartnerships, createPartnershipsForUser } from '../lib/database'
+import { getUserPartnerships, createPartnershipsForUser } from '../lib/supabase-database'
 
 interface Partnership {
   id: string

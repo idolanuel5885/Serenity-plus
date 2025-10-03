@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createUser } from '../../lib/database' // Import createUser
+import { createUser } from '../../lib/supabase-database' // Import createUser from Supabase
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(30)
