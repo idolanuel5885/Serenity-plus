@@ -9,6 +9,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing userId or userName' }, { status: 400 })
     }
 
+    console.log('Creating invite for user:', { userId, userName })
+
     // Check if user already has an active invite
     const { data: existingInvite, error } = await supabase
       .from('invites')
@@ -16,6 +18,8 @@ export async function POST(request: NextRequest) {
       .eq('userId', userId)
       .eq('isActive', true)
       .single()
+    
+    console.log('Existing invite check result:', { existingInvite, error })
     
     let inviteCode
     let inviteId
@@ -43,7 +47,11 @@ export async function POST(request: NextRequest) {
         .select()
         .single()
 
-      if (error) throw error
+      console.log('Insert invite result:', { data, error })
+      if (error) {
+        console.error('Error inserting invite:', error)
+        throw error
+      }
       inviteId = data.id
       console.log('Created new invite code:', inviteCode)
     }

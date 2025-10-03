@@ -64,6 +64,9 @@ export default function Home() {
           const userInviteCode = localStorage.getItem('userInviteCode')
           const inviteCode = pendingInviteCode || userInviteCode
           console.log('Using invite code for partnership creation:', inviteCode)
+          console.log('All localStorage keys:', Object.keys(localStorage))
+          console.log('pendingInviteCode:', pendingInviteCode)
+          console.log('userInviteCode:', userInviteCode)
           const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined)
           
           if (newPartnerships.length > 0) {
