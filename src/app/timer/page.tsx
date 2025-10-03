@@ -149,7 +149,7 @@ export default function TimerPage() {
       const centerX = 120
       const centerY = 120
       const petalLength = 60
-      const petalWidth = 20
+      // const petalWidth = 20 // Unused for now
 
       for (let i = 0; i < totalSits; i++) {
         const angle = (i * 360) / totalSits

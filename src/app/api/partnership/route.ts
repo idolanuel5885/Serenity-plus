@@ -4,7 +4,7 @@ import { collection, addDoc, getDocs, query, where } from 'firebase/firestore'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, partnerId, inviteCode } = await request.json()
+    const { userId, partnerId } = await request.json()
     
     if (!userId || !partnerId) {
       return NextResponse.json({ error: 'Missing userId or partnerId' }, { status: 400 })

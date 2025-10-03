@@ -6,10 +6,8 @@ import {
   getDocs, 
   getDoc, 
   updateDoc, 
-  deleteDoc, 
   query, 
-  where, 
-  orderBy 
+  where
 } from 'firebase/firestore';
 
 // User interface

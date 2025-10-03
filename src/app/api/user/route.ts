@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 // Simple in-memory storage for now (replace with real database later)
-let users: any[] = []
-let partnerships: any[] = []
+const users: any[] = []
 
 export async function POST(request: NextRequest) {
   try {

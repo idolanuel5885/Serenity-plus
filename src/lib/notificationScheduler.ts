@@ -80,7 +80,7 @@ export class NotificationScheduler {
   }
 
   // Helper method to send immediate notification
-  private async sendNotification(token: string, title: string, body: string, clickAction: string) {
+  private async sendNotification(token: string, title: string, body: string, _clickAction: string) {
     try {
       // For now, use the test notification function
       // In production, this would send via Firebase Cloud Messaging
