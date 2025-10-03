@@ -84,11 +84,12 @@ export default function MeditationLengthPage() {
       try {
         // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
         const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-        const userInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        const userInviteCode = localStorage.getItem('userInviteCode')
+        const finalInviteCode = pendingInviteCode || userInviteCode || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         console.log('=== USER CREATION: Invite code debugging ===', {
           pendingInviteCode,
           userInviteCode: localStorage.getItem('userInviteCode'),
-          finalInviteCode: userInviteCode,
+          finalInviteCode: finalInviteCode,
           allLocalStorage: Object.keys(localStorage)
         })
         
@@ -98,7 +99,7 @@ export default function MeditationLengthPage() {
           weeklytarget: parseInt(weeklyTarget),
           usualsitlength: selectedLength,
           image: '/icons/meditation-1.svg',
-          invitecode: userInviteCode
+          invitecode: finalInviteCode
         }
         
         console.log('Creating user with data:', userData)
