@@ -33,8 +33,10 @@ export default function InvitePage() {
                 const userData = await userResponse.json()
                 if (userData.user && userData.user.invitecode) {
                   existingInviteCode = userData.user.invitecode
-                  localStorage.setItem('userInviteCode', existingInviteCode)
-                  console.log('=== INVITE PAGE: Found existing user invite code ===', existingInviteCode)
+                  if (existingInviteCode) {
+                    localStorage.setItem('userInviteCode', existingInviteCode)
+                    console.log('=== INVITE PAGE: Found existing user invite code ===', existingInviteCode)
+                  }
                 }
               }
             } catch (error) {
