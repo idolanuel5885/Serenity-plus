@@ -46,16 +46,20 @@ export interface Partnership {
 // User operations
 export const createUser = async (userData: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> => {
   try {
+    console.log('Creating user with data:', userData);
+    console.log('Firebase db object:', db);
+    
     const now = new Date();
     const userRef = await addDoc(collection(db, 'users'), {
       ...userData,
       createdAt: now,
       updatedAt: now
     });
-    console.log('User created with ID:', userRef.id);
+    console.log('User created successfully with ID:', userRef.id);
     return userRef.id;
   } catch (error) {
     console.error('Error creating user:', error);
+    console.error('Error details:', error.message);
     throw error;
   }
 };
