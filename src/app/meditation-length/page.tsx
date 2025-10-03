@@ -112,6 +112,7 @@ export default function MeditationLengthPage() {
         localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
       } catch (supabaseError) {
         console.log('Supabase error, using localStorage fallback:', supabaseError)
+        console.error('Supabase error details:', supabaseError)
         // Create a fallback user ID
         supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         localStorage.setItem('userId', supabaseUserId)
