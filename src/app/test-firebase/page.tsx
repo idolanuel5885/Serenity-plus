@@ -1,8 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { db } from '../../../firebase-config'
-import { collection, addDoc, getDocs } from 'firebase/firestore'
 
 export default function TestFirebase() {
   const [status, setStatus] = useState('Testing...')
@@ -13,6 +11,10 @@ export default function TestFirebase() {
       try {
         console.log('Testing Firebase connection...')
         setStatus('Testing Firebase connection...')
+        
+        // Dynamic imports to avoid CSP issues
+        const { db } = await import('../../../firebase-config')
+        const { collection, addDoc, getDocs } = await import('firebase/firestore')
         
         // Try to add a test document
         const testDoc = await addDoc(collection(db, 'test'), {
