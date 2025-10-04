@@ -82,11 +82,11 @@ export default function MeditationLengthPage() {
         // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
         const pendingInviteCode = localStorage.getItem('pendingInviteCode')
         const userInviteCode = localStorage.getItem('userInviteCode')
-        const finalInviteCode = pendingInviteCode || userInviteCode || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        const finalUserInviteCode = pendingInviteCode || userInviteCode || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         console.log('=== USER CREATION: Invite code debugging ===', {
           pendingInviteCode,
           userInviteCode: localStorage.getItem('userInviteCode'),
-          finalInviteCode: finalInviteCode,
+          finalUserInviteCode: finalUserInviteCode,
           allLocalStorage: Object.keys(localStorage)
         })
         
@@ -96,7 +96,7 @@ export default function MeditationLengthPage() {
           weeklytarget: parseInt(weeklyTarget),
           usualsitlength: selectedLength,
           image: '/icons/meditation-1.svg',
-          invitecode: finalInviteCode
+          invitecode: finalUserInviteCode
         }
         
         console.log('Creating user with data:', userData)
@@ -107,7 +107,13 @@ export default function MeditationLengthPage() {
         
         // Store Supabase user ID in localStorage for session management
         localStorage.setItem('supabaseUserId', supabaseUserId)
+        // Store the invite code in localStorage for partnership creation
+        localStorage.setItem('userInviteCode', finalUserInviteCode)
+        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
         localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
+        // Store the invite code in localStorage for partnership creation
+        localStorage.setItem('userInviteCode', finalUserInviteCode)
+        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
         
         // Clear pending invite after successful user creation
         // Create invite record in invites table
@@ -143,6 +149,9 @@ export default function MeditationLengthPage() {
         // Create a fallback user ID
         supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         localStorage.setItem('userId', supabaseUserId)
+        // Store the invite code in localStorage for partnership creation
+        localStorage.setItem('userInviteCode', finalUserInviteCode)
+        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
       }
       
       // Always store in localStorage for compatibility

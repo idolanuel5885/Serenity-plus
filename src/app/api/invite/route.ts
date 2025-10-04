@@ -3,7 +3,7 @@ import { supabase } from '../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId, userName } = await request.json()
+    const { userId, userName, inviteCode: providedInviteCode } = await request.json()
     
     if (!userId || !userName) {
       return NextResponse.json({ error: 'Missing userId or userName' }, { status: 400 })
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
       console.log('Reusing existing invite code:', inviteCode)
     } else {
       // Create a new unique invite code
-      inviteCode = `invite-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`
+      inviteCode = providedInviteCode || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`
       
       // Store the invite in Supabase
       const inviteData = {
