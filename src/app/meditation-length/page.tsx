@@ -110,6 +110,29 @@ export default function MeditationLengthPage() {
         localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
         
         // Clear pending invite after successful user creation
+        // Create invite record in invites table
+        if (pendingInviteCode) {
+          try {
+            const inviteResponse = await fetch("/api/invite", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                userId: supabaseUserId,
+                userName: nickname,
+                inviteCode: pendingInviteCode
+              })
+            })
+            if (inviteResponse.ok) {
+              console.log("Invite record created in database")
+            } else {
+              console.error("Failed to create invite record")
+            }
+          } catch (error) {
+            console.error("Error creating invite record:", error)
+          }
+        }
         if (pendingInviteCode) {
           localStorage.removeItem('pendingInviteCode')
           console.log('Cleared pendingInviteCode after user creation')
