@@ -1,25 +1,27 @@
 'use client'
+import Link from 'next/link'
 
 import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
 
 export default function InvitePage() {
   const [inviteCode, setInviteCode] = useState('')
-  const [copied, setCopied] = useState(false)
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('')
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/join/${inviteCode}`)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('')
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const getInviteCode = async () => {
       try {
         const userId = localStorage.getItem('userId')
         const userName = localStorage.getItem('userName') || localStorage.getItem('userNickname')
+        
+        if (!userId || !userName) {
+          console.log('No user data found, redirecting to welcome.')
+          router.push('/welcome')
+          return
+        }
         
         if (userId && userName) {
           // Check if user already has an invite code
@@ -44,20 +46,20 @@ export default function InvitePage() {
             }
           }
           
-          // Always create an invite record when user goes to invite page
-          // This ensures there's always a record in the invites table
-          console.log('=== INVITE PAGE: Creating invite record ===')
-          const response = await fetch('/api/invite', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId,
-              userName
+          if (!existingInviteCode) {
+            // Create a new invite via API only if user doesn't have one
+            console.log('=== INVITE PAGE: Creating new invite record ===')
+            const response = await fetch('/api/invite', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userId,
+                userName
+              })
             })
-          })
-            
+              
             if (response.ok) {
               const data = await response.json()
               existingInviteCode = data.inviteCode
@@ -80,123 +82,93 @@ export default function InvitePage() {
         }
       } catch (error) {
         console.error('Error getting invite code:', error)
-        // Fallback to demo code
-        setInviteCode('demo123')
+        setInviteCode('demo123') // Fallback in case of API error
+      } finally {
+        setLoading(false)
       }
     }
 
     getInviteCode()
-  }, [])
+  }, [router])
 
   useEffect(() => {
-    const generateQRCode = async () => {
-      try {
-        const inviteUrl = `${window.location.origin}/join/${inviteCode}`
-        const qrCodeDataUrl = await QRCode.toDataURL(inviteUrl, {
-          width: 192,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        })
-        setQrCodeDataUrl(qrCodeDataUrl)
-      } catch (error) {
-        console.error('Error generating QR code:', error)
-      }
-    }
-
     if (inviteCode) {
-      generateQRCode()
+      const inviteUrl = `${window.location.origin}/welcome?invite=${inviteCode}`
+      QRCode.toDataURL(inviteUrl, { width: 256 }, (err, url) => {
+        if (err) {
+          console.error('Error generating QR code:', err)
+          return
+        }
+        setQrCodeDataUrl(url || '')
+      })
     }
   }, [inviteCode])
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <div className="flex items-center p-4 border-b">
-        <Link href="/" className="mr-4">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
-        <h1 className="text-xl font-bold">Invite Partners</h1>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <p>Loading...</p>
       </div>
+    )
+  }
 
-      <div className="p-6 space-y-8">
-        {/* Invite Link Section */}
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Invite Your Meditation Partners</h2>
-          <p className="text-gray-600">
-            Share this link with a person you&apos;d like to meditate with.
-          </p>
-        </div>
+  const shareLink = `${window.location.origin}/welcome?invite=${inviteCode}`
 
-        {/* Invite Code */}
-        <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-          <h3 className="font-semibold">Your Invite Link</h3>
-          <div className="flex items-center gap-2">
+  return (
+    <div className="min-h-screen flex flex-col bg-white text-gray-900">
+      <header className="flex items-center justify-between p-6 border-b border-gray-200">
+        <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+        <span className="text-sm font-medium">Serenity+</span>
+      </header>
+
+      <main className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+        <h1 className="text-2xl font-bold mb-4">Invite a Partner</h1>
+        <p className="text-gray-600 mb-8">
+          Share this link with a person you'd like to meditate with.
+        </p>
+
+        {qrCodeDataUrl ? (
+          <div className="mb-8 p-4 border border-gray-300 rounded-lg">
+            <img src={qrCodeDataUrl} alt="QR Code" className="w-48 h-48 mx-auto" />
+          </div>
+        ) : (
+          <div className="mb-8 p-4 border border-gray-300 rounded-lg w-48 h-48 flex items-center justify-center">
+            <p className="text-gray-500">Loading QR Code...</p>
+          </div>
+        )}
+
+        <div className="w-full max-w-md mb-8">
+          <label htmlFor="invite-link" className="block text-sm font-medium text-gray-700 text-left mb-2">
+            Your Invite Link
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
             <input
               type="text"
-              value={`${typeof window !== 'undefined' ? window.location.origin : ''}/join/${inviteCode}`}
+              id="invite-link"
               readOnly
-              className="flex-1 p-3 border border-gray-300 rounded-lg bg-white text-sm"
+              value={shareLink}
+              className="flex-1 p-3 text-sm text-gray-900 bg-gray-50 focus:outline-none"
             />
             <button
-              onClick={copyToClipboard}
-              className="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              onClick={() => navigator.clipboard.writeText(shareLink)}
+              className="bg-gray-200 text-gray-700 px-4 py-3 text-sm font-medium hover:bg-gray-300 transition-colors"
             >
-              {copied ? 'Copied!' : 'Copy'}
+              Copy
             </button>
           </div>
-          <p className="text-sm text-gray-500">
-            This link will expire in 7 days. You can generate a new one anytime.
-          </p>
         </div>
 
-        {/* QR Code */}
-        <div className="text-center space-y-4">
-          <h3 className="font-semibold">Or share via QR Code</h3>
-          <div className="w-48 h-48 mx-auto bg-white rounded-lg border-2 border-gray-200 flex items-center justify-center">
-            {qrCodeDataUrl ? (
-              <img 
-                src={qrCodeDataUrl} 
-                alt="QR Code" 
-                className="w-44 h-44"
-              />
-            ) : (
-              <span className="text-gray-500">Generating QR Code...</span>
-            )}
-          </div>
-          <p className="text-sm text-gray-500">
-            Scan this code with your phone's camera
-          </p>
-        </div>
+        <Link href="/" className="w-full max-w-xs">
+          <button className="w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors">
+            Go to Homepage
+          </button>
+        </Link>
+      </main>
 
-        {/* Instructions */}
-        <div className="bg-blue-50 rounded-lg p-4 space-y-3">
-          <h3 className="font-semibold text-blue-900">How it works:</h3>
-          <ol className="text-sm text-blue-800 space-y-2">
-            <li>1. Share the link or QR code with your meditation partners</li>
-            <li>2. They'll create an account and complete their own meditation plan</li>
-            <li>3. Once they accept, you'll be connected as accountability partners</li>
-            <li>4. Start meditating together and supporting each other!</li>
-          </ol>
-        </div>
-
-        {/* Back to Home */}
-        <div className="text-center">
-          <Link 
-            href="/"
-            className="inline-block bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
-          >
-            Back to Home
-          </Link>
-        </div>
-      </div>
+      <footer className="mt-auto p-6 border-t border-gray-200 flex items-center justify-center">
+        <img src="/logo.svg" alt="Serenity+" className="w-6 h-6 mr-2" />
+        <span className="text-sm text-gray-600">Serenity+</span>
+      </footer>
     </div>
   )
 }
-
-
-
