@@ -150,8 +150,6 @@ export default function MeditationLengthPage() {
         supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
         localStorage.setItem('userId', supabaseUserId)
         // Store the invite code in localStorage for partnership creation
-        localStorage.setItem('userInviteCode', finalUserInviteCode)
-        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
       }
       
       // Always store in localStorage for compatibility
@@ -167,6 +165,9 @@ export default function MeditationLengthPage() {
       }
       allUsers.push(newUser)
       localStorage.setItem('allUsers', JSON.stringify(allUsers))
+      // Store the invite code in localStorage for partnership creation
+      localStorage.setItem('userInviteCode', finalUserInviteCode)
+      console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
       console.log('User added to localStorage:', newUser)
       
       // Redirect immediately - no setTimeout needed
