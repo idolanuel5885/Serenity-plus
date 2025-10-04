@@ -44,18 +44,19 @@ export default function InvitePage() {
             }
           }
           
-          if (!existingInviteCode) {
-            // Create a new invite via API
-            const response = await fetch('/api/invite', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                userId,
-                userName
-              })
+          // Always create an invite record when user goes to invite page
+          // This ensures there's always a record in the invites table
+          console.log('=== INVITE PAGE: Creating invite record ===')
+          const response = await fetch('/api/invite', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId,
+              userName
             })
+          })
             
             if (response.ok) {
               const data = await response.json()
