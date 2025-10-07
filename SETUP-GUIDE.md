@@ -55,7 +55,7 @@ git remote set-url origin git@github.com:idolanuel/serenity-plus.git
    - ✅ Require branches to be up to date before merging
 5. **Select required status checks**:
    - `onboarding-workflow-tests`
-   - `e2e-tests` 
+   - `e2e-tests`
    - `unit-tests`
    - `build`
 6. **Click "Create"**
@@ -75,6 +75,7 @@ git remote set-url origin git@github.com:idolanuel/serenity-plus.git
 ## **What Happens Next:**
 
 ### **Every Push Will:**
+
 - ✅ **Run linting** and type checking
 - ✅ **Run unit tests** with coverage
 - ✅ **Run integration tests**
@@ -84,6 +85,7 @@ git remote set-url origin git@github.com:idolanuel/serenity-plus.git
 - ✅ **Block merge if any test fails**
 
 ### **Bugs Will Be Caught:**
+
 - 🐛 **Notification redirect bugs** (your current issue)
 - 🐛 **Missing userId issues**
 - 🐛 **Broken onboarding flows**
@@ -94,11 +96,13 @@ git remote set-url origin git@github.com:idolanuel/serenity-plus.git
 ## **Troubleshooting:**
 
 ### **If GitHub Actions Don't Start:**
+
 - Check that the repository is public (free accounts)
 - Verify the `.github/workflows/ci.yml` file exists
 - Make sure you pushed to the `main` branch
 
 ### **If Tests Fail:**
+
 - Check the Actions tab for detailed error logs
 - Fix the issues and push again
 - The pipeline will re-run automatically
@@ -106,6 +110,7 @@ git remote set-url origin git@github.com:idolanuel/serenity-plus.git
 ## **Expected Result:**
 
 Once set up, you'll see:
+
 - ✅ **Green checkmarks** on every successful push
 - ❌ **Red X marks** when tests fail (preventing broken deployments)
 - 📊 **Test reports** showing what passed/failed

@@ -1,1 +1,163 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,18566,(e,t,a)=>{t.exports=e.r(76562)},13018,e=>{"use strict";e.s(["default",()=>o]);var t=e.i(43476),a=e.i(71645),l=e.i(18566),r=e.i(98480);function o(){let[e,o]=(0,a.useState)(30),s=(0,l.useRouter)(),n=async t=>{t.preventDefault(),localStorage.setItem("usualSitLength",e.toString());let a=localStorage.getItem("userNickname"),l=localStorage.getItem("weeklyTarget"),o=localStorage.getItem("usualSitLength"),n=localStorage.getItem("pendingInviteCode");if(!a||!l||!o)return void alert("Missing required data. Please start over.");try{let t="user-".concat(Date.now());console.log("Creating user with ID:",t),localStorage.setItem("userId",t),localStorage.setItem("userEmail","user-".concat(Date.now(),"@example.com")),localStorage.setItem("userName",a),localStorage.setItem("userWeeklyTarget",l),localStorage.setItem("userUsualSitLength",o),localStorage.setItem("userPrimaryWindow","06:00–09:00"),localStorage.setItem("userTimezone","GMT+0"),localStorage.setItem("userWhyPractice","Mindfulness and stress relief"),localStorage.setItem("userSupportNeeds","Gentle reminders"),n&&(localStorage.setItem("partnershipInviteCode",n),localStorage.setItem("partnershipStatus","pending"),console.log("Partnership invite stored for demo"),localStorage.removeItem("pendingInviteCode")),console.log("User account created successfully (demo mode)"),console.log("All localStorage keys after creation:",Object.keys(localStorage)),localStorage.setItem("userId",t),console.log("UserId confirmed in localStorage:",localStorage.getItem("userId"));try{let t=localStorage.getItem("userInviteCode")||"invite-".concat(Date.now(),"-").concat(Math.random().toString(36).substr(2,9)),o={name:a,email:"user-".concat(Date.now(),"@example.com"),weeklyTarget:parseInt(l),usualSitLength:e,image:"/icons/meditation-1.svg",inviteCode:t},s=await (0,r.createUser)(o);console.log("User created in Firebase with ID:",s),localStorage.setItem("firebaseUserId",s),localStorage.setItem("userId",s);let n=JSON.parse(localStorage.getItem("allUsers")||"[]"),i={id:s,name:a,email:"user-".concat(Date.now(),"@example.com"),weeklyTarget:parseInt(l),image:"/icons/meditation-1.svg",inviteCode:t};n.push(i),localStorage.setItem("allUsers",JSON.stringify(n)),console.log("User added to localStorage fallback:",i)}catch(e){console.error("Error creating user in Firebase:",e),alert("Failed to create user account. Please try again.");return}console.log("Redirecting to homepage..."),s.push("/")}catch(e){console.error("Onboarding error:",e),alert("Failed to create your account. Please try again.")}};return(0,t.jsxs)("div",{className:"min-h-screen bg-white flex flex-col",children:[(0,t.jsx)("div",{className:"px-6 py-4 border-b",children:(0,t.jsxs)("div",{className:"flex items-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})}),(0,t.jsxs)("div",{className:"px-6 py-8 flex-1 flex flex-col min-h-0",children:[(0,t.jsxs)("div",{className:"flex-1 flex flex-col",children:[(0,t.jsx)("h1",{className:"text-2xl font-bold text-gray-900 mb-2",children:"How long do you want each meditation to be?"}),(0,t.jsx)("p",{className:"text-sm text-gray-600 mb-8",children:"This will be the time you are accountable to meditating in each sitting"}),(0,t.jsx)("div",{className:"flex-1",children:(0,t.jsx)("select",{value:e,onChange:e=>o(parseInt(e.target.value)),className:"w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white",style:{backgroundImage:"url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",backgroundPosition:"right 12px center",backgroundRepeat:"no-repeat",backgroundSize:"16px"},children:[{minutes:5,label:"5 minutes"},{minutes:10,label:"10 minutes"},{minutes:15,label:"15 minutes"},{minutes:20,label:"20 minutes"},{minutes:30,label:"30 minutes"},{minutes:45,label:"45 minutes"},{minutes:60,label:"60 minutes"}].map(e=>{let{minutes:a,label:l}=e;return(0,t.jsx)("option",{value:a,className:"text-black",children:l},a)})})})]}),(0,t.jsx)("form",{onSubmit:n,className:"mt-6",children:(0,t.jsx)("button",{type:"submit",className:"w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors",children:"Complete Setup"})})]})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  18566,
+  (e, t, a) => {
+    t.exports = e.r(76562);
+  },
+  13018,
+  (e) => {
+    'use strict';
+    e.s(['default', () => o]);
+    var t = e.i(43476),
+      a = e.i(71645),
+      l = e.i(18566),
+      r = e.i(98480);
+    function o() {
+      let [e, o] = (0, a.useState)(30),
+        s = (0, l.useRouter)(),
+        n = async (t) => {
+          (t.preventDefault(), localStorage.setItem('usualSitLength', e.toString()));
+          let a = localStorage.getItem('userNickname'),
+            l = localStorage.getItem('weeklyTarget'),
+            o = localStorage.getItem('usualSitLength'),
+            n = localStorage.getItem('pendingInviteCode');
+          if (!a || !l || !o) return void alert('Missing required data. Please start over.');
+          try {
+            let t = 'user-'.concat(Date.now());
+            (console.log('Creating user with ID:', t),
+              localStorage.setItem('userId', t),
+              localStorage.setItem('userEmail', 'user-'.concat(Date.now(), '@example.com')),
+              localStorage.setItem('userName', a),
+              localStorage.setItem('userWeeklyTarget', l),
+              localStorage.setItem('userUsualSitLength', o),
+              localStorage.setItem('userPrimaryWindow', '06:00–09:00'),
+              localStorage.setItem('userTimezone', 'GMT+0'),
+              localStorage.setItem('userWhyPractice', 'Mindfulness and stress relief'),
+              localStorage.setItem('userSupportNeeds', 'Gentle reminders'),
+              n &&
+                (localStorage.setItem('partnershipInviteCode', n),
+                localStorage.setItem('partnershipStatus', 'pending'),
+                console.log('Partnership invite stored for demo'),
+                localStorage.removeItem('pendingInviteCode')),
+              console.log('User account created successfully (demo mode)'),
+              console.log('All localStorage keys after creation:', Object.keys(localStorage)),
+              localStorage.setItem('userId', t),
+              console.log('UserId confirmed in localStorage:', localStorage.getItem('userId')));
+            try {
+              let t =
+                  localStorage.getItem('userInviteCode') ||
+                  'invite-'.concat(Date.now(), '-').concat(Math.random().toString(36).substr(2, 9)),
+                o = {
+                  name: a,
+                  email: 'user-'.concat(Date.now(), '@example.com'),
+                  weeklyTarget: parseInt(l),
+                  usualSitLength: e,
+                  image: '/icons/meditation-1.svg',
+                  inviteCode: t,
+                },
+                s = await (0, r.createUser)(o);
+              (console.log('User created in Firebase with ID:', s),
+                localStorage.setItem('firebaseUserId', s),
+                localStorage.setItem('userId', s));
+              let n = JSON.parse(localStorage.getItem('allUsers') || '[]'),
+                i = {
+                  id: s,
+                  name: a,
+                  email: 'user-'.concat(Date.now(), '@example.com'),
+                  weeklyTarget: parseInt(l),
+                  image: '/icons/meditation-1.svg',
+                  inviteCode: t,
+                };
+              (n.push(i),
+                localStorage.setItem('allUsers', JSON.stringify(n)),
+                console.log('User added to localStorage fallback:', i));
+            } catch (e) {
+              (console.error('Error creating user in Firebase:', e),
+                alert('Failed to create user account. Please try again.'));
+              return;
+            }
+            (console.log('Redirecting to homepage...'), s.push('/'));
+          } catch (e) {
+            (console.error('Onboarding error:', e),
+              alert('Failed to create your account. Please try again.'));
+          }
+        };
+      return (0, t.jsxs)('div', {
+        className: 'min-h-screen bg-white flex flex-col',
+        children: [
+          (0, t.jsx)('div', {
+            className: 'px-6 py-4 border-b',
+            children: (0, t.jsxs)('div', {
+              className: 'flex items-center gap-2',
+              children: [
+                (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+              ],
+            }),
+          }),
+          (0, t.jsxs)('div', {
+            className: 'px-6 py-8 flex-1 flex flex-col min-h-0',
+            children: [
+              (0, t.jsxs)('div', {
+                className: 'flex-1 flex flex-col',
+                children: [
+                  (0, t.jsx)('h1', {
+                    className: 'text-2xl font-bold text-gray-900 mb-2',
+                    children: 'How long do you want each meditation to be?',
+                  }),
+                  (0, t.jsx)('p', {
+                    className: 'text-sm text-gray-600 mb-8',
+                    children:
+                      'This will be the time you are accountable to meditating in each sitting',
+                  }),
+                  (0, t.jsx)('div', {
+                    className: 'flex-1',
+                    children: (0, t.jsx)('select', {
+                      value: e,
+                      onChange: (e) => o(parseInt(e.target.value)),
+                      className:
+                        'w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white',
+                      style: {
+                        backgroundImage:
+                          "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
+                        backgroundPosition: 'right 12px center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '16px',
+                      },
+                      children: [
+                        { minutes: 5, label: '5 minutes' },
+                        { minutes: 10, label: '10 minutes' },
+                        { minutes: 15, label: '15 minutes' },
+                        { minutes: 20, label: '20 minutes' },
+                        { minutes: 30, label: '30 minutes' },
+                        { minutes: 45, label: '45 minutes' },
+                        { minutes: 60, label: '60 minutes' },
+                      ].map((e) => {
+                        let { minutes: a, label: l } = e;
+                        return (0, t.jsx)(
+                          'option',
+                          { value: a, className: 'text-black', children: l },
+                          a,
+                        );
+                      }),
+                    }),
+                  }),
+                ],
+              }),
+              (0, t.jsx)('form', {
+                onSubmit: n,
+                className: 'mt-6',
+                children: (0, t.jsx)('button', {
+                  type: 'submit',
+                  className:
+                    'w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors',
+                  children: 'Complete Setup',
+                }),
+              }),
+            ],
+          }),
+        ],
+      });
+    }
+  },
+]);

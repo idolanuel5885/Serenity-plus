@@ -3,7 +3,7 @@
 
 // Used for __tests__/testing-library.js
 // Learn more: https://github.com/testing-library/jest-dom
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom';
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
@@ -17,7 +17,7 @@ jest.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
-}))
+}));
 
 // Mock Next.js Link
 jest.mock('next/link', () => {
@@ -26,9 +26,9 @@ jest.mock('next/link', () => {
       <a href={href} {...props}>
         {children}
       </a>
-    )
-  }
-})
+    );
+  };
+});
 
 // Mock localStorage
 const localStorageMock = {
@@ -36,13 +36,13 @@ const localStorageMock = {
   setItem: jest.fn(),
   removeItem: jest.fn(),
   clear: jest.fn(),
-}
+};
 Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock
-})
+  value: localStorageMock,
+});
 
 // Mock fetch
-global.fetch = jest.fn()
+global.fetch = jest.fn();
 
 // Mock window.location
 window.location = {
@@ -51,4 +51,4 @@ window.location = {
   pathname: '/',
   search: '',
   hash: '',
-}
+};

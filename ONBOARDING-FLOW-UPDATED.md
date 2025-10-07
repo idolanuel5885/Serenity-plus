@@ -3,25 +3,30 @@
 ## ✅ **New 5-Step Onboarding Process:**
 
 ### **Step 1: Welcome Page** (`/welcome`)
+
 - **Invited users**: Shows inviter's name and avatar
 - **Non-invited users**: Shows generic welcome message
 - **CTA**: "Set up your profile" or "Get started"
 
 ### **Step 2: Nickname Page** (`/nickname`)
+
 - **Validation**: 2-20 characters, letters/numbers/spaces only
 - **Required field** for account creation
 
 ### **Step 3: Meditations Per Week** (`/meditations-per-week`)
+
 - **Default**: 5 times per week
 - **Contextual text**: "This will be your weekly commitment to yourself and to {partner name}"
 - **Dropdown selection** for frequency
 
 ### **Step 4: Meditation Length** (`/meditation-length`)
+
 - **Default**: 30 minutes
 - **Contextual text**: "This will be the time you are accountable to meditating in each sitting"
 - **Dropdown selection** for duration
 
 ### **Step 5: Notifications Page** (`/notifications`) ⭐ **NEW**
+
 - **Title**: "Enable Notifications"
 - **Description**: "So we can best support you and your partner's meditation commitment, we will need you to enable notifications"
 - **Button**: "Enable Notifications and Continue"

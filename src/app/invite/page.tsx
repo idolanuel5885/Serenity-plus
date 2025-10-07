@@ -1,54 +1,57 @@
-'use client'
-import Link from 'next/link'
+'use client';
+import Link from 'next/link';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import QRCode from 'qrcode'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import QRCode from 'qrcode';
 
 export default function InvitePage() {
-  const [inviteCode, setInviteCode] = useState('')
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('')
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [inviteCode, setInviteCode] = useState('');
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const getInviteCode = async () => {
       try {
-        const userId = localStorage.getItem('userId')
-        const userName = localStorage.getItem('userName') || localStorage.getItem('userNickname')
-        
+        const userId = localStorage.getItem('userId');
+        const userName = localStorage.getItem('userName') || localStorage.getItem('userNickname');
+
         if (!userId || !userName) {
-          console.log('No user data found, redirecting to welcome.')
-          router.push('/welcome')
-          return
+          console.log('No user data found, redirecting to welcome.');
+          router.push('/welcome');
+          return;
         }
-        
+
         if (userId && userName) {
           // Check if user already has an invite code
-          let existingInviteCode = localStorage.getItem('userInviteCode')
-          
+          let existingInviteCode = localStorage.getItem('userInviteCode');
+
           if (!existingInviteCode) {
             // First, try to get the user's existing invite code from the database
             try {
-              const userResponse = await fetch(`/api/user?userId=${userId}`)
+              const userResponse = await fetch(`/api/user?userId=${userId}`);
               if (userResponse.ok) {
-                const userData = await userResponse.json()
+                const userData = await userResponse.json();
                 if (userData.user && userData.user.invitecode) {
-                  existingInviteCode = userData.user.invitecode
+                  existingInviteCode = userData.user.invitecode;
                   if (existingInviteCode) {
-                    localStorage.setItem('userInviteCode', existingInviteCode)
-                    console.log('=== INVITE PAGE: Found existing user invite code ===', existingInviteCode)
+                    localStorage.setItem('userInviteCode', existingInviteCode);
+                    console.log(
+                      '=== INVITE PAGE: Found existing user invite code ===',
+                      existingInviteCode,
+                    );
                   }
                 }
               }
             } catch (error) {
-              console.error('Error fetching user invite code:', error)
+              console.error('Error fetching user invite code:', error);
             }
           }
-          
+
           if (!existingInviteCode) {
             // Create a new invite via API only if user doesn't have one
-            console.log('=== INVITE PAGE: Creating new invite record ===')
+            console.log('=== INVITE PAGE: Creating new invite record ===');
             const response = await fetch('/api/invite', {
               method: 'POST',
               headers: {
@@ -56,63 +59,62 @@ export default function InvitePage() {
               },
               body: JSON.stringify({
                 userId,
-                userName
-              })
-            })
-              
+                userName,
+              }),
+            });
+
             if (response.ok) {
-              const data = await response.json()
-              existingInviteCode = data.inviteCode
-              localStorage.setItem('userInviteCode', data.inviteCode)
-              console.log('=== INVITE PAGE: Stored userInviteCode ===', data.inviteCode)
-              console.log('Created new invite code via API:', data.inviteCode)
-              console.log('=== INVITE PAGE: API Response ===', data)
-              
+              const data = await response.json();
+              existingInviteCode = data.inviteCode;
+              localStorage.setItem('userInviteCode', data.inviteCode);
+              console.log('=== INVITE PAGE: Stored userInviteCode ===', data.inviteCode);
+              console.log('Created new invite code via API:', data.inviteCode);
+              console.log('=== INVITE PAGE: API Response ===', data);
             } else {
-              throw new Error('Failed to create invite')
+              throw new Error('Failed to create invite');
             }
           } else {
-            console.log('Using existing invite code:', existingInviteCode)
+            console.log('Using existing invite code:', existingInviteCode);
           }
-          
-          setInviteCode(existingInviteCode || 'demo123')
+
+          setInviteCode(existingInviteCode || 'demo123');
         } else {
           // Fallback to demo code
-          setInviteCode('demo123')
+          setInviteCode('demo123');
         }
       } catch (error) {
-        console.error('Error getting invite code:', error)
-        setInviteCode('demo123') // Fallback in case of API error
+        console.error('Error getting invite code:', error);
+        setInviteCode('demo123'); // Fallback in case of API error
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    getInviteCode()
-  }, [router])
+    getInviteCode();
+  }, [router]);
 
   useEffect(() => {
     if (inviteCode) {
-      const inviteUrl = `${window.location.origin}/welcome?invite=${inviteCode}`
+      const inviteUrl = `${window.location.origin}/welcome?invite=${inviteCode}`;
       QRCode.toDataURL(inviteUrl, { width: 256 }, (err, url) => {
         if (err) {
-          console.error('Error generating QR code:', err)
-          return
+          console.error('Error generating QR code:', err);
+          return;
         }
-        setQrCodeDataUrl(url || '')
-      })
+        setQrCodeDataUrl(url || '');
+      });
     }
-  }, [inviteCode])
+  }, [inviteCode]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p>Loading...</p>
       </div>
-    )
+    );
   }
 
-  const shareLink = `${window.location.origin}/welcome?invite=${inviteCode}`
+  const shareLink = `${window.location.origin}/welcome?invite=${inviteCode}`;
 
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
@@ -138,7 +140,10 @@ export default function InvitePage() {
         )}
 
         <div className="w-full max-w-md mb-8">
-          <label htmlFor="invite-link" className="block text-sm font-medium text-gray-700 text-left mb-2">
+          <label
+            htmlFor="invite-link"
+            className="block text-sm font-medium text-gray-700 text-left mb-2"
+          >
             Your Invite Link
           </label>
           <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
@@ -170,5 +175,5 @@ export default function InvitePage() {
         <span className="text-sm text-gray-600">Serenity+</span>
       </footer>
     </div>
-  )
+  );
 }

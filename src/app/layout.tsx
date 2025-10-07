@@ -1,28 +1,28 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import './globals.css';
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Serenity Plus",
-  description: "Meditate daily with a gentle nudge. Pair with one buddy. Tiny steps, big change.",
-  manifest: "/manifest.json",
-  themeColor: "#f97316",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  title: 'Serenity Plus',
+  description: 'Meditate daily with a gentle nudge. Pair with one buddy. Tiny steps, big change.',
+  manifest: '/manifest.json',
+  themeColor: '#f97316',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "Serenity Plus"
-  }
+    statusBarStyle: 'default',
+    title: 'Serenity Plus',
+  },
 };
 
 export default function RootLayout({
@@ -40,11 +40,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Serenity Plus" />
         <link rel="apple-touch-icon" href="/icons/meditation-1.svg" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>{children}</body>
     </html>
   );
 }

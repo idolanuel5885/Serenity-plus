@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DevToolsPage() {
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
   const createTestUser = async () => {
-    setLoading(true)
-    setMessage('')
-    
+    setLoading(true);
+    setMessage('');
+
     try {
       // Create a test user with onboarding data
       const response = await fetch('/api/onboarding', {
@@ -27,35 +27,35 @@ export default function DevToolsPage() {
           timezone: 'GMT+2',
           usualSitLength: 30,
           whyPractice: 'To find inner peace and reduce stress',
-          supportNeeds: 'Gentle reminders and encouragement'
+          supportNeeds: 'Gentle reminders and encouragement',
         }),
-      })
+      });
 
-      const result = await response.json()
-      
+      const result = await response.json();
+
       if (result.success) {
-        localStorage.setItem('userId', result.user.id)
-        setMessage(`✅ Test user created! ID: ${result.user.id}`)
+        localStorage.setItem('userId', result.user.id);
+        setMessage(`✅ Test user created! ID: ${result.user.id}`);
       } else {
-        setMessage(`❌ Error: ${result.error}`)
+        setMessage(`❌ Error: ${result.error}`);
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error}`)
+      setMessage(`❌ Error: ${error}`);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const createTestPartnership = async () => {
-    setLoading(true)
-    setMessage('')
-    
+    setLoading(true);
+    setMessage('');
+
     try {
-      const userId = localStorage.getItem('userId')
+      const userId = localStorage.getItem('userId');
       if (!userId) {
-        setMessage('❌ Please create a test user first')
-        setLoading(false)
-        return
+        setMessage('❌ Please create a test user first');
+        setLoading(false);
+        return;
       }
 
       // Create a test partner
@@ -72,12 +72,12 @@ export default function DevToolsPage() {
           timezone: 'GMT+2',
           usualSitLength: 25,
           whyPractice: 'To improve focus and mindfulness',
-          supportNeeds: 'Accountability and motivation'
+          supportNeeds: 'Accountability and motivation',
         }),
-      })
+      });
 
-      const partnerResult = await partnerResponse.json()
-      
+      const partnerResult = await partnerResponse.json();
+
       if (partnerResult.success) {
         // Create invitation
         const inviteResponse = await fetch('/api/invite', {
@@ -86,12 +86,12 @@ export default function DevToolsPage() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            inviterId: userId
+            inviterId: userId,
           }),
-        })
+        });
 
-        const inviteResult = await inviteResponse.json()
-        
+        const inviteResult = await inviteResponse.json();
+
         if (inviteResult.success) {
           // Accept the invitation to create partnership
           const partnershipResponse = await fetch('/api/partnership', {
@@ -101,51 +101,51 @@ export default function DevToolsPage() {
             },
             body: JSON.stringify({
               inviteCode: inviteResult.invitation.inviteCode,
-              inviteeId: partnerResult.user.id
+              inviteeId: partnerResult.user.id,
             }),
-          })
+          });
 
-          const partnershipResult = await partnershipResponse.json()
-          
+          const partnershipResult = await partnershipResponse.json();
+
           if (partnershipResult.success) {
-            setMessage(`✅ Test partnership created! You now have Priya as a partner.`)
+            setMessage(`✅ Test partnership created! You now have Priya as a partner.`);
           } else {
-            setMessage(`❌ Partnership error: ${partnershipResult.error}`)
+            setMessage(`❌ Partnership error: ${partnershipResult.error}`);
           }
         } else {
-          setMessage(`❌ Invite error: ${inviteResult.error}`)
+          setMessage(`❌ Invite error: ${inviteResult.error}`);
         }
       } else {
-        setMessage(`❌ Partner creation error: ${partnerResult.error}`)
+        setMessage(`❌ Partner creation error: ${partnerResult.error}`);
       }
     } catch (error) {
-      setMessage(`❌ Error: ${error}`)
+      setMessage(`❌ Error: ${error}`);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const clearTestData = () => {
-    localStorage.removeItem('userId')
-    setMessage('✅ Test data cleared! Refresh the page to see changes.')
-  }
+    localStorage.removeItem('userId');
+    setMessage('✅ Test data cleared! Refresh the page to see changes.');
+  };
 
   const goToHome = () => {
-    router.push('/')
-  }
+    router.push('/');
+  };
 
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-md mx-auto">
         <h1 className="text-2xl font-bold mb-6">Development Tools</h1>
-        
+
         <div className="space-y-4">
           <div className="bg-blue-50 p-4 rounded-lg">
             <h2 className="font-semibold mb-2">Test User Flow</h2>
             <p className="text-sm text-gray-600 mb-4">
               Create test data to see how the app looks with partnerships
             </p>
-            
+
             <div className="space-y-3">
               <button
                 onClick={createTestUser}
@@ -154,7 +154,7 @@ export default function DevToolsPage() {
               >
                 {loading ? 'Creating...' : '1. Create Test User'}
               </button>
-              
+
               <button
                 onClick={createTestPartnership}
                 disabled={loading}
@@ -162,7 +162,7 @@ export default function DevToolsPage() {
               >
                 {loading ? 'Creating...' : '2. Create Test Partnership'}
               </button>
-              
+
               <button
                 onClick={clearTestData}
                 className="w-full bg-gray-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-gray-700 transition-colors"
@@ -189,10 +189,5 @@ export default function DevToolsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-
-
-
-

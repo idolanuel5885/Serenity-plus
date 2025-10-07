@@ -1,1 +1,136 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,18566,(e,t,a)=>{t.exports=e.r(76562)},13018,e=>{"use strict";e.s(["default",()=>r]);var t=e.i(43476),a=e.i(71645),s=e.i(18566);function r(){let[e,r]=(0,a.useState)(30),n=(0,s.useRouter)(),i=async t=>{t.preventDefault(),localStorage.setItem("usualSitLength",e.toString());let a=localStorage.getItem("userNickname"),s=localStorage.getItem("weeklyTarget"),r=localStorage.getItem("usualSitLength"),i=localStorage.getItem("pendingInviteCode");if(!a||!s||!r)return void alert("Missing required data. Please start over.");try{let e=await fetch("/api/onboarding",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:"user-".concat(Date.now(),"@example.com"),name:a,weeklyTarget:parseInt(s),primaryWindow:"06:00–09:00",timezone:"GMT+0",usualSitLength:parseInt(r),whyPractice:"Mindfulness and stress relief",supportNeeds:"Gentle reminders"})}),t=await e.json();if(t.success){if(localStorage.setItem("userId",t.user.id),i){let e=await fetch("/api/partnership",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({inviteCode:i,inviteeId:t.user.id})});(await e.json()).success&&console.log("Partnership created successfully"),localStorage.removeItem("pendingInviteCode")}n.push("/")}else alert("Failed to create your account. Please try again.")}catch(e){console.error("Onboarding error:",e),alert("Failed to create your account. Please try again.")}};return(0,t.jsxs)("div",{className:"min-h-screen bg-white flex flex-col",children:[(0,t.jsx)("div",{className:"px-6 py-4 border-b",children:(0,t.jsxs)("div",{className:"flex items-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})}),(0,t.jsxs)("div",{className:"px-6 py-8 flex-1",children:[(0,t.jsx)("h1",{className:"text-2xl font-bold text-gray-900 mb-2",children:"How long do you want each meditation to be?"}),(0,t.jsx)("p",{className:"text-sm text-gray-600 mb-8",children:"This will be the time you are accountable to meditating in each sitting"}),(0,t.jsxs)("form",{onSubmit:i,className:"space-y-6",children:[(0,t.jsx)("div",{children:(0,t.jsx)("select",{value:e,onChange:e=>r(parseInt(e.target.value)),className:"w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white",style:{backgroundImage:"url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",backgroundPosition:"right 12px center",backgroundRepeat:"no-repeat",backgroundSize:"16px"},children:[{minutes:5,label:"5 minutes"},{minutes:10,label:"10 minutes"},{minutes:15,label:"15 minutes"},{minutes:20,label:"20 minutes"},{minutes:30,label:"30 minutes"},{minutes:45,label:"45 minutes"},{minutes:60,label:"60 minutes"}].map(e=>{let{minutes:a,label:s}=e;return(0,t.jsx)("option",{value:a,children:s},a)})})}),(0,t.jsx)("button",{type:"submit",className:"w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors",children:"Complete Setup"})]})]}),(0,t.jsx)("div",{className:"px-6 py-4 border-t mt-auto",children:(0,t.jsxs)("div",{className:"flex items-center justify-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  18566,
+  (e, t, a) => {
+    t.exports = e.r(76562);
+  },
+  13018,
+  (e) => {
+    'use strict';
+    e.s(['default', () => r]);
+    var t = e.i(43476),
+      a = e.i(71645),
+      s = e.i(18566);
+    function r() {
+      let [e, r] = (0, a.useState)(30),
+        n = (0, s.useRouter)(),
+        i = async (t) => {
+          (t.preventDefault(), localStorage.setItem('usualSitLength', e.toString()));
+          let a = localStorage.getItem('userNickname'),
+            s = localStorage.getItem('weeklyTarget'),
+            r = localStorage.getItem('usualSitLength'),
+            i = localStorage.getItem('pendingInviteCode');
+          if (!a || !s || !r) return void alert('Missing required data. Please start over.');
+          try {
+            let e = await fetch('/api/onboarding', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  email: 'user-'.concat(Date.now(), '@example.com'),
+                  name: a,
+                  weeklyTarget: parseInt(s),
+                  primaryWindow: '06:00–09:00',
+                  timezone: 'GMT+0',
+                  usualSitLength: parseInt(r),
+                  whyPractice: 'Mindfulness and stress relief',
+                  supportNeeds: 'Gentle reminders',
+                }),
+              }),
+              t = await e.json();
+            if (t.success) {
+              if ((localStorage.setItem('userId', t.user.id), i)) {
+                let e = await fetch('/api/partnership', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ inviteCode: i, inviteeId: t.user.id }),
+                });
+                ((await e.json()).success && console.log('Partnership created successfully'),
+                  localStorage.removeItem('pendingInviteCode'));
+              }
+              n.push('/');
+            } else alert('Failed to create your account. Please try again.');
+          } catch (e) {
+            (console.error('Onboarding error:', e),
+              alert('Failed to create your account. Please try again.'));
+          }
+        };
+      return (0, t.jsxs)('div', {
+        className: 'min-h-screen bg-white flex flex-col',
+        children: [
+          (0, t.jsx)('div', {
+            className: 'px-6 py-4 border-b',
+            children: (0, t.jsxs)('div', {
+              className: 'flex items-center gap-2',
+              children: [
+                (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+              ],
+            }),
+          }),
+          (0, t.jsxs)('div', {
+            className: 'px-6 py-8 flex-1',
+            children: [
+              (0, t.jsx)('h1', {
+                className: 'text-2xl font-bold text-gray-900 mb-2',
+                children: 'How long do you want each meditation to be?',
+              }),
+              (0, t.jsx)('p', {
+                className: 'text-sm text-gray-600 mb-8',
+                children: 'This will be the time you are accountable to meditating in each sitting',
+              }),
+              (0, t.jsxs)('form', {
+                onSubmit: i,
+                className: 'space-y-6',
+                children: [
+                  (0, t.jsx)('div', {
+                    children: (0, t.jsx)('select', {
+                      value: e,
+                      onChange: (e) => r(parseInt(e.target.value)),
+                      className:
+                        'w-full p-4 pr-12 border border-gray-300 rounded-lg text-lg focus:ring-2 focus:ring-black focus:border-transparent appearance-none bg-white',
+                      style: {
+                        backgroundImage:
+                          "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e\")",
+                        backgroundPosition: 'right 12px center',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundSize: '16px',
+                      },
+                      children: [
+                        { minutes: 5, label: '5 minutes' },
+                        { minutes: 10, label: '10 minutes' },
+                        { minutes: 15, label: '15 minutes' },
+                        { minutes: 20, label: '20 minutes' },
+                        { minutes: 30, label: '30 minutes' },
+                        { minutes: 45, label: '45 minutes' },
+                        { minutes: 60, label: '60 minutes' },
+                      ].map((e) => {
+                        let { minutes: a, label: s } = e;
+                        return (0, t.jsx)('option', { value: a, children: s }, a);
+                      }),
+                    }),
+                  }),
+                  (0, t.jsx)('button', {
+                    type: 'submit',
+                    className:
+                      'w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors',
+                    children: 'Complete Setup',
+                  }),
+                ],
+              }),
+            ],
+          }),
+          (0, t.jsx)('div', {
+            className: 'px-6 py-4 border-t mt-auto',
+            children: (0, t.jsxs)('div', {
+              className: 'flex items-center justify-center gap-2',
+              children: [
+                (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+              ],
+            }),
+          }),
+        ],
+      });
+    }
+  },
+]);

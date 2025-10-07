@@ -1,1 +1,824 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,33525,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"warnOnce",{enumerable:!0,get:function(){return n}});let n=e=>{}},98183,(e,t,r)=>{"use strict";function n(e){let t={};for(let[r,n]of e.entries()){let e=t[r];void 0===e?t[r]=n:Array.isArray(e)?e.push(n):t[r]=[e,n]}return t}function o(e){return"string"==typeof e?e:("number"!=typeof e||isNaN(e))&&"boolean"!=typeof e?"":String(e)}function s(e){let t=new URLSearchParams;for(let[r,n]of Object.entries(e))if(Array.isArray(n))for(let e of n)t.append(r,o(e));else t.set(r,o(n));return t}function a(e){for(var t=arguments.length,r=Array(t>1?t-1:0),n=1;n<t;n++)r[n-1]=arguments[n];for(let t of r){for(let r of t.keys())e.delete(r);for(let[r,n]of t.entries())e.append(r,n)}return e}Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{assign:function(){return a},searchParamsToUrlQuery:function(){return n},urlQueryToSearchParams:function(){return s}})},95057,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{formatUrl:function(){return s},formatWithValidation:function(){return i},urlObjectKeys:function(){return a}});let n=e.r(90809)._(e.r(98183)),o=/https?|ftp|gopher|file/;function s(e){let{auth:t,hostname:r}=e,s=e.protocol||"",a=e.pathname||"",i=e.hash||"",u=e.query||"",l=!1;t=t?encodeURIComponent(t).replace(/%3A/i,":")+"@":"",e.host?l=t+e.host:r&&(l=t+(~r.indexOf(":")?"["+r+"]":r),e.port&&(l+=":"+e.port)),u&&"object"==typeof u&&(u=String(n.urlQueryToSearchParams(u)));let c=e.search||u&&"?"+u||"";return s&&!s.endsWith(":")&&(s+=":"),e.slashes||(!s||o.test(s))&&!1!==l?(l="//"+(l||""),a&&"/"!==a[0]&&(a="/"+a)):l||(l=""),i&&"#"!==i[0]&&(i="#"+i),c&&"?"!==c[0]&&(c="?"+c),""+s+l+(a=a.replace(/[?#]/g,encodeURIComponent))+(c=c.replace("#","%23"))+i}let a=["auth","hash","host","hostname","href","path","pathname","port","protocol","query","search","slashes"];function i(e){return s(e)}},18581,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"useMergedRef",{enumerable:!0,get:function(){return o}});let n=e.r(71645);function o(e,t){let r=(0,n.useRef)(null),o=(0,n.useRef)(null);return(0,n.useCallback)(n=>{if(null===n){let e=r.current;e&&(r.current=null,e());let t=o.current;t&&(o.current=null,t())}else e&&(r.current=s(e,n)),t&&(o.current=s(t,n))},[e,t])}function s(e,t){if("function"!=typeof e)return e.current=t,()=>{e.current=null};{let r=e(t);return"function"==typeof r?r:()=>e(null)}}("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},18967,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{DecodeError:function(){return m},MiddlewareNotFoundError:function(){return b},MissingStaticPage:function(){return y},NormalizeError:function(){return g},PageNotFoundError:function(){return x},SP:function(){return h},ST:function(){return p},WEB_VITALS:function(){return n},execOnce:function(){return o},getDisplayName:function(){return l},getLocationOrigin:function(){return i},getURL:function(){return u},isAbsoluteUrl:function(){return a},isResSent:function(){return c},loadGetInitialProps:function(){return d},normalizeRepeatedSlashes:function(){return f},stringifyError:function(){return j}});let n=["CLS","FCP","FID","INP","LCP","TTFB"];function o(e){let t,r=!1;return function(){for(var n=arguments.length,o=Array(n),s=0;s<n;s++)o[s]=arguments[s];return r||(r=!0,t=e(...o)),t}}let s=/^[a-zA-Z][a-zA-Z\d+\-.]*?:/,a=e=>s.test(e);function i(){let{protocol:e,hostname:t,port:r}=window.location;return e+"//"+t+(r?":"+r:"")}function u(){let{href:e}=window.location,t=i();return e.substring(t.length)}function l(e){return"string"==typeof e?e:e.displayName||e.name||"Unknown"}function c(e){return e.finished||e.headersSent}function f(e){let t=e.split("?");return t[0].replace(/\\/g,"/").replace(/\/\/+/g,"/")+(t[1]?"?"+t.slice(1).join("?"):"")}async function d(e,t){let r=t.res||t.ctx&&t.ctx.res;if(!e.getInitialProps)return t.ctx&&t.Component?{pageProps:await d(t.Component,t.ctx)}:{};let n=await e.getInitialProps(t);if(r&&c(r))return n;if(!n)throw Object.defineProperty(Error('"'+l(e)+'.getInitialProps()" should resolve to an object. But found "'+n+'" instead.'),"__NEXT_ERROR_CODE",{value:"E394",enumerable:!1,configurable:!0});return n}let h="undefined"!=typeof performance,p=h&&["mark","measure","getEntriesByName"].every(e=>"function"==typeof performance[e]);class m extends Error{}class g extends Error{}class x extends Error{constructor(e){super(),this.code="ENOENT",this.name="PageNotFoundError",this.message="Cannot find module for page: "+e}}class y extends Error{constructor(e,t){super(),this.message="Failed to load static file for page: "+e+" "+t}}class b extends Error{constructor(){super(),this.code="ENOENT",this.message="Cannot find the middleware module"}}function j(e){return JSON.stringify({message:e.message,stack:e.stack})}},73668,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"isLocalURL",{enumerable:!0,get:function(){return s}});let n=e.r(18967),o=e.r(52817);function s(e){if(!(0,n.isAbsoluteUrl)(e))return!0;try{let t=(0,n.getLocationOrigin)(),r=new URL(e,t);return r.origin===t&&(0,o.hasBasePath)(r.pathname)}catch(e){return!1}}},84508,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"errorOnce",{enumerable:!0,get:function(){return n}});let n=e=>{}},22016,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{default:function(){return g},useLinkStatus:function(){return y}});let n=e.r(90809),o=e.r(43476),s=n._(e.r(71645)),a=e.r(95057),i=e.r(8372),u=e.r(18581),l=e.r(18967),c=e.r(5550);e.r(33525);let f=e.r(91949),d=e.r(73668),h=e.r(99781);e.r(84508);let p=e.r(65165);function m(e){return"string"==typeof e?e:(0,a.formatUrl)(e)}function g(e){var t;let r,n,a,[g,y]=(0,s.useOptimistic)(f.IDLE_LINK_STATUS),b=(0,s.useRef)(null),{href:j,as:v,children:N,prefetch:S=null,passHref:P,replace:w,shallow:O,scroll:_,onClick:M,onMouseEnter:E,onTouchStart:L,legacyBehavior:C=!1,onNavigate:k,ref:T,unstable_dynamicOnHover:I,...A}=e;r=N,C&&("string"==typeof r||"number"==typeof r)&&(r=(0,o.jsx)("a",{children:r}));let R=s.default.useContext(i.AppRouterContext),U=!1!==S,F=!1!==S?null===(t=S)||"auto"===t?p.FetchStrategy.PPR:p.FetchStrategy.Full:p.FetchStrategy.PPR,{href:B,as:D}=s.default.useMemo(()=>{let e=m(j);return{href:e,as:v?m(v):e}},[j,v]);C&&(n=s.default.Children.only(r));let K=C?n&&"object"==typeof n&&n.ref:T,Q=s.default.useCallback(e=>(null!==R&&(b.current=(0,f.mountLinkInstance)(e,B,R,F,U,y)),()=>{b.current&&((0,f.unmountLinkForCurrentNavigation)(b.current),b.current=null),(0,f.unmountPrefetchableInstance)(e)}),[U,B,R,F,y]),W={ref:(0,u.useMergedRef)(Q,K),onClick(e){C||"function"!=typeof M||M(e),C&&n.props&&"function"==typeof n.props.onClick&&n.props.onClick(e),R&&(e.defaultPrevented||function(e,t,r,n,o,a,i){let{nodeName:u}=e.currentTarget;if(!("A"===u.toUpperCase()&&function(e){let t=e.currentTarget.getAttribute("target");return t&&"_self"!==t||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.nativeEvent&&2===e.nativeEvent.which}(e)||e.currentTarget.hasAttribute("download"))){if(!(0,d.isLocalURL)(t)){o&&(e.preventDefault(),location.replace(t));return}if(e.preventDefault(),i){let e=!1;if(i({preventDefault:()=>{e=!0}}),e)return}s.default.startTransition(()=>{(0,h.dispatchNavigateAction)(r||t,o?"replace":"push",null==a||a,n.current)})}}(e,B,D,b,w,_,k))},onMouseEnter(e){C||"function"!=typeof E||E(e),C&&n.props&&"function"==typeof n.props.onMouseEnter&&n.props.onMouseEnter(e),R&&U&&(0,f.onNavigationIntent)(e.currentTarget,!0===I)},onTouchStart:function(e){C||"function"!=typeof L||L(e),C&&n.props&&"function"==typeof n.props.onTouchStart&&n.props.onTouchStart(e),R&&U&&(0,f.onNavigationIntent)(e.currentTarget,!0===I)}};return(0,l.isAbsoluteUrl)(D)?W.href=D:C&&!P&&("a"!==n.type||"href"in n.props)||(W.href=(0,c.addBasePath)(D)),a=C?s.default.cloneElement(n,W):(0,o.jsx)("a",{...A,...W,children:r}),(0,o.jsx)(x.Provider,{value:g,children:a})}let x=(0,s.createContext)(f.IDLE_LINK_STATUS),y=()=>(0,s.useContext)(x);("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},47323,e=>{"use strict";e.s(["default",()=>o]);var t=e.i(43476),r=e.i(71645),n=e.i(22016);function o(){let[e,o]=(0,r.useState)(null),[s,a]=(0,r.useState)([]),[i,u]=(0,r.useState)(900),[l,c]=(0,r.useState)(!1),[f,d]=(0,r.useState)(!1),[h,p]=(0,r.useState)(!0),m=(0,r.useRef)(null);(0,r.useEffect)(()=>{(async()=>{try{let e=localStorage.getItem("userId");if(!e)return void p(!1);let t=await fetch("/api/user?userId=".concat(e)),r=await t.json();if(r.success){let e={id:r.user.id,name:r.user.name||"You",usualSitLength:r.user.usualSitLength};o(e),u(60*e.usualSitLength)}else o({id:e,name:"You",usualSitLength:15}),u(900);let n=await fetch("/api/partnership?userId=".concat(e)),s=await n.json();s.success&&a(s.partnerships)}catch(e){console.error("Error fetching data:",e),o({id:"unknown",name:"You",usualSitLength:15}),u(900)}finally{p(!1)}})()},[]),(0,r.useEffect)(()=>(l&&i>0?m.current=setInterval(()=>{u(e=>e<=1?(c(!1),d(!0),0):e-1)},1e3):m.current&&clearInterval(m.current),()=>{m.current&&clearInterval(m.current)}),[l,i]);let g=()=>{c(!1),u((null==e?void 0:e.usualSitLength)?60*e.usualSitLength:900),d(!1)};return h?(0,t.jsx)("div",{className:"min-h-screen bg-white flex items-center justify-center",children:(0,t.jsxs)("div",{className:"text-center",children:[(0,t.jsx)("div",{className:"w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"}),(0,t.jsx)("p",{className:"text-gray-600",children:"Loading your meditation preferences..."})]})}):(0,t.jsxs)("div",{className:"min-h-screen bg-white",children:[(0,t.jsxs)("div",{className:"flex items-center justify-between p-4 border-b",children:[(0,t.jsx)(n.default,{href:"/",className:"flex items-center gap-2",children:(0,t.jsx)("svg",{className:"w-6 h-6",fill:"none",stroke:"currentColor",viewBox:"0 0 24 24",children:(0,t.jsx)("path",{strokeLinecap:"round",strokeLinejoin:"round",strokeWidth:2,d:"M15 19l-7-7 7-7"})})}),(0,t.jsx)("h1",{className:"text-lg font-bold",children:"Sitting in Progress"}),(0,t.jsx)("div",{})]}),(0,t.jsxs)("div",{className:"p-6 space-y-8",children:[(0,t.jsxs)("div",{className:"text-center space-y-6",children:[(0,t.jsx)("div",{className:"text-6xl font-mono font-bold",children:(e=>{let t=Math.floor(e/60);return"".concat(t.toString().padStart(2,"0"),":").concat((e%60).toString().padStart(2,"0"))})(i)}),e&&(0,t.jsxs)("p",{className:"text-sm text-gray-600",children:["Your preferred session: ",e.usualSitLength," minutes"]}),(0,t.jsx)(()=>{let r=s[0];if(!r)return(0,t.jsx)("div",{className:"w-48 h-48 mx-auto flex items-center justify-center",children:(0,t.jsxs)("div",{className:"text-center text-gray-500",children:[(0,t.jsx)("div",{className:"text-4xl mb-2",children:"🧘"}),(0,t.jsx)("p",{className:"text-sm",children:"No partnerships yet"})]})});let n=r.weeklyGoal,o=r.userSits+r.partnerSits,a=l&&(null==e?void 0:e.usualSitLength)?60*e.usualSitLength-i:0,u=(null==e?void 0:e.usualSitLength)?a/(60*e.usualSitLength):0;return(0,t.jsxs)("div",{className:"w-48 h-48 mx-auto",children:[(0,t.jsxs)("svg",{width:"240",height:"240",viewBox:"0 0 240 240",className:"w-full h-full",children:[(()=>{let e=[];for(let r=0;r<n;r++){let s=360*r/n*Math.PI/180,a=120+60*Math.cos(s),i=120+60*Math.sin(s),c=s-.3,f=s+.3,d=120+15*Math.cos(c),h=120+15*Math.sin(c),p=120+15*Math.cos(f),m=120+15*Math.sin(f),g=120+36*Math.cos(s-.15),x=120+36*Math.sin(s-.15),y=120+36*Math.cos(s+.15),b=120+36*Math.sin(s+.15),j="M ".concat(d," ").concat(h," \n          Q ").concat(g," ").concat(x," ").concat(a," ").concat(i,"\n          Q ").concat(y," ").concat(b," ").concat(p," ").concat(m,"\n          Q ").concat(120," ").concat(120," ").concat(d," ").concat(h," Z"),v="#f3f4f6",N="#d1d5db";if(r<o)v="#10b981",N="#059669";else if(r===o&&l){let e=Math.min(u,1);v="rgba(16, 185, 129, ".concat(e,")"),N="#059669"}e.push((0,t.jsx)("path",{d:j,fill:v,stroke:N,strokeWidth:"1.5",className:"transition-all duration-300"},r))}return e})(),(0,t.jsx)("circle",{cx:"120",cy:"120",r:"20",fill:"#fbbf24",stroke:"#f59e0b",strokeWidth:"2"}),(0,t.jsx)("text",{x:"120",y:"130",textAnchor:"middle",fontSize:"16",fill:"#92400e",children:"🧘"})]}),(0,t.jsxs)("div",{className:"text-center mt-4",children:[(0,t.jsxs)("p",{className:"text-sm text-gray-600",children:[o,"/",n," sits completed this week"]}),s.length>0&&(0,t.jsxs)("p",{className:"text-xs text-gray-500 mt-1",children:["with ",r.partner.name]})]})]})},{})]}),(0,t.jsx)("div",{className:"space-y-4",children:f?(0,t.jsxs)("div",{className:"text-center space-y-4",children:[(0,t.jsx)("div",{className:"text-2xl font-bold text-green-600",children:"Session Complete! 🎉"}),(0,t.jsx)("p",{className:"text-gray-600",children:"Great job! You've completed your meditation session."}),(0,t.jsxs)("div",{className:"flex gap-4 justify-center",children:[(0,t.jsx)("button",{onClick:g,className:"bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors",children:"Start Another"}),(0,t.jsx)(n.default,{href:"/",className:"bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors",children:"Back to Home"})]})]}):(0,t.jsxs)("div",{className:"flex gap-4 justify-center",children:[l?(0,t.jsx)("button",{onClick:()=>{c(!1)},className:"bg-yellow-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors",children:"Pause"}):(0,t.jsx)("button",{onClick:()=>{c(!0),d(!1)},className:"bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors",children:"Start"}),(0,t.jsx)("button",{onClick:g,className:"bg-gray-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors",children:"Reset"})]})})]})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  33525,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'warnOnce', {
+        enumerable: !0,
+        get: function () {
+          return n;
+        },
+      }));
+    let n = (e) => {};
+  },
+  98183,
+  (e, t, r) => {
+    'use strict';
+    function n(e) {
+      let t = {};
+      for (let [r, n] of e.entries()) {
+        let e = t[r];
+        void 0 === e ? (t[r] = n) : Array.isArray(e) ? e.push(n) : (t[r] = [e, n]);
+      }
+      return t;
+    }
+    function o(e) {
+      return 'string' == typeof e
+        ? e
+        : ('number' != typeof e || isNaN(e)) && 'boolean' != typeof e
+          ? ''
+          : String(e);
+    }
+    function s(e) {
+      let t = new URLSearchParams();
+      for (let [r, n] of Object.entries(e))
+        if (Array.isArray(n)) for (let e of n) t.append(r, o(e));
+        else t.set(r, o(n));
+      return t;
+    }
+    function a(e) {
+      for (var t = arguments.length, r = Array(t > 1 ? t - 1 : 0), n = 1; n < t; n++)
+        r[n - 1] = arguments[n];
+      for (let t of r) {
+        for (let r of t.keys()) e.delete(r);
+        for (let [r, n] of t.entries()) e.append(r, n);
+      }
+      return e;
+    }
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        assign: function () {
+          return a;
+        },
+        searchParamsToUrlQuery: function () {
+          return n;
+        },
+        urlQueryToSearchParams: function () {
+          return s;
+        },
+      }));
+  },
+  95057,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        formatUrl: function () {
+          return s;
+        },
+        formatWithValidation: function () {
+          return i;
+        },
+        urlObjectKeys: function () {
+          return a;
+        },
+      }));
+    let n = e.r(90809)._(e.r(98183)),
+      o = /https?|ftp|gopher|file/;
+    function s(e) {
+      let { auth: t, hostname: r } = e,
+        s = e.protocol || '',
+        a = e.pathname || '',
+        i = e.hash || '',
+        u = e.query || '',
+        l = !1;
+      ((t = t ? encodeURIComponent(t).replace(/%3A/i, ':') + '@' : ''),
+        e.host
+          ? (l = t + e.host)
+          : r && ((l = t + (~r.indexOf(':') ? '[' + r + ']' : r)), e.port && (l += ':' + e.port)),
+        u && 'object' == typeof u && (u = String(n.urlQueryToSearchParams(u))));
+      let c = e.search || (u && '?' + u) || '';
+      return (
+        s && !s.endsWith(':') && (s += ':'),
+        e.slashes || ((!s || o.test(s)) && !1 !== l)
+          ? ((l = '//' + (l || '')), a && '/' !== a[0] && (a = '/' + a))
+          : l || (l = ''),
+        i && '#' !== i[0] && (i = '#' + i),
+        c && '?' !== c[0] && (c = '?' + c),
+        '' + s + l + (a = a.replace(/[?#]/g, encodeURIComponent)) + (c = c.replace('#', '%23')) + i
+      );
+    }
+    let a = [
+      'auth',
+      'hash',
+      'host',
+      'hostname',
+      'href',
+      'path',
+      'pathname',
+      'port',
+      'protocol',
+      'query',
+      'search',
+      'slashes',
+    ];
+    function i(e) {
+      return s(e);
+    }
+  },
+  18581,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'useMergedRef', {
+        enumerable: !0,
+        get: function () {
+          return o;
+        },
+      }));
+    let n = e.r(71645);
+    function o(e, t) {
+      let r = (0, n.useRef)(null),
+        o = (0, n.useRef)(null);
+      return (0, n.useCallback)(
+        (n) => {
+          if (null === n) {
+            let e = r.current;
+            e && ((r.current = null), e());
+            let t = o.current;
+            t && ((o.current = null), t());
+          } else (e && (r.current = s(e, n)), t && (o.current = s(t, n)));
+        },
+        [e, t],
+      );
+    }
+    function s(e, t) {
+      if ('function' != typeof e)
+        return (
+          (e.current = t),
+          () => {
+            e.current = null;
+          }
+        );
+      {
+        let r = e(t);
+        return 'function' == typeof r ? r : () => e(null);
+      }
+    }
+    ('function' == typeof r.default || ('object' == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, '__esModule', { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  18967,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        DecodeError: function () {
+          return m;
+        },
+        MiddlewareNotFoundError: function () {
+          return b;
+        },
+        MissingStaticPage: function () {
+          return y;
+        },
+        NormalizeError: function () {
+          return g;
+        },
+        PageNotFoundError: function () {
+          return x;
+        },
+        SP: function () {
+          return h;
+        },
+        ST: function () {
+          return p;
+        },
+        WEB_VITALS: function () {
+          return n;
+        },
+        execOnce: function () {
+          return o;
+        },
+        getDisplayName: function () {
+          return l;
+        },
+        getLocationOrigin: function () {
+          return i;
+        },
+        getURL: function () {
+          return u;
+        },
+        isAbsoluteUrl: function () {
+          return a;
+        },
+        isResSent: function () {
+          return c;
+        },
+        loadGetInitialProps: function () {
+          return d;
+        },
+        normalizeRepeatedSlashes: function () {
+          return f;
+        },
+        stringifyError: function () {
+          return j;
+        },
+      }));
+    let n = ['CLS', 'FCP', 'FID', 'INP', 'LCP', 'TTFB'];
+    function o(e) {
+      let t,
+        r = !1;
+      return function () {
+        for (var n = arguments.length, o = Array(n), s = 0; s < n; s++) o[s] = arguments[s];
+        return (r || ((r = !0), (t = e(...o))), t);
+      };
+    }
+    let s = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/,
+      a = (e) => s.test(e);
+    function i() {
+      let { protocol: e, hostname: t, port: r } = window.location;
+      return e + '//' + t + (r ? ':' + r : '');
+    }
+    function u() {
+      let { href: e } = window.location,
+        t = i();
+      return e.substring(t.length);
+    }
+    function l(e) {
+      return 'string' == typeof e ? e : e.displayName || e.name || 'Unknown';
+    }
+    function c(e) {
+      return e.finished || e.headersSent;
+    }
+    function f(e) {
+      let t = e.split('?');
+      return (
+        t[0].replace(/\\/g, '/').replace(/\/\/+/g, '/') + (t[1] ? '?' + t.slice(1).join('?') : '')
+      );
+    }
+    async function d(e, t) {
+      let r = t.res || (t.ctx && t.ctx.res);
+      if (!e.getInitialProps)
+        return t.ctx && t.Component ? { pageProps: await d(t.Component, t.ctx) } : {};
+      let n = await e.getInitialProps(t);
+      if (r && c(r)) return n;
+      if (!n)
+        throw Object.defineProperty(
+          Error(
+            '"' +
+              l(e) +
+              '.getInitialProps()" should resolve to an object. But found "' +
+              n +
+              '" instead.',
+          ),
+          '__NEXT_ERROR_CODE',
+          { value: 'E394', enumerable: !1, configurable: !0 },
+        );
+      return n;
+    }
+    let h = 'undefined' != typeof performance,
+      p =
+        h &&
+        ['mark', 'measure', 'getEntriesByName'].every((e) => 'function' == typeof performance[e]);
+    class m extends Error {}
+    class g extends Error {}
+    class x extends Error {
+      constructor(e) {
+        (super(),
+          (this.code = 'ENOENT'),
+          (this.name = 'PageNotFoundError'),
+          (this.message = 'Cannot find module for page: ' + e));
+      }
+    }
+    class y extends Error {
+      constructor(e, t) {
+        (super(), (this.message = 'Failed to load static file for page: ' + e + ' ' + t));
+      }
+    }
+    class b extends Error {
+      constructor() {
+        (super(), (this.code = 'ENOENT'), (this.message = 'Cannot find the middleware module'));
+      }
+    }
+    function j(e) {
+      return JSON.stringify({ message: e.message, stack: e.stack });
+    }
+  },
+  73668,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'isLocalURL', {
+        enumerable: !0,
+        get: function () {
+          return s;
+        },
+      }));
+    let n = e.r(18967),
+      o = e.r(52817);
+    function s(e) {
+      if (!(0, n.isAbsoluteUrl)(e)) return !0;
+      try {
+        let t = (0, n.getLocationOrigin)(),
+          r = new URL(e, t);
+        return r.origin === t && (0, o.hasBasePath)(r.pathname);
+      } catch (e) {
+        return !1;
+      }
+    }
+  },
+  84508,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'errorOnce', {
+        enumerable: !0,
+        get: function () {
+          return n;
+        },
+      }));
+    let n = (e) => {};
+  },
+  22016,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        default: function () {
+          return g;
+        },
+        useLinkStatus: function () {
+          return y;
+        },
+      }));
+    let n = e.r(90809),
+      o = e.r(43476),
+      s = n._(e.r(71645)),
+      a = e.r(95057),
+      i = e.r(8372),
+      u = e.r(18581),
+      l = e.r(18967),
+      c = e.r(5550);
+    e.r(33525);
+    let f = e.r(91949),
+      d = e.r(73668),
+      h = e.r(99781);
+    e.r(84508);
+    let p = e.r(65165);
+    function m(e) {
+      return 'string' == typeof e ? e : (0, a.formatUrl)(e);
+    }
+    function g(e) {
+      var t;
+      let r,
+        n,
+        a,
+        [g, y] = (0, s.useOptimistic)(f.IDLE_LINK_STATUS),
+        b = (0, s.useRef)(null),
+        {
+          href: j,
+          as: v,
+          children: N,
+          prefetch: S = null,
+          passHref: P,
+          replace: w,
+          shallow: O,
+          scroll: _,
+          onClick: M,
+          onMouseEnter: E,
+          onTouchStart: L,
+          legacyBehavior: C = !1,
+          onNavigate: k,
+          ref: T,
+          unstable_dynamicOnHover: I,
+          ...A
+        } = e;
+      ((r = N),
+        C &&
+          ('string' == typeof r || 'number' == typeof r) &&
+          (r = (0, o.jsx)('a', { children: r })));
+      let R = s.default.useContext(i.AppRouterContext),
+        U = !1 !== S,
+        F =
+          !1 !== S
+            ? null === (t = S) || 'auto' === t
+              ? p.FetchStrategy.PPR
+              : p.FetchStrategy.Full
+            : p.FetchStrategy.PPR,
+        { href: B, as: D } = s.default.useMemo(() => {
+          let e = m(j);
+          return { href: e, as: v ? m(v) : e };
+        }, [j, v]);
+      C && (n = s.default.Children.only(r));
+      let K = C ? n && 'object' == typeof n && n.ref : T,
+        Q = s.default.useCallback(
+          (e) => (
+            null !== R && (b.current = (0, f.mountLinkInstance)(e, B, R, F, U, y)),
+            () => {
+              (b.current && ((0, f.unmountLinkForCurrentNavigation)(b.current), (b.current = null)),
+                (0, f.unmountPrefetchableInstance)(e));
+            }
+          ),
+          [U, B, R, F, y],
+        ),
+        W = {
+          ref: (0, u.useMergedRef)(Q, K),
+          onClick(e) {
+            (C || 'function' != typeof M || M(e),
+              C && n.props && 'function' == typeof n.props.onClick && n.props.onClick(e),
+              R &&
+                (e.defaultPrevented ||
+                  (function (e, t, r, n, o, a, i) {
+                    let { nodeName: u } = e.currentTarget;
+                    if (
+                      !(
+                        ('A' === u.toUpperCase() &&
+                          (function (e) {
+                            let t = e.currentTarget.getAttribute('target');
+                            return (
+                              (t && '_self' !== t) ||
+                              e.metaKey ||
+                              e.ctrlKey ||
+                              e.shiftKey ||
+                              e.altKey ||
+                              (e.nativeEvent && 2 === e.nativeEvent.which)
+                            );
+                          })(e)) ||
+                        e.currentTarget.hasAttribute('download')
+                      )
+                    ) {
+                      if (!(0, d.isLocalURL)(t)) {
+                        o && (e.preventDefault(), location.replace(t));
+                        return;
+                      }
+                      if ((e.preventDefault(), i)) {
+                        let e = !1;
+                        if (
+                          (i({
+                            preventDefault: () => {
+                              e = !0;
+                            },
+                          }),
+                          e)
+                        )
+                          return;
+                      }
+                      s.default.startTransition(() => {
+                        (0, h.dispatchNavigateAction)(
+                          r || t,
+                          o ? 'replace' : 'push',
+                          null == a || a,
+                          n.current,
+                        );
+                      });
+                    }
+                  })(e, B, D, b, w, _, k)));
+          },
+          onMouseEnter(e) {
+            (C || 'function' != typeof E || E(e),
+              C && n.props && 'function' == typeof n.props.onMouseEnter && n.props.onMouseEnter(e),
+              R && U && (0, f.onNavigationIntent)(e.currentTarget, !0 === I));
+          },
+          onTouchStart: function (e) {
+            (C || 'function' != typeof L || L(e),
+              C && n.props && 'function' == typeof n.props.onTouchStart && n.props.onTouchStart(e),
+              R && U && (0, f.onNavigationIntent)(e.currentTarget, !0 === I));
+          },
+        };
+      return (
+        (0, l.isAbsoluteUrl)(D)
+          ? (W.href = D)
+          : (C && !P && ('a' !== n.type || 'href' in n.props)) || (W.href = (0, c.addBasePath)(D)),
+        (a = C ? s.default.cloneElement(n, W) : (0, o.jsx)('a', { ...A, ...W, children: r })),
+        (0, o.jsx)(x.Provider, { value: g, children: a })
+      );
+    }
+    let x = (0, s.createContext)(f.IDLE_LINK_STATUS),
+      y = () => (0, s.useContext)(x);
+    ('function' == typeof r.default || ('object' == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, '__esModule', { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  47323,
+  (e) => {
+    'use strict';
+    e.s(['default', () => o]);
+    var t = e.i(43476),
+      r = e.i(71645),
+      n = e.i(22016);
+    function o() {
+      let [e, o] = (0, r.useState)(null),
+        [s, a] = (0, r.useState)([]),
+        [i, u] = (0, r.useState)(900),
+        [l, c] = (0, r.useState)(!1),
+        [f, d] = (0, r.useState)(!1),
+        [h, p] = (0, r.useState)(!0),
+        m = (0, r.useRef)(null);
+      ((0, r.useEffect)(() => {
+        (async () => {
+          try {
+            let e = localStorage.getItem('userId');
+            if (!e) return void p(!1);
+            let t = await fetch('/api/user?userId='.concat(e)),
+              r = await t.json();
+            if (r.success) {
+              let e = {
+                id: r.user.id,
+                name: r.user.name || 'You',
+                usualSitLength: r.user.usualSitLength,
+              };
+              (o(e), u(60 * e.usualSitLength));
+            } else (o({ id: e, name: 'You', usualSitLength: 15 }), u(900));
+            let n = await fetch('/api/partnership?userId='.concat(e)),
+              s = await n.json();
+            s.success && a(s.partnerships);
+          } catch (e) {
+            (console.error('Error fetching data:', e),
+              o({ id: 'unknown', name: 'You', usualSitLength: 15 }),
+              u(900));
+          } finally {
+            p(!1);
+          }
+        })();
+      }, []),
+        (0, r.useEffect)(
+          () => (
+            l && i > 0
+              ? (m.current = setInterval(() => {
+                  u((e) => (e <= 1 ? (c(!1), d(!0), 0) : e - 1));
+                }, 1e3))
+              : m.current && clearInterval(m.current),
+            () => {
+              m.current && clearInterval(m.current);
+            }
+          ),
+          [l, i],
+        ));
+      let g = () => {
+        (c(!1), u((null == e ? void 0 : e.usualSitLength) ? 60 * e.usualSitLength : 900), d(!1));
+      };
+      return h
+        ? (0, t.jsx)('div', {
+            className: 'min-h-screen bg-white flex items-center justify-center',
+            children: (0, t.jsxs)('div', {
+              className: 'text-center',
+              children: [
+                (0, t.jsx)('div', {
+                  className:
+                    'w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4',
+                }),
+                (0, t.jsx)('p', {
+                  className: 'text-gray-600',
+                  children: 'Loading your meditation preferences...',
+                }),
+              ],
+            }),
+          })
+        : (0, t.jsxs)('div', {
+            className: 'min-h-screen bg-white',
+            children: [
+              (0, t.jsxs)('div', {
+                className: 'flex items-center justify-between p-4 border-b',
+                children: [
+                  (0, t.jsx)(n.default, {
+                    href: '/',
+                    className: 'flex items-center gap-2',
+                    children: (0, t.jsx)('svg', {
+                      className: 'w-6 h-6',
+                      fill: 'none',
+                      stroke: 'currentColor',
+                      viewBox: '0 0 24 24',
+                      children: (0, t.jsx)('path', {
+                        strokeLinecap: 'round',
+                        strokeLinejoin: 'round',
+                        strokeWidth: 2,
+                        d: 'M15 19l-7-7 7-7',
+                      }),
+                    }),
+                  }),
+                  (0, t.jsx)('h1', {
+                    className: 'text-lg font-bold',
+                    children: 'Sitting in Progress',
+                  }),
+                  (0, t.jsx)('div', {}),
+                ],
+              }),
+              (0, t.jsxs)('div', {
+                className: 'p-6 space-y-8',
+                children: [
+                  (0, t.jsxs)('div', {
+                    className: 'text-center space-y-6',
+                    children: [
+                      (0, t.jsx)('div', {
+                        className: 'text-6xl font-mono font-bold',
+                        children: ((e) => {
+                          let t = Math.floor(e / 60);
+                          return ''
+                            .concat(t.toString().padStart(2, '0'), ':')
+                            .concat((e % 60).toString().padStart(2, '0'));
+                        })(i),
+                      }),
+                      e &&
+                        (0, t.jsxs)('p', {
+                          className: 'text-sm text-gray-600',
+                          children: ['Your preferred session: ', e.usualSitLength, ' minutes'],
+                        }),
+                      (0, t.jsx)(() => {
+                        let r = s[0];
+                        if (!r)
+                          return (0, t.jsx)('div', {
+                            className: 'w-48 h-48 mx-auto flex items-center justify-center',
+                            children: (0, t.jsxs)('div', {
+                              className: 'text-center text-gray-500',
+                              children: [
+                                (0, t.jsx)('div', { className: 'text-4xl mb-2', children: '🧘' }),
+                                (0, t.jsx)('p', {
+                                  className: 'text-sm',
+                                  children: 'No partnerships yet',
+                                }),
+                              ],
+                            }),
+                          });
+                        let n = r.weeklyGoal,
+                          o = r.userSits + r.partnerSits,
+                          a =
+                            l && (null == e ? void 0 : e.usualSitLength)
+                              ? 60 * e.usualSitLength - i
+                              : 0,
+                          u = (null == e ? void 0 : e.usualSitLength)
+                            ? a / (60 * e.usualSitLength)
+                            : 0;
+                        return (0, t.jsxs)('div', {
+                          className: 'w-48 h-48 mx-auto',
+                          children: [
+                            (0, t.jsxs)('svg', {
+                              width: '240',
+                              height: '240',
+                              viewBox: '0 0 240 240',
+                              className: 'w-full h-full',
+                              children: [
+                                (() => {
+                                  let e = [];
+                                  for (let r = 0; r < n; r++) {
+                                    let s = (((360 * r) / n) * Math.PI) / 180,
+                                      a = 120 + 60 * Math.cos(s),
+                                      i = 120 + 60 * Math.sin(s),
+                                      c = s - 0.3,
+                                      f = s + 0.3,
+                                      d = 120 + 15 * Math.cos(c),
+                                      h = 120 + 15 * Math.sin(c),
+                                      p = 120 + 15 * Math.cos(f),
+                                      m = 120 + 15 * Math.sin(f),
+                                      g = 120 + 36 * Math.cos(s - 0.15),
+                                      x = 120 + 36 * Math.sin(s - 0.15),
+                                      y = 120 + 36 * Math.cos(s + 0.15),
+                                      b = 120 + 36 * Math.sin(s + 0.15),
+                                      j = 'M '
+                                        .concat(d, ' ')
+                                        .concat(h, ' \n          Q ')
+                                        .concat(g, ' ')
+                                        .concat(x, ' ')
+                                        .concat(a, ' ')
+                                        .concat(i, '\n          Q ')
+                                        .concat(y, ' ')
+                                        .concat(b, ' ')
+                                        .concat(p, ' ')
+                                        .concat(m, '\n          Q ')
+                                        .concat(120, ' ')
+                                        .concat(120, ' ')
+                                        .concat(d, ' ')
+                                        .concat(h, ' Z'),
+                                      v = '#f3f4f6',
+                                      N = '#d1d5db';
+                                    if (r < o) ((v = '#10b981'), (N = '#059669'));
+                                    else if (r === o && l) {
+                                      let e = Math.min(u, 1);
+                                      ((v = 'rgba(16, 185, 129, '.concat(e, ')')), (N = '#059669'));
+                                    }
+                                    e.push(
+                                      (0, t.jsx)(
+                                        'path',
+                                        {
+                                          d: j,
+                                          fill: v,
+                                          stroke: N,
+                                          strokeWidth: '1.5',
+                                          className: 'transition-all duration-300',
+                                        },
+                                        r,
+                                      ),
+                                    );
+                                  }
+                                  return e;
+                                })(),
+                                (0, t.jsx)('circle', {
+                                  cx: '120',
+                                  cy: '120',
+                                  r: '20',
+                                  fill: '#fbbf24',
+                                  stroke: '#f59e0b',
+                                  strokeWidth: '2',
+                                }),
+                                (0, t.jsx)('text', {
+                                  x: '120',
+                                  y: '130',
+                                  textAnchor: 'middle',
+                                  fontSize: '16',
+                                  fill: '#92400e',
+                                  children: '🧘',
+                                }),
+                              ],
+                            }),
+                            (0, t.jsxs)('div', {
+                              className: 'text-center mt-4',
+                              children: [
+                                (0, t.jsxs)('p', {
+                                  className: 'text-sm text-gray-600',
+                                  children: [o, '/', n, ' sits completed this week'],
+                                }),
+                                s.length > 0 &&
+                                  (0, t.jsxs)('p', {
+                                    className: 'text-xs text-gray-500 mt-1',
+                                    children: ['with ', r.partner.name],
+                                  }),
+                              ],
+                            }),
+                          ],
+                        });
+                      }, {}),
+                    ],
+                  }),
+                  (0, t.jsx)('div', {
+                    className: 'space-y-4',
+                    children: f
+                      ? (0, t.jsxs)('div', {
+                          className: 'text-center space-y-4',
+                          children: [
+                            (0, t.jsx)('div', {
+                              className: 'text-2xl font-bold text-green-600',
+                              children: 'Session Complete! 🎉',
+                            }),
+                            (0, t.jsx)('p', {
+                              className: 'text-gray-600',
+                              children: "Great job! You've completed your meditation session.",
+                            }),
+                            (0, t.jsxs)('div', {
+                              className: 'flex gap-4 justify-center',
+                              children: [
+                                (0, t.jsx)('button', {
+                                  onClick: g,
+                                  className:
+                                    'bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors',
+                                  children: 'Start Another',
+                                }),
+                                (0, t.jsx)(n.default, {
+                                  href: '/',
+                                  className:
+                                    'bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors',
+                                  children: 'Back to Home',
+                                }),
+                              ],
+                            }),
+                          ],
+                        })
+                      : (0, t.jsxs)('div', {
+                          className: 'flex gap-4 justify-center',
+                          children: [
+                            l
+                              ? (0, t.jsx)('button', {
+                                  onClick: () => {
+                                    c(!1);
+                                  },
+                                  className:
+                                    'bg-yellow-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors',
+                                  children: 'Pause',
+                                })
+                              : (0, t.jsx)('button', {
+                                  onClick: () => {
+                                    (c(!0), d(!1));
+                                  },
+                                  className:
+                                    'bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors',
+                                  children: 'Start',
+                                }),
+                            (0, t.jsx)('button', {
+                              onClick: g,
+                              className:
+                                'bg-gray-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors',
+                              children: 'Reset',
+                            }),
+                          ],
+                        }),
+                  }),
+                ],
+              }),
+            ],
+          });
+    }
+  },
+]);

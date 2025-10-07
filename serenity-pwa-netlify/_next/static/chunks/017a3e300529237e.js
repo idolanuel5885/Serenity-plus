@@ -1,1 +1,92 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,18566,(e,s,t)=>{s.exports=e.r(76562)},88889,e=>{"use strict";e.s(["default",()=>a]);var s=e.i(43476),t=e.i(71645),l=e.i(18566);function a(){let[e,a]=(0,t.useState)(""),[r,c]=(0,t.useState)(""),n=(0,l.useRouter)();return(0,s.jsxs)("div",{className:"min-h-screen bg-white flex flex-col",children:[(0,s.jsx)("div",{className:"px-6 py-4 border-b",children:(0,s.jsxs)("div",{className:"flex items-center gap-2",children:[(0,s.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,s.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})}),(0,s.jsxs)("div",{className:"px-6 py-8 flex-1 flex flex-col min-h-0",children:[(0,s.jsxs)("div",{className:"flex-1 flex flex-col",children:[(0,s.jsx)("h1",{className:"text-2xl font-bold text-gray-900 mb-2",children:"What should we call you?"}),(0,s.jsx)("p",{className:"text-sm text-gray-600 mb-8",children:"You can change this later."}),(0,s.jsxs)("div",{className:"flex-1",children:[(0,s.jsx)("input",{type:"text",placeholder:"e.g., Ido",value:e,onChange:e=>{a(e.target.value),c("")},className:"w-full p-4 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent"}),r&&(0,s.jsx)("p",{className:"text-red-600 text-sm mt-2",children:r})]})]}),(0,s.jsx)("form",{onSubmit:s=>{s.preventDefault();let t=e.length<2?"Nickname must be at least 2 characters":e.length>20?"Nickname must be 20 characters or less":/^[a-zA-Z0-9\s]+$/.test(e)?null:"Nickname can only contain letters, numbers, and spaces";if(t)return void c(t);localStorage.setItem("userNickname",e),n.push("/meditations-per-week")},className:"mt-6",children:(0,s.jsx)("button",{type:"submit",disabled:!e.trim(),className:"w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed",children:"Continue"})})]})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  18566,
+  (e, s, t) => {
+    s.exports = e.r(76562);
+  },
+  88889,
+  (e) => {
+    'use strict';
+    e.s(['default', () => a]);
+    var s = e.i(43476),
+      t = e.i(71645),
+      l = e.i(18566);
+    function a() {
+      let [e, a] = (0, t.useState)(''),
+        [r, c] = (0, t.useState)(''),
+        n = (0, l.useRouter)();
+      return (0, s.jsxs)('div', {
+        className: 'min-h-screen bg-white flex flex-col',
+        children: [
+          (0, s.jsx)('div', {
+            className: 'px-6 py-4 border-b',
+            children: (0, s.jsxs)('div', {
+              className: 'flex items-center gap-2',
+              children: [
+                (0, s.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                (0, s.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+              ],
+            }),
+          }),
+          (0, s.jsxs)('div', {
+            className: 'px-6 py-8 flex-1 flex flex-col min-h-0',
+            children: [
+              (0, s.jsxs)('div', {
+                className: 'flex-1 flex flex-col',
+                children: [
+                  (0, s.jsx)('h1', {
+                    className: 'text-2xl font-bold text-gray-900 mb-2',
+                    children: 'What should we call you?',
+                  }),
+                  (0, s.jsx)('p', {
+                    className: 'text-sm text-gray-600 mb-8',
+                    children: 'You can change this later.',
+                  }),
+                  (0, s.jsxs)('div', {
+                    className: 'flex-1',
+                    children: [
+                      (0, s.jsx)('input', {
+                        type: 'text',
+                        placeholder: 'e.g., Ido',
+                        value: e,
+                        onChange: (e) => {
+                          (a(e.target.value), c(''));
+                        },
+                        className:
+                          'w-full p-4 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent',
+                      }),
+                      r && (0, s.jsx)('p', { className: 'text-red-600 text-sm mt-2', children: r }),
+                    ],
+                  }),
+                ],
+              }),
+              (0, s.jsx)('form', {
+                onSubmit: (s) => {
+                  s.preventDefault();
+                  let t =
+                    e.length < 2
+                      ? 'Nickname must be at least 2 characters'
+                      : e.length > 20
+                        ? 'Nickname must be 20 characters or less'
+                        : /^[a-zA-Z0-9\s]+$/.test(e)
+                          ? null
+                          : 'Nickname can only contain letters, numbers, and spaces';
+                  if (t) return void c(t);
+                  (localStorage.setItem('userNickname', e), n.push('/meditations-per-week'));
+                },
+                className: 'mt-6',
+                children: (0, s.jsx)('button', {
+                  type: 'submit',
+                  disabled: !e.trim(),
+                  className:
+                    'w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed',
+                  children: 'Continue',
+                }),
+              }),
+            ],
+          }),
+        ],
+      });
+    }
+  },
+]);

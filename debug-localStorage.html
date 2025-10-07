@@ -1,43 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
+  <head>
     <title>Debug localStorage</title>
-</head>
-<body>
+  </head>
+  <body>
     <h1>Serenity+ localStorage Debug</h1>
     <div id="output"></div>
     <button onclick="clearAll()">Clear All Data</button>
-    
+
     <script>
-        function showLocalStorage() {
-            const output = document.getElementById('output');
-            const keys = Object.keys(localStorage);
-            
-            let html = '<h2>Current localStorage data:</h2>';
-            html += '<ul>';
-            
-            keys.forEach(key => {
-                const value = localStorage.getItem(key);
-                html += `<li><strong>${key}:</strong> ${value}</li>`;
-            });
-            
-            html += '</ul>';
-            
-            if (keys.length === 0) {
-                html += '<p><em>No data in localStorage</em></p>';
-            }
-            
-            output.innerHTML = html;
+      function showLocalStorage() {
+        const output = document.getElementById('output');
+        const keys = Object.keys(localStorage);
+
+        let html = '<h2>Current localStorage data:</h2>';
+        html += '<ul>';
+
+        keys.forEach((key) => {
+          const value = localStorage.getItem(key);
+          html += `<li><strong>${key}:</strong> ${value}</li>`;
+        });
+
+        html += '</ul>';
+
+        if (keys.length === 0) {
+          html += '<p><em>No data in localStorage</em></p>';
         }
-        
-        function clearAll() {
-            localStorage.clear();
-            showLocalStorage();
-            alert('All localStorage data cleared!');
-        }
-        
-        // Show data on page load
+
+        output.innerHTML = html;
+      }
+
+      function clearAll() {
+        localStorage.clear();
         showLocalStorage();
+        alert('All localStorage data cleared!');
+      }
+
+      // Show data on page load
+      showLocalStorage();
     </script>
-</body>
+  </body>
 </html>

@@ -1,1 +1,665 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,33525,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"warnOnce",{enumerable:!0,get:function(){return n}});let n=e=>{}},98183,(e,t,r)=>{"use strict";function n(e){let t={};for(let[r,n]of e.entries()){let e=t[r];void 0===e?t[r]=n:Array.isArray(e)?e.push(n):t[r]=[e,n]}return t}function o(e){return"string"==typeof e?e:("number"!=typeof e||isNaN(e))&&"boolean"!=typeof e?"":String(e)}function i(e){let t=new URLSearchParams;for(let[r,n]of Object.entries(e))if(Array.isArray(n))for(let e of n)t.append(r,o(e));else t.set(r,o(n));return t}function a(e){for(var t=arguments.length,r=Array(t>1?t-1:0),n=1;n<t;n++)r[n-1]=arguments[n];for(let t of r){for(let r of t.keys())e.delete(r);for(let[r,n]of t.entries())e.append(r,n)}return e}Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{assign:function(){return a},searchParamsToUrlQuery:function(){return n},urlQueryToSearchParams:function(){return i}})},95057,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{formatUrl:function(){return i},formatWithValidation:function(){return s},urlObjectKeys:function(){return a}});let n=e.r(90809)._(e.r(98183)),o=/https?|ftp|gopher|file/;function i(e){let{auth:t,hostname:r}=e,i=e.protocol||"",a=e.pathname||"",s=e.hash||"",l=e.query||"",u=!1;t=t?encodeURIComponent(t).replace(/%3A/i,":")+"@":"",e.host?u=t+e.host:r&&(u=t+(~r.indexOf(":")?"["+r+"]":r),e.port&&(u+=":"+e.port)),l&&"object"==typeof l&&(l=String(n.urlQueryToSearchParams(l)));let c=e.search||l&&"?"+l||"";return i&&!i.endsWith(":")&&(i+=":"),e.slashes||(!i||o.test(i))&&!1!==u?(u="//"+(u||""),a&&"/"!==a[0]&&(a="/"+a)):u||(u=""),s&&"#"!==s[0]&&(s="#"+s),c&&"?"!==c[0]&&(c="?"+c),""+i+u+(a=a.replace(/[?#]/g,encodeURIComponent))+(c=c.replace("#","%23"))+s}let a=["auth","hash","host","hostname","href","path","pathname","port","protocol","query","search","slashes"];function s(e){return i(e)}},18581,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"useMergedRef",{enumerable:!0,get:function(){return o}});let n=e.r(71645);function o(e,t){let r=(0,n.useRef)(null),o=(0,n.useRef)(null);return(0,n.useCallback)(n=>{if(null===n){let e=r.current;e&&(r.current=null,e());let t=o.current;t&&(o.current=null,t())}else e&&(r.current=i(e,n)),t&&(o.current=i(t,n))},[e,t])}function i(e,t){if("function"!=typeof e)return e.current=t,()=>{e.current=null};{let r=e(t);return"function"==typeof r?r:()=>e(null)}}("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},18967,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{DecodeError:function(){return g},MiddlewareNotFoundError:function(){return b},MissingStaticPage:function(){return x},NormalizeError:function(){return m},PageNotFoundError:function(){return y},SP:function(){return p},ST:function(){return h},WEB_VITALS:function(){return n},execOnce:function(){return o},getDisplayName:function(){return u},getLocationOrigin:function(){return s},getURL:function(){return l},isAbsoluteUrl:function(){return a},isResSent:function(){return c},loadGetInitialProps:function(){return d},normalizeRepeatedSlashes:function(){return f},stringifyError:function(){return v}});let n=["CLS","FCP","FID","INP","LCP","TTFB"];function o(e){let t,r=!1;return function(){for(var n=arguments.length,o=Array(n),i=0;i<n;i++)o[i]=arguments[i];return r||(r=!0,t=e(...o)),t}}let i=/^[a-zA-Z][a-zA-Z\d+\-.]*?:/,a=e=>i.test(e);function s(){let{protocol:e,hostname:t,port:r}=window.location;return e+"//"+t+(r?":"+r:"")}function l(){let{href:e}=window.location,t=s();return e.substring(t.length)}function u(e){return"string"==typeof e?e:e.displayName||e.name||"Unknown"}function c(e){return e.finished||e.headersSent}function f(e){let t=e.split("?");return t[0].replace(/\\/g,"/").replace(/\/\/+/g,"/")+(t[1]?"?"+t.slice(1).join("?"):"")}async function d(e,t){let r=t.res||t.ctx&&t.ctx.res;if(!e.getInitialProps)return t.ctx&&t.Component?{pageProps:await d(t.Component,t.ctx)}:{};let n=await e.getInitialProps(t);if(r&&c(r))return n;if(!n)throw Object.defineProperty(Error('"'+u(e)+'.getInitialProps()" should resolve to an object. But found "'+n+'" instead.'),"__NEXT_ERROR_CODE",{value:"E394",enumerable:!1,configurable:!0});return n}let p="undefined"!=typeof performance,h=p&&["mark","measure","getEntriesByName"].every(e=>"function"==typeof performance[e]);class g extends Error{}class m extends Error{}class y extends Error{constructor(e){super(),this.code="ENOENT",this.name="PageNotFoundError",this.message="Cannot find module for page: "+e}}class x extends Error{constructor(e,t){super(),this.message="Failed to load static file for page: "+e+" "+t}}class b extends Error{constructor(){super(),this.code="ENOENT",this.message="Cannot find the middleware module"}}function v(e){return JSON.stringify({message:e.message,stack:e.stack})}},73668,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"isLocalURL",{enumerable:!0,get:function(){return i}});let n=e.r(18967),o=e.r(52817);function i(e){if(!(0,n.isAbsoluteUrl)(e))return!0;try{let t=(0,n.getLocationOrigin)(),r=new URL(e,t);return r.origin===t&&(0,o.hasBasePath)(r.pathname)}catch(e){return!1}}},84508,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),Object.defineProperty(r,"errorOnce",{enumerable:!0,get:function(){return n}});let n=e=>{}},22016,(e,t,r)=>{"use strict";Object.defineProperty(r,"__esModule",{value:!0}),!function(e,t){for(var r in t)Object.defineProperty(e,r,{enumerable:!0,get:t[r]})}(r,{default:function(){return m},useLinkStatus:function(){return x}});let n=e.r(90809),o=e.r(43476),i=n._(e.r(71645)),a=e.r(95057),s=e.r(8372),l=e.r(18581),u=e.r(18967),c=e.r(5550);e.r(33525);let f=e.r(91949),d=e.r(73668),p=e.r(99781);e.r(84508);let h=e.r(65165);function g(e){return"string"==typeof e?e:(0,a.formatUrl)(e)}function m(e){var t;let r,n,a,[m,x]=(0,i.useOptimistic)(f.IDLE_LINK_STATUS),b=(0,i.useRef)(null),{href:v,as:j,children:N,prefetch:P=null,passHref:O,replace:S,shallow:_,scroll:w,onClick:E,onMouseEnter:T,onTouchStart:C,legacyBehavior:A=!1,onNavigate:I,ref:L,unstable_dynamicOnHover:M,...R}=e;r=N,A&&("string"==typeof r||"number"==typeof r)&&(r=(0,o.jsx)("a",{children:r}));let k=i.default.useContext(s.AppRouterContext),U=!1!==P,F=!1!==P?null===(t=P)||"auto"===t?h.FetchStrategy.PPR:h.FetchStrategy.Full:h.FetchStrategy.PPR,{href:D,as:K}=i.default.useMemo(()=>{let e=g(v);return{href:e,as:j?g(j):e}},[v,j]);A&&(n=i.default.Children.only(r));let B=A?n&&"object"==typeof n&&n.ref:L,z=i.default.useCallback(e=>(null!==k&&(b.current=(0,f.mountLinkInstance)(e,D,k,F,U,x)),()=>{b.current&&((0,f.unmountLinkForCurrentNavigation)(b.current),b.current=null),(0,f.unmountPrefetchableInstance)(e)}),[U,D,k,F,x]),Q={ref:(0,l.useMergedRef)(z,B),onClick(e){A||"function"!=typeof E||E(e),A&&n.props&&"function"==typeof n.props.onClick&&n.props.onClick(e),k&&(e.defaultPrevented||function(e,t,r,n,o,a,s){let{nodeName:l}=e.currentTarget;if(!("A"===l.toUpperCase()&&function(e){let t=e.currentTarget.getAttribute("target");return t&&"_self"!==t||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.nativeEvent&&2===e.nativeEvent.which}(e)||e.currentTarget.hasAttribute("download"))){if(!(0,d.isLocalURL)(t)){o&&(e.preventDefault(),location.replace(t));return}if(e.preventDefault(),s){let e=!1;if(s({preventDefault:()=>{e=!0}}),e)return}i.default.startTransition(()=>{(0,p.dispatchNavigateAction)(r||t,o?"replace":"push",null==a||a,n.current)})}}(e,D,K,b,S,w,I))},onMouseEnter(e){A||"function"!=typeof T||T(e),A&&n.props&&"function"==typeof n.props.onMouseEnter&&n.props.onMouseEnter(e),k&&U&&(0,f.onNavigationIntent)(e.currentTarget,!0===M)},onTouchStart:function(e){A||"function"!=typeof C||C(e),A&&n.props&&"function"==typeof n.props.onTouchStart&&n.props.onTouchStart(e),k&&U&&(0,f.onNavigationIntent)(e.currentTarget,!0===M)}};return(0,u.isAbsoluteUrl)(K)?Q.href=K:A&&!O&&("a"!==n.type||"href"in n.props)||(Q.href=(0,c.addBasePath)(K)),a=A?i.default.cloneElement(n,Q):(0,o.jsx)("a",{...R,...Q,children:r}),(0,o.jsx)(y.Provider,{value:m,children:a})}let y=(0,i.createContext)(f.IDLE_LINK_STATUS),x=()=>(0,i.useContext)(y);("function"==typeof r.default||"object"==typeof r.default&&null!==r.default)&&void 0===r.default.__esModule&&(Object.defineProperty(r.default,"__esModule",{value:!0}),Object.assign(r.default,r),t.exports=r.default)},66973,e=>{"use strict";e.s(["default",()=>o]);var t=e.i(43476),r=e.i(71645),n=e.i(22016);function o(){let[e,o]=(0,r.useState)(!1),[i,a]=(0,r.useState)(null),[s,l]=(0,r.useState)(!0);return((0,r.useEffect)(()=>{setTimeout(async()=>{try{let e=localStorage.getItem("pendingInviteCode");if(e){let t=await fetch("/api/invite?code=".concat(e)),r=await t.json();r.success&&a({inviterName:r.invitation.inviter.name,inviterImage:r.invitation.inviter.image})}}catch(e){console.error("Error fetching invite data:",e)}finally{l(!1)}},100)},[]),s)?(0,t.jsx)("div",{className:"min-h-screen bg-white flex items-center justify-center",children:(0,t.jsxs)("div",{className:"text-center",children:[(0,t.jsx)("div",{className:"w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"}),(0,t.jsx)("p",{className:"text-gray-600",children:"Loading..."})]})}):(0,t.jsxs)("div",{className:"min-h-screen bg-white flex flex-col",children:[(0,t.jsx)("div",{className:"px-6 py-4 border-b",children:(0,t.jsxs)("div",{className:"flex items-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})}),(0,t.jsxs)("div",{className:"px-6 py-8 flex-1",children:[i?(0,t.jsxs)(t.Fragment,{children:[(0,t.jsxs)("h1",{className:"text-3xl font-bold text-gray-900 leading-tight",children:["Let's set you up to start meditating with ",i.inviterName]}),(0,t.jsx)("p",{className:"text-lg text-gray-600 mt-4",children:"You'll be accountability partners, supporting each other's meditation practice."}),(0,t.jsxs)("div",{className:"mt-6 flex items-center gap-3",children:[(0,t.jsx)("div",{className:"w-12 h-12 rounded-full overflow-hidden",children:i.inviterImage?(0,t.jsx)("img",{src:i.inviterImage,alt:"".concat(i.inviterName,"'s avatar"),className:"w-full h-full object-cover"}):(0,t.jsx)("div",{className:"w-full h-full bg-gray-300 flex items-center justify-center",children:(0,t.jsx)("span",{className:"text-lg font-medium text-gray-600",children:i.inviterName.charAt(0).toUpperCase()})})}),(0,t.jsxs)("div",{className:"text-sm text-gray-600",children:[(0,t.jsx)("div",{children:"+"}),(0,t.jsx)("div",{children:"You"})]})]})]}):(0,t.jsxs)(t.Fragment,{children:[(0,t.jsx)("h1",{className:"text-3xl font-bold text-gray-900 leading-tight",children:"Meditate daily with a gentle nudge."}),(0,t.jsx)("p",{className:"text-lg text-gray-600 mt-4",children:"Pair with one buddy. Tiny steps, big change."})]}),(0,t.jsxs)("div",{className:"mt-8 space-y-4",children:[(0,t.jsx)(n.default,{href:"/nickname",className:"block w-full bg-black text-white text-center py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors",children:i?"Set up your profile":"Get started"}),(0,t.jsx)("button",{onClick:()=>o(!e),className:"block w-full text-gray-600 text-center py-2 text-sm hover:text-gray-800 transition-colors",children:"Learn more"})]}),e&&(0,t.jsx)("div",{className:"mt-6 p-4 bg-gray-50 rounded-lg",children:(0,t.jsx)("p",{className:"text-sm text-gray-700",children:"SerenityPlus pairs you with one accountability partner. A short check-in after each sit keeps both of you consistent."})})]}),(0,t.jsx)("div",{className:"px-6 py-4 border-t mt-auto",children:(0,t.jsxs)("div",{className:"flex items-center justify-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  33525,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'warnOnce', {
+        enumerable: !0,
+        get: function () {
+          return n;
+        },
+      }));
+    let n = (e) => {};
+  },
+  98183,
+  (e, t, r) => {
+    'use strict';
+    function n(e) {
+      let t = {};
+      for (let [r, n] of e.entries()) {
+        let e = t[r];
+        void 0 === e ? (t[r] = n) : Array.isArray(e) ? e.push(n) : (t[r] = [e, n]);
+      }
+      return t;
+    }
+    function o(e) {
+      return 'string' == typeof e
+        ? e
+        : ('number' != typeof e || isNaN(e)) && 'boolean' != typeof e
+          ? ''
+          : String(e);
+    }
+    function i(e) {
+      let t = new URLSearchParams();
+      for (let [r, n] of Object.entries(e))
+        if (Array.isArray(n)) for (let e of n) t.append(r, o(e));
+        else t.set(r, o(n));
+      return t;
+    }
+    function a(e) {
+      for (var t = arguments.length, r = Array(t > 1 ? t - 1 : 0), n = 1; n < t; n++)
+        r[n - 1] = arguments[n];
+      for (let t of r) {
+        for (let r of t.keys()) e.delete(r);
+        for (let [r, n] of t.entries()) e.append(r, n);
+      }
+      return e;
+    }
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        assign: function () {
+          return a;
+        },
+        searchParamsToUrlQuery: function () {
+          return n;
+        },
+        urlQueryToSearchParams: function () {
+          return i;
+        },
+      }));
+  },
+  95057,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        formatUrl: function () {
+          return i;
+        },
+        formatWithValidation: function () {
+          return s;
+        },
+        urlObjectKeys: function () {
+          return a;
+        },
+      }));
+    let n = e.r(90809)._(e.r(98183)),
+      o = /https?|ftp|gopher|file/;
+    function i(e) {
+      let { auth: t, hostname: r } = e,
+        i = e.protocol || '',
+        a = e.pathname || '',
+        s = e.hash || '',
+        l = e.query || '',
+        u = !1;
+      ((t = t ? encodeURIComponent(t).replace(/%3A/i, ':') + '@' : ''),
+        e.host
+          ? (u = t + e.host)
+          : r && ((u = t + (~r.indexOf(':') ? '[' + r + ']' : r)), e.port && (u += ':' + e.port)),
+        l && 'object' == typeof l && (l = String(n.urlQueryToSearchParams(l))));
+      let c = e.search || (l && '?' + l) || '';
+      return (
+        i && !i.endsWith(':') && (i += ':'),
+        e.slashes || ((!i || o.test(i)) && !1 !== u)
+          ? ((u = '//' + (u || '')), a && '/' !== a[0] && (a = '/' + a))
+          : u || (u = ''),
+        s && '#' !== s[0] && (s = '#' + s),
+        c && '?' !== c[0] && (c = '?' + c),
+        '' + i + u + (a = a.replace(/[?#]/g, encodeURIComponent)) + (c = c.replace('#', '%23')) + s
+      );
+    }
+    let a = [
+      'auth',
+      'hash',
+      'host',
+      'hostname',
+      'href',
+      'path',
+      'pathname',
+      'port',
+      'protocol',
+      'query',
+      'search',
+      'slashes',
+    ];
+    function s(e) {
+      return i(e);
+    }
+  },
+  18581,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'useMergedRef', {
+        enumerable: !0,
+        get: function () {
+          return o;
+        },
+      }));
+    let n = e.r(71645);
+    function o(e, t) {
+      let r = (0, n.useRef)(null),
+        o = (0, n.useRef)(null);
+      return (0, n.useCallback)(
+        (n) => {
+          if (null === n) {
+            let e = r.current;
+            e && ((r.current = null), e());
+            let t = o.current;
+            t && ((o.current = null), t());
+          } else (e && (r.current = i(e, n)), t && (o.current = i(t, n)));
+        },
+        [e, t],
+      );
+    }
+    function i(e, t) {
+      if ('function' != typeof e)
+        return (
+          (e.current = t),
+          () => {
+            e.current = null;
+          }
+        );
+      {
+        let r = e(t);
+        return 'function' == typeof r ? r : () => e(null);
+      }
+    }
+    ('function' == typeof r.default || ('object' == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, '__esModule', { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  18967,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        DecodeError: function () {
+          return g;
+        },
+        MiddlewareNotFoundError: function () {
+          return b;
+        },
+        MissingStaticPage: function () {
+          return x;
+        },
+        NormalizeError: function () {
+          return m;
+        },
+        PageNotFoundError: function () {
+          return y;
+        },
+        SP: function () {
+          return p;
+        },
+        ST: function () {
+          return h;
+        },
+        WEB_VITALS: function () {
+          return n;
+        },
+        execOnce: function () {
+          return o;
+        },
+        getDisplayName: function () {
+          return u;
+        },
+        getLocationOrigin: function () {
+          return s;
+        },
+        getURL: function () {
+          return l;
+        },
+        isAbsoluteUrl: function () {
+          return a;
+        },
+        isResSent: function () {
+          return c;
+        },
+        loadGetInitialProps: function () {
+          return d;
+        },
+        normalizeRepeatedSlashes: function () {
+          return f;
+        },
+        stringifyError: function () {
+          return v;
+        },
+      }));
+    let n = ['CLS', 'FCP', 'FID', 'INP', 'LCP', 'TTFB'];
+    function o(e) {
+      let t,
+        r = !1;
+      return function () {
+        for (var n = arguments.length, o = Array(n), i = 0; i < n; i++) o[i] = arguments[i];
+        return (r || ((r = !0), (t = e(...o))), t);
+      };
+    }
+    let i = /^[a-zA-Z][a-zA-Z\d+\-.]*?:/,
+      a = (e) => i.test(e);
+    function s() {
+      let { protocol: e, hostname: t, port: r } = window.location;
+      return e + '//' + t + (r ? ':' + r : '');
+    }
+    function l() {
+      let { href: e } = window.location,
+        t = s();
+      return e.substring(t.length);
+    }
+    function u(e) {
+      return 'string' == typeof e ? e : e.displayName || e.name || 'Unknown';
+    }
+    function c(e) {
+      return e.finished || e.headersSent;
+    }
+    function f(e) {
+      let t = e.split('?');
+      return (
+        t[0].replace(/\\/g, '/').replace(/\/\/+/g, '/') + (t[1] ? '?' + t.slice(1).join('?') : '')
+      );
+    }
+    async function d(e, t) {
+      let r = t.res || (t.ctx && t.ctx.res);
+      if (!e.getInitialProps)
+        return t.ctx && t.Component ? { pageProps: await d(t.Component, t.ctx) } : {};
+      let n = await e.getInitialProps(t);
+      if (r && c(r)) return n;
+      if (!n)
+        throw Object.defineProperty(
+          Error(
+            '"' +
+              u(e) +
+              '.getInitialProps()" should resolve to an object. But found "' +
+              n +
+              '" instead.',
+          ),
+          '__NEXT_ERROR_CODE',
+          { value: 'E394', enumerable: !1, configurable: !0 },
+        );
+      return n;
+    }
+    let p = 'undefined' != typeof performance,
+      h =
+        p &&
+        ['mark', 'measure', 'getEntriesByName'].every((e) => 'function' == typeof performance[e]);
+    class g extends Error {}
+    class m extends Error {}
+    class y extends Error {
+      constructor(e) {
+        (super(),
+          (this.code = 'ENOENT'),
+          (this.name = 'PageNotFoundError'),
+          (this.message = 'Cannot find module for page: ' + e));
+      }
+    }
+    class x extends Error {
+      constructor(e, t) {
+        (super(), (this.message = 'Failed to load static file for page: ' + e + ' ' + t));
+      }
+    }
+    class b extends Error {
+      constructor() {
+        (super(), (this.code = 'ENOENT'), (this.message = 'Cannot find the middleware module'));
+      }
+    }
+    function v(e) {
+      return JSON.stringify({ message: e.message, stack: e.stack });
+    }
+  },
+  73668,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'isLocalURL', {
+        enumerable: !0,
+        get: function () {
+          return i;
+        },
+      }));
+    let n = e.r(18967),
+      o = e.r(52817);
+    function i(e) {
+      if (!(0, n.isAbsoluteUrl)(e)) return !0;
+      try {
+        let t = (0, n.getLocationOrigin)(),
+          r = new URL(e, t);
+        return r.origin === t && (0, o.hasBasePath)(r.pathname);
+      } catch (e) {
+        return !1;
+      }
+    }
+  },
+  84508,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      Object.defineProperty(r, 'errorOnce', {
+        enumerable: !0,
+        get: function () {
+          return n;
+        },
+      }));
+    let n = (e) => {};
+  },
+  22016,
+  (e, t, r) => {
+    'use strict';
+    (Object.defineProperty(r, '__esModule', { value: !0 }),
+      !(function (e, t) {
+        for (var r in t) Object.defineProperty(e, r, { enumerable: !0, get: t[r] });
+      })(r, {
+        default: function () {
+          return m;
+        },
+        useLinkStatus: function () {
+          return x;
+        },
+      }));
+    let n = e.r(90809),
+      o = e.r(43476),
+      i = n._(e.r(71645)),
+      a = e.r(95057),
+      s = e.r(8372),
+      l = e.r(18581),
+      u = e.r(18967),
+      c = e.r(5550);
+    e.r(33525);
+    let f = e.r(91949),
+      d = e.r(73668),
+      p = e.r(99781);
+    e.r(84508);
+    let h = e.r(65165);
+    function g(e) {
+      return 'string' == typeof e ? e : (0, a.formatUrl)(e);
+    }
+    function m(e) {
+      var t;
+      let r,
+        n,
+        a,
+        [m, x] = (0, i.useOptimistic)(f.IDLE_LINK_STATUS),
+        b = (0, i.useRef)(null),
+        {
+          href: v,
+          as: j,
+          children: N,
+          prefetch: P = null,
+          passHref: O,
+          replace: S,
+          shallow: _,
+          scroll: w,
+          onClick: E,
+          onMouseEnter: T,
+          onTouchStart: C,
+          legacyBehavior: A = !1,
+          onNavigate: I,
+          ref: L,
+          unstable_dynamicOnHover: M,
+          ...R
+        } = e;
+      ((r = N),
+        A &&
+          ('string' == typeof r || 'number' == typeof r) &&
+          (r = (0, o.jsx)('a', { children: r })));
+      let k = i.default.useContext(s.AppRouterContext),
+        U = !1 !== P,
+        F =
+          !1 !== P
+            ? null === (t = P) || 'auto' === t
+              ? h.FetchStrategy.PPR
+              : h.FetchStrategy.Full
+            : h.FetchStrategy.PPR,
+        { href: D, as: K } = i.default.useMemo(() => {
+          let e = g(v);
+          return { href: e, as: j ? g(j) : e };
+        }, [v, j]);
+      A && (n = i.default.Children.only(r));
+      let B = A ? n && 'object' == typeof n && n.ref : L,
+        z = i.default.useCallback(
+          (e) => (
+            null !== k && (b.current = (0, f.mountLinkInstance)(e, D, k, F, U, x)),
+            () => {
+              (b.current && ((0, f.unmountLinkForCurrentNavigation)(b.current), (b.current = null)),
+                (0, f.unmountPrefetchableInstance)(e));
+            }
+          ),
+          [U, D, k, F, x],
+        ),
+        Q = {
+          ref: (0, l.useMergedRef)(z, B),
+          onClick(e) {
+            (A || 'function' != typeof E || E(e),
+              A && n.props && 'function' == typeof n.props.onClick && n.props.onClick(e),
+              k &&
+                (e.defaultPrevented ||
+                  (function (e, t, r, n, o, a, s) {
+                    let { nodeName: l } = e.currentTarget;
+                    if (
+                      !(
+                        ('A' === l.toUpperCase() &&
+                          (function (e) {
+                            let t = e.currentTarget.getAttribute('target');
+                            return (
+                              (t && '_self' !== t) ||
+                              e.metaKey ||
+                              e.ctrlKey ||
+                              e.shiftKey ||
+                              e.altKey ||
+                              (e.nativeEvent && 2 === e.nativeEvent.which)
+                            );
+                          })(e)) ||
+                        e.currentTarget.hasAttribute('download')
+                      )
+                    ) {
+                      if (!(0, d.isLocalURL)(t)) {
+                        o && (e.preventDefault(), location.replace(t));
+                        return;
+                      }
+                      if ((e.preventDefault(), s)) {
+                        let e = !1;
+                        if (
+                          (s({
+                            preventDefault: () => {
+                              e = !0;
+                            },
+                          }),
+                          e)
+                        )
+                          return;
+                      }
+                      i.default.startTransition(() => {
+                        (0, p.dispatchNavigateAction)(
+                          r || t,
+                          o ? 'replace' : 'push',
+                          null == a || a,
+                          n.current,
+                        );
+                      });
+                    }
+                  })(e, D, K, b, S, w, I)));
+          },
+          onMouseEnter(e) {
+            (A || 'function' != typeof T || T(e),
+              A && n.props && 'function' == typeof n.props.onMouseEnter && n.props.onMouseEnter(e),
+              k && U && (0, f.onNavigationIntent)(e.currentTarget, !0 === M));
+          },
+          onTouchStart: function (e) {
+            (A || 'function' != typeof C || C(e),
+              A && n.props && 'function' == typeof n.props.onTouchStart && n.props.onTouchStart(e),
+              k && U && (0, f.onNavigationIntent)(e.currentTarget, !0 === M));
+          },
+        };
+      return (
+        (0, u.isAbsoluteUrl)(K)
+          ? (Q.href = K)
+          : (A && !O && ('a' !== n.type || 'href' in n.props)) || (Q.href = (0, c.addBasePath)(K)),
+        (a = A ? i.default.cloneElement(n, Q) : (0, o.jsx)('a', { ...R, ...Q, children: r })),
+        (0, o.jsx)(y.Provider, { value: m, children: a })
+      );
+    }
+    let y = (0, i.createContext)(f.IDLE_LINK_STATUS),
+      x = () => (0, i.useContext)(y);
+    ('function' == typeof r.default || ('object' == typeof r.default && null !== r.default)) &&
+      void 0 === r.default.__esModule &&
+      (Object.defineProperty(r.default, '__esModule', { value: !0 }),
+      Object.assign(r.default, r),
+      (t.exports = r.default));
+  },
+  66973,
+  (e) => {
+    'use strict';
+    e.s(['default', () => o]);
+    var t = e.i(43476),
+      r = e.i(71645),
+      n = e.i(22016);
+    function o() {
+      let [e, o] = (0, r.useState)(!1),
+        [i, a] = (0, r.useState)(null),
+        [s, l] = (0, r.useState)(!0);
+      return ((0, r.useEffect)(() => {
+        setTimeout(async () => {
+          try {
+            let e = localStorage.getItem('pendingInviteCode');
+            if (e) {
+              let t = await fetch('/api/invite?code='.concat(e)),
+                r = await t.json();
+              r.success &&
+                a({
+                  inviterName: r.invitation.inviter.name,
+                  inviterImage: r.invitation.inviter.image,
+                });
+            }
+          } catch (e) {
+            console.error('Error fetching invite data:', e);
+          } finally {
+            l(!1);
+          }
+        }, 100);
+      }, []),
+      s)
+        ? (0, t.jsx)('div', {
+            className: 'min-h-screen bg-white flex items-center justify-center',
+            children: (0, t.jsxs)('div', {
+              className: 'text-center',
+              children: [
+                (0, t.jsx)('div', {
+                  className:
+                    'w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4',
+                }),
+                (0, t.jsx)('p', { className: 'text-gray-600', children: 'Loading...' }),
+              ],
+            }),
+          })
+        : (0, t.jsxs)('div', {
+            className: 'min-h-screen bg-white flex flex-col',
+            children: [
+              (0, t.jsx)('div', {
+                className: 'px-6 py-4 border-b',
+                children: (0, t.jsxs)('div', {
+                  className: 'flex items-center gap-2',
+                  children: [
+                    (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                    (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+                  ],
+                }),
+              }),
+              (0, t.jsxs)('div', {
+                className: 'px-6 py-8 flex-1',
+                children: [
+                  i
+                    ? (0, t.jsxs)(t.Fragment, {
+                        children: [
+                          (0, t.jsxs)('h1', {
+                            className: 'text-3xl font-bold text-gray-900 leading-tight',
+                            children: ["Let's set you up to start meditating with ", i.inviterName],
+                          }),
+                          (0, t.jsx)('p', {
+                            className: 'text-lg text-gray-600 mt-4',
+                            children:
+                              "You'll be accountability partners, supporting each other's meditation practice.",
+                          }),
+                          (0, t.jsxs)('div', {
+                            className: 'mt-6 flex items-center gap-3',
+                            children: [
+                              (0, t.jsx)('div', {
+                                className: 'w-12 h-12 rounded-full overflow-hidden',
+                                children: i.inviterImage
+                                  ? (0, t.jsx)('img', {
+                                      src: i.inviterImage,
+                                      alt: ''.concat(i.inviterName, "'s avatar"),
+                                      className: 'w-full h-full object-cover',
+                                    })
+                                  : (0, t.jsx)('div', {
+                                      className:
+                                        'w-full h-full bg-gray-300 flex items-center justify-center',
+                                      children: (0, t.jsx)('span', {
+                                        className: 'text-lg font-medium text-gray-600',
+                                        children: i.inviterName.charAt(0).toUpperCase(),
+                                      }),
+                                    }),
+                              }),
+                              (0, t.jsxs)('div', {
+                                className: 'text-sm text-gray-600',
+                                children: [
+                                  (0, t.jsx)('div', { children: '+' }),
+                                  (0, t.jsx)('div', { children: 'You' }),
+                                ],
+                              }),
+                            ],
+                          }),
+                        ],
+                      })
+                    : (0, t.jsxs)(t.Fragment, {
+                        children: [
+                          (0, t.jsx)('h1', {
+                            className: 'text-3xl font-bold text-gray-900 leading-tight',
+                            children: 'Meditate daily with a gentle nudge.',
+                          }),
+                          (0, t.jsx)('p', {
+                            className: 'text-lg text-gray-600 mt-4',
+                            children: 'Pair with one buddy. Tiny steps, big change.',
+                          }),
+                        ],
+                      }),
+                  (0, t.jsxs)('div', {
+                    className: 'mt-8 space-y-4',
+                    children: [
+                      (0, t.jsx)(n.default, {
+                        href: '/nickname',
+                        className:
+                          'block w-full bg-black text-white text-center py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors',
+                        children: i ? 'Set up your profile' : 'Get started',
+                      }),
+                      (0, t.jsx)('button', {
+                        onClick: () => o(!e),
+                        className:
+                          'block w-full text-gray-600 text-center py-2 text-sm hover:text-gray-800 transition-colors',
+                        children: 'Learn more',
+                      }),
+                    ],
+                  }),
+                  e &&
+                    (0, t.jsx)('div', {
+                      className: 'mt-6 p-4 bg-gray-50 rounded-lg',
+                      children: (0, t.jsx)('p', {
+                        className: 'text-sm text-gray-700',
+                        children:
+                          'SerenityPlus pairs you with one accountability partner. A short check-in after each sit keeps both of you consistent.',
+                      }),
+                    }),
+                ],
+              }),
+              (0, t.jsx)('div', {
+                className: 'px-6 py-4 border-t mt-auto',
+                children: (0, t.jsxs)('div', {
+                  className: 'flex items-center justify-center gap-2',
+                  children: [
+                    (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                    (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+                  ],
+                }),
+              }),
+            ],
+          });
+    }
+  },
+]);

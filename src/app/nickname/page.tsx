@@ -1,42 +1,43 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function NicknamePage() {
-  const [nickname, setNickname] = useState('')
-  const [error, setError] = useState('')
-  const router = useRouter()
+  const [nickname, setNickname] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     // Debug: Check if pendingInviteCode exists when user reaches nickname page
-    const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-    console.log('Nickname page: pendingInviteCode exists:', pendingInviteCode)
-    console.log('Nickname page: All localStorage keys:', Object.keys(localStorage))
-  }, [])
+    const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+    console.log('Nickname page: pendingInviteCode exists:', pendingInviteCode);
+    console.log('Nickname page: All localStorage keys:', Object.keys(localStorage));
+  }, []);
 
   const validateNickname = (name: string) => {
-    if (name.length < 2) return 'Nickname must be at least 2 characters'
-    if (name.length > 20) return 'Nickname must be 20 characters or less'
-    if (!/^[a-zA-Z0-9\s]+$/.test(name)) return 'Nickname can only contain letters, numbers, and spaces'
-    return null
-  }
+    if (name.length < 2) return 'Nickname must be at least 2 characters';
+    if (name.length > 20) return 'Nickname must be 20 characters or less';
+    if (!/^[a-zA-Z0-9\s]+$/.test(name))
+      return 'Nickname can only contain letters, numbers, and spaces';
+    return null;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    const validationError = validateNickname(nickname)
-    
+    e.preventDefault();
+    const validationError = validateNickname(nickname);
+
     if (validationError) {
-      setError(validationError)
-      return
+      setError(validationError);
+      return;
     }
 
     // Store nickname in localStorage
-    localStorage.setItem('userNickname', nickname)
-    
+    localStorage.setItem('userNickname', nickname);
+
     // Redirect to next step
-    router.push('/meditations-per-week')
-  }
+    router.push('/meditations-per-week');
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -49,12 +50,8 @@ export default function NicknamePage() {
 
       <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
         <div className="flex-1 flex flex-col">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            What should we call you?
-          </h1>
-          <p className="text-sm text-gray-600 mb-8">
-            You can change this later.
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">What should we call you?</h1>
+          <p className="text-sm text-gray-600 mb-8">You can change this later.</p>
 
           <div className="flex-1">
             <input
@@ -62,14 +59,12 @@ export default function NicknamePage() {
               placeholder="e.g., Ido"
               value={nickname}
               onChange={(e) => {
-                setNickname(e.target.value)
-                setError('')
+                setNickname(e.target.value);
+                setError('');
               }}
               className="w-full p-4 border border-gray-300 rounded-lg text-lg text-black focus:ring-2 focus:ring-black focus:border-transparent"
             />
-            {error && (
-              <p className="text-red-600 text-sm mt-2">{error}</p>
-            )}
+            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
           </div>
         </div>
 
@@ -84,5 +79,5 @@ export default function NicknamePage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

@@ -1,52 +1,52 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 export default function WelcomePage() {
-  const [showLearnMore, setShowLearnMore] = useState(false)
+  const [showLearnMore, setShowLearnMore] = useState(false);
   const [inviteData, setInviteData] = useState<{
-    inviterName: string
-    inviterImage?: string
-  } | null>(null)
-  const [loading, setLoading] = useState(true)
+    inviterName: string;
+    inviterImage?: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkForInvite = async () => {
       try {
         // Check URL parameters first
-        const urlParams = new URLSearchParams(window.location.search)
-        const inviteCode = urlParams.get('invite')
-        
+        const urlParams = new URLSearchParams(window.location.search);
+        const inviteCode = urlParams.get('invite');
+
         if (inviteCode) {
           // Store the invite code for later use
-          localStorage.setItem('pendingInviteCode', inviteCode)
-          console.log('Welcome page: Stored pendingInviteCode from URL:', inviteCode)
+          localStorage.setItem('pendingInviteCode', inviteCode);
+          console.log('Welcome page: Stored pendingInviteCode from URL:', inviteCode);
           setInviteData({
             inviterName: 'Your Partner',
-            inviterImage: '/icons/meditation-1.svg'
-          })
+            inviterImage: '/icons/meditation-1.svg',
+          });
         } else {
           // Check localStorage for existing invite
-          const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-          console.log('Welcome page: Found existing pendingInviteCode:', pendingInviteCode)
+          const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+          console.log('Welcome page: Found existing pendingInviteCode:', pendingInviteCode);
           if (pendingInviteCode) {
             setInviteData({
               inviterName: 'Your Partner',
-              inviterImage: '/icons/meditation-1.svg'
-            })
+              inviterImage: '/icons/meditation-1.svg',
+            });
           }
         }
       } catch (error) {
-        console.error('Error fetching invite data:', error)
+        console.error('Error fetching invite data:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     // Small delay to ensure client-side hydration
-    setTimeout(checkForInvite, 100)
-  }, [])
+    setTimeout(checkForInvite, 100);
+  }, []);
 
   if (loading) {
     return (
@@ -56,7 +56,7 @@ export default function WelcomePage() {
           <p className="text-gray-600">Loading...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -75,14 +75,15 @@ export default function WelcomePage() {
               Let&apos;s set you up to start meditating with {inviteData.inviterName}
             </h1>
             <p className="text-lg text-gray-600 mt-4">
-              You&apos;ll be accountability partners, supporting each other&apos;s meditation practice.
+              You&apos;ll be accountability partners, supporting each other&apos;s meditation
+              practice.
             </p>
-            
+
             <div className="mt-6 flex items-center gap-3">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 {inviteData.inviterImage ? (
-                  <img 
-                    src={inviteData.inviterImage} 
+                  <img
+                    src={inviteData.inviterImage}
                     alt={`${inviteData.inviterName}'s avatar`}
                     className="w-full h-full object-cover"
                   />
@@ -118,7 +119,7 @@ export default function WelcomePage() {
           >
             {inviteData ? 'Set up your profile' : 'Get started'}
           </Link>
-          
+
           <button
             onClick={() => setShowLearnMore(!showLearnMore)}
             className="block w-full text-gray-600 text-center py-2 text-sm hover:text-gray-800 transition-colors"
@@ -130,7 +131,8 @@ export default function WelcomePage() {
         {showLearnMore && (
           <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-700">
-              SerenityPlus pairs you with one accountability partner. A short check-in after each sit keeps both of you consistent.
+              SerenityPlus pairs you with one accountability partner. A short check-in after each
+              sit keeps both of you consistent.
             </p>
           </div>
         )}
@@ -143,5 +145,5 @@ export default function WelcomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

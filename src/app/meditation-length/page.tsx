@@ -1,18 +1,21 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { createUser } from '../../lib/supabase-database' // Import createUser from Supabase
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { createUser } from '../../lib/supabase-database'; // Import createUser from Supabase
 
 export default function MeditationLengthPage() {
-  const [selectedLength, setSelectedLength] = useState<number>(30)
-  const router = useRouter()
+  const [selectedLength, setSelectedLength] = useState<number>(30);
+  const router = useRouter();
 
   useEffect(() => {
-    console.log('MeditationLengthPage: User reached this page')
-    console.log('MeditationLengthPage: pendingInviteCode:', localStorage.getItem('pendingInviteCode'))
-    console.log('MeditationLengthPage: userInviteCode:', localStorage.getItem('userInviteCode'))
-  }, [])
+    console.log('MeditationLengthPage: User reached this page');
+    console.log(
+      'MeditationLengthPage: pendingInviteCode:',
+      localStorage.getItem('pendingInviteCode'),
+    );
+    console.log('MeditationLengthPage: userInviteCode:', localStorage.getItem('userInviteCode'));
+  }, []);
 
   const meditationLengths = [
     { minutes: 5, label: '5 minutes' },
@@ -21,163 +24,169 @@ export default function MeditationLengthPage() {
     { minutes: 20, label: '20 minutes' },
     { minutes: 30, label: '30 minutes' },
     { minutes: 45, label: '45 minutes' },
-    { minutes: 60, label: '60 minutes' }
-  ]
+    { minutes: 60, label: '60 minutes' },
+  ];
 
   const handleSubmit = async () => {
-    console.log('=== COMPLETE SETUP BUTTON CLICKED ===')
-    console.log('Complete Setup button clicked!')
-    
+    console.log('=== COMPLETE SETUP BUTTON CLICKED ===');
+    console.log('Complete Setup button clicked!');
+
     // Store selection in localStorage
-    localStorage.setItem('usualSitLength', selectedLength.toString())
-    console.log('Stored meditation length:', selectedLength)
-    
+    localStorage.setItem('usualSitLength', selectedLength.toString());
+    console.log('Stored meditation length:', selectedLength);
+
     // Get all stored data
-    const nickname = localStorage.getItem('userNickname')
-    const weeklyTarget = localStorage.getItem('userWeeklyTarget')
-    const usualSitLength = localStorage.getItem('usualSitLength')
-    const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-    
-    console.log('Retrieved data:', { nickname, weeklyTarget, usualSitLength, pendingInviteCode })
-    
+    const nickname = localStorage.getItem('userNickname');
+    const weeklyTarget = localStorage.getItem('userWeeklyTarget');
+    const usualSitLength = localStorage.getItem('usualSitLength');
+    const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+
+    console.log('Retrieved data:', { nickname, weeklyTarget, usualSitLength, pendingInviteCode });
+
     if (!nickname || !weeklyTarget || !usualSitLength) {
-      console.error('Missing required data:', { nickname, weeklyTarget, usualSitLength })
-      alert('Missing required data. Please start over.')
-      return
+      console.error('Missing required data:', { nickname, weeklyTarget, usualSitLength });
+      alert('Missing required data. Please start over.');
+      return;
     }
 
     try {
       // For static export, create a mock user ID and store in localStorage
-      const userId = `user-${Date.now()}`
-      console.log('Creating user with ID:', userId)
-      
+      const userId = `user-${Date.now()}`;
+      console.log('Creating user with ID:', userId);
+
       // Store all user data in localStorage for demo purposes
-      localStorage.setItem('userId', userId)
-      localStorage.setItem('userEmail', `user-${Date.now()}@example.com`)
-      localStorage.setItem('userName', nickname)
-      localStorage.setItem('userWeeklyTarget', weeklyTarget)
-      localStorage.setItem('userUsualSitLength', usualSitLength)
-      localStorage.setItem('userPrimaryWindow', '06:00–09:00')
-      localStorage.setItem('userTimezone', 'GMT+0')
-      localStorage.setItem('userWhyPractice', 'Mindfulness and stress relief')
-      localStorage.setItem('userSupportNeeds', 'Gentle reminders')
-      
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userEmail', `user-${Date.now()}@example.com`);
+      localStorage.setItem('userName', nickname);
+      localStorage.setItem('userWeeklyTarget', weeklyTarget);
+      localStorage.setItem('userUsualSitLength', usualSitLength);
+      localStorage.setItem('userPrimaryWindow', '06:00–09:00');
+      localStorage.setItem('userTimezone', 'GMT+0');
+      localStorage.setItem('userWhyPractice', 'Mindfulness and stress relief');
+      localStorage.setItem('userSupportNeeds', 'Gentle reminders');
+
       // If there's a pending invite, store partnership info
       if (pendingInviteCode) {
-        localStorage.setItem('partnershipInviteCode', pendingInviteCode)
-        localStorage.setItem('partnershipStatus', 'pending')
-        console.log('Partnership invite stored for demo')
+        localStorage.setItem('partnershipInviteCode', pendingInviteCode);
+        localStorage.setItem('partnershipStatus', 'pending');
+        console.log('Partnership invite stored for demo');
       }
-      
-      console.log('User account created successfully (demo mode)')
-      console.log('All localStorage keys after creation:', Object.keys(localStorage))
-      
+
+      console.log('User account created successfully (demo mode)');
+      console.log('All localStorage keys after creation:', Object.keys(localStorage));
+
       // Ensure localStorage is written synchronously
-      localStorage.setItem('userId', userId)
-      console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'))
-      
+      localStorage.setItem('userId', userId);
+      console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'));
+
       // Create user in Supabase database
-      let supabaseUserId = null
+      let supabaseUserId = null;
       try {
         // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
-        const pendingInviteCode = localStorage.getItem('pendingInviteCode')
-        const userInviteCode = localStorage.getItem('userInviteCode')
-        const finalUserInviteCode = pendingInviteCode || userInviteCode || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+        const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+        const userInviteCode = localStorage.getItem('userInviteCode');
+        const finalUserInviteCode =
+          pendingInviteCode ||
+          userInviteCode ||
+          `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         console.log('=== USER CREATION: Invite code debugging ===', {
           pendingInviteCode,
           userInviteCode: localStorage.getItem('userInviteCode'),
           finalUserInviteCode: finalUserInviteCode,
-          allLocalStorage: Object.keys(localStorage)
-        })
-        
+          allLocalStorage: Object.keys(localStorage),
+        });
+
         const userData = {
           name: nickname,
           email: `user-${Date.now()}@example.com`,
           weeklytarget: parseInt(weeklyTarget),
           usualsitlength: selectedLength,
           image: '/icons/meditation-1.svg',
-          invitecode: finalUserInviteCode
-        }
-        
-        console.log('Creating user with data:', userData)
-        console.log('About to call createUser with invite code:', userData.invitecode)
-        supabaseUserId = await createUser(userData)
-        console.log('User created in Supabase with ID:', supabaseUserId)
-        console.log('User created with invite code:', userData.invitecode)
-        
+          invitecode: finalUserInviteCode,
+        };
+
+        console.log('Creating user with data:', userData);
+        console.log('About to call createUser with invite code:', userData.invitecode);
+        supabaseUserId = await createUser(userData);
+        console.log('User created in Supabase with ID:', supabaseUserId);
+        console.log('User created with invite code:', userData.invitecode);
+
         // Store Supabase user ID in localStorage for session management
-        localStorage.setItem('supabaseUserId', supabaseUserId)
+        localStorage.setItem('supabaseUserId', supabaseUserId);
         // Store the invite code in localStorage for partnership creation
-        localStorage.setItem('userInviteCode', finalUserInviteCode)
-        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
-        localStorage.setItem('userId', supabaseUserId) // Keep for compatibility
+        localStorage.setItem('userInviteCode', finalUserInviteCode);
+        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
+        localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
         // Store the invite code in localStorage for partnership creation
-        localStorage.setItem('userInviteCode', finalUserInviteCode)
-        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
-        
+        localStorage.setItem('userInviteCode', finalUserInviteCode);
+        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
+
         // Clear pending invite after successful user creation
         // Create invite record in invites table
         if (pendingInviteCode) {
           try {
-            const inviteResponse = await fetch("/api/invite", {
-              method: "POST",
+            const inviteResponse = await fetch('/api/invite', {
+              method: 'POST',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
               body: JSON.stringify({
                 userId: supabaseUserId,
                 userName: nickname,
-                inviteCode: pendingInviteCode
-              })
-            })
+                inviteCode: pendingInviteCode,
+              }),
+            });
             if (inviteResponse.ok) {
-              console.log("Invite record created in database")
+              console.log('Invite record created in database');
             } else {
-              console.error("Failed to create invite record")
+              console.error('Failed to create invite record');
             }
           } catch (error) {
-            console.error("Error creating invite record:", error)
+            console.error('Error creating invite record:', error);
           }
         }
         if (pendingInviteCode) {
-          localStorage.removeItem('pendingInviteCode')
-          console.log('Cleared pendingInviteCode after user creation')
+          localStorage.removeItem('pendingInviteCode');
+          console.log('Cleared pendingInviteCode after user creation');
         }
       } catch (supabaseError) {
-        console.log('Supabase error, using localStorage fallback:', supabaseError)
-        console.error('Supabase error details:', supabaseError)
+        console.log('Supabase error, using localStorage fallback:', supabaseError);
+        console.error('Supabase error details:', supabaseError);
         // Create a fallback user ID
-        supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-        localStorage.setItem('userId', supabaseUserId)
+        supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        localStorage.setItem('userId', supabaseUserId);
         // Store the invite code in localStorage for partnership creation
       }
-      
+
       // Always store in localStorage for compatibility
-      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]')
-      const finalUserInviteCode = pendingInviteCode || localStorage.getItem('userInviteCode') || `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+      const finalUserInviteCode =
+        pendingInviteCode ||
+        localStorage.getItem('userInviteCode') ||
+        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       const newUser = {
         id: supabaseUserId,
         name: nickname,
         email: `user-${Date.now()}@example.com`,
         weeklytarget: parseInt(weeklyTarget),
         image: '/icons/meditation-1.svg',
-        invitecode: finalUserInviteCode
-      }
-      allUsers.push(newUser)
-      localStorage.setItem('allUsers', JSON.stringify(allUsers))
+        invitecode: finalUserInviteCode,
+      };
+      allUsers.push(newUser);
+      localStorage.setItem('allUsers', JSON.stringify(allUsers));
       // Store the invite code in localStorage for partnership creation
-      localStorage.setItem('userInviteCode', finalUserInviteCode)
-      console.log('Stored userInviteCode in localStorage:', finalUserInviteCode)
-      console.log('User added to localStorage:', newUser)
-      
+      localStorage.setItem('userInviteCode', finalUserInviteCode);
+      console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
+      console.log('User added to localStorage:', newUser);
+
       // Redirect immediately - no setTimeout needed
-      console.log('Redirecting to homepage...')
-      router.push('/')
+      console.log('Redirecting to homepage...');
+      router.push('/');
     } catch (error) {
-      console.error('Onboarding error:', error)
-      alert('Failed to create your account. Please try again.')
+      console.error('Onboarding error:', error);
+      alert('Failed to create your account. Please try again.');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -206,7 +215,7 @@ export default function MeditationLengthPage() {
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
                 backgroundPosition: 'right 12px center',
                 backgroundRepeat: 'no-repeat',
-                backgroundSize: '16px'
+                backgroundSize: '16px',
               }}
             >
               {meditationLengths.map(({ minutes, label }) => (
@@ -228,5 +237,5 @@ export default function MeditationLengthPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

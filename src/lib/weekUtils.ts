@@ -1,22 +1,22 @@
-import { prisma } from './prisma'
+import { prisma } from './prisma';
 
 export async function checkAndTransitionWeek(partnershipId: string) {
   const partnership = await prisma.partnership.findUnique({
-    where: { id: partnershipId }
-  })
+    where: { id: partnershipId },
+  });
 
-  if (!partnership) return
+  if (!partnership) return;
 
-  const now = new Date()
-  const weekStart = new Date(partnership.currentWeekStart)
-  const weekEnd = new Date(weekStart)
-  weekEnd.setDate(weekEnd.getDate() + 7) // 7 full days
+  const now = new Date();
+  const weekStart = new Date(partnership.currentWeekStart);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 7); // 7 full days
 
   // If current week has ended
   if (now >= weekEnd) {
     // Save current week to history
-    const goalMet = (partnership.user1Sits + partnership.user2Sits) >= partnership.weeklyGoal
-    
+    const goalMet = partnership.user1Sits + partnership.user2Sits >= partnership.weeklyGoal;
+
     await prisma.weekHistory.create({
       data: {
         partnershipId,
@@ -25,13 +25,13 @@ export async function checkAndTransitionWeek(partnershipId: string) {
         weekEnd,
         user1Sits: partnership.user1Sits,
         user2Sits: partnership.user2Sits,
-        goalMet
-      }
-    })
+        goalMet,
+      },
+    });
 
     // Update streak
-    const newCurrentStreak = goalMet ? partnership.currentStreak + 1 : 0
-    const newLongestStreak = Math.max(partnership.longestStreak, newCurrentStreak)
+    const newCurrentStreak = goalMet ? partnership.currentStreak + 1 : 0;
+    const newLongestStreak = Math.max(partnership.longestStreak, newCurrentStreak);
 
     // Start new week
     await prisma.partnership.update({
@@ -43,8 +43,8 @@ export async function checkAndTransitionWeek(partnershipId: string) {
         user2Sits: 0,
         currentStreak: newCurrentStreak,
         longestStreak: newLongestStreak,
-        totalWeeks: partnership.totalWeeks + 1
-      }
-    })
+        totalWeeks: partnership.totalWeeks + 1,
+      },
+    });
   }
 }

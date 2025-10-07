@@ -31,12 +31,12 @@ Replace the placeholder values in `firebase-config.js` with your actual Firebase
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "your-actual-api-key",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-actual-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-actual-sender-id",
-  appId: "your-actual-app-id"
+  apiKey: 'your-actual-api-key',
+  authDomain: 'your-project-id.firebaseapp.com',
+  projectId: 'your-actual-project-id',
+  storageBucket: 'your-project-id.appspot.com',
+  messagingSenderId: 'your-actual-sender-id',
+  appId: 'your-actual-app-id',
 };
 ```
 
@@ -68,6 +68,7 @@ service cloud.firestore {
 ## Database Structure
 
 ### Users Collection
+
 ```javascript
 {
   id: "auto-generated-id",
@@ -82,6 +83,7 @@ service cloud.firestore {
 ```
 
 ### Partnerships Collection
+
 ```javascript
 {
   id: "auto-generated-id",
@@ -104,11 +106,13 @@ service cloud.firestore {
 ## Troubleshooting
 
 ### Common Issues:
+
 1. **"Firebase not initialized"** - Check your config values
 2. **"Permission denied"** - Check Firestore security rules
 3. **"Network error"** - Check internet connection and Firebase project status
 
 ### Debug Steps:
+
 1. **Check browser console** for Firebase errors
 2. **Check Firebase Console** for database activity
 3. **Verify config values** match your Firebase project

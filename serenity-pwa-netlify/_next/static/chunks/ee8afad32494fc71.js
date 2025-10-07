@@ -1,1 +1,132 @@
-(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,18566,(e,t,o)=>{t.exports=e.r(76562)},11765,e=>{"use strict";e.s(["default",()=>r],11765);var t=e.i(43476),o=e.i(71645),i=e.i(18566);let n=async()=>{if(!("Notification"in window))return console.log("Notifications not supported in this browser"),{granted:!1,denied:!0,default:!1};if(console.log("Current notification permission:",Notification.permission),"granted"===Notification.permission)return{granted:!0,denied:!1,default:!1};if("denied"===Notification.permission)return console.log("Notifications already denied"),{granted:!1,denied:!0,default:!1};console.log("Requesting notification permission...");try{let e=await Notification.requestPermission();return console.log("Permission result:",e),{granted:"granted"===e,denied:"denied"===e,default:"default"===e}}catch(e){return console.error("Error requesting notification permission:",e),{granted:!1,denied:!0,default:!1}}},s=async()=>{try{if(!("Notification"in window)){console.log("Notification API not available");let e="mock-fcm-token-"+Date.now();return localStorage.setItem("fcm_token",e),e}if(!(await n()).granted){console.log("Notification permission denied");let e="mock-fcm-token-"+Date.now();return localStorage.setItem("fcm_token",e),e}let e="mock-fcm-token-"+Date.now();return localStorage.setItem("fcm_token",e),e}catch(t){console.error("Error subscribing to notifications:",t);let e="mock-fcm-token-"+Date.now();return localStorage.setItem("fcm_token",e),e}};function r(){let[e,n]=(0,o.useState)(!1),r=(0,i.useRouter)(),a=async()=>{n(!0);try{console.log("Starting notification subscription...");let e=await s();console.log("Notification token result:",e),e?console.log("Notifications enabled successfully"):console.log("Notification permission denied or failed"),r.push("/")}catch(e){console.error("Error enabling notifications:",e),r.push("/")}finally{n(!1)}};return(0,t.jsxs)("div",{className:"min-h-screen bg-white flex flex-col",children:[(0,t.jsx)("div",{className:"px-6 py-4 border-b",children:(0,t.jsxs)("div",{className:"flex items-center gap-2",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-6 h-6"}),(0,t.jsx)("span",{className:"font-bold text-lg",children:"Serenity+"})]})}),(0,t.jsxs)("div",{className:"px-6 py-8 flex-1 flex flex-col items-center justify-center text-center space-y-6",children:[(0,t.jsx)("img",{src:"/logo.svg",alt:"Serenity+",className:"w-24 h-24 mx-auto"}),(0,t.jsxs)("div",{className:"space-y-4 flex-1 flex flex-col justify-center",children:[(0,t.jsx)("h1",{className:"text-3xl font-bold text-gray-900 leading-tight",children:"Enable Notifications"}),(0,t.jsx)("p",{className:"text-lg text-gray-600 max-w-md",children:"So we can best support you and your partner's meditation commitment, we will need you to enable notifications"})]}),(0,t.jsx)("button",{onClick:a,disabled:e,className:"w-full bg-black text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50",children:e?"Enabling...":"Enable Notifications and Continue"})]})]})}}]);
+(globalThis.TURBOPACK || (globalThis.TURBOPACK = [])).push([
+  'object' == typeof document ? document.currentScript : void 0,
+  18566,
+  (e, t, o) => {
+    t.exports = e.r(76562);
+  },
+  11765,
+  (e) => {
+    'use strict';
+    e.s(['default', () => r], 11765);
+    var t = e.i(43476),
+      o = e.i(71645),
+      i = e.i(18566);
+    let n = async () => {
+        if (!('Notification' in window))
+          return (
+            console.log('Notifications not supported in this browser'),
+            { granted: !1, denied: !0, default: !1 }
+          );
+        if (
+          (console.log('Current notification permission:', Notification.permission),
+          'granted' === Notification.permission)
+        )
+          return { granted: !0, denied: !1, default: !1 };
+        if ('denied' === Notification.permission)
+          return (
+            console.log('Notifications already denied'),
+            { granted: !1, denied: !0, default: !1 }
+          );
+        console.log('Requesting notification permission...');
+        try {
+          let e = await Notification.requestPermission();
+          return (
+            console.log('Permission result:', e),
+            { granted: 'granted' === e, denied: 'denied' === e, default: 'default' === e }
+          );
+        } catch (e) {
+          return (
+            console.error('Error requesting notification permission:', e),
+            { granted: !1, denied: !0, default: !1 }
+          );
+        }
+      },
+      s = async () => {
+        try {
+          if (!('Notification' in window)) {
+            console.log('Notification API not available');
+            let e = 'mock-fcm-token-' + Date.now();
+            return (localStorage.setItem('fcm_token', e), e);
+          }
+          if (!(await n()).granted) {
+            console.log('Notification permission denied');
+            let e = 'mock-fcm-token-' + Date.now();
+            return (localStorage.setItem('fcm_token', e), e);
+          }
+          let e = 'mock-fcm-token-' + Date.now();
+          return (localStorage.setItem('fcm_token', e), e);
+        } catch (t) {
+          console.error('Error subscribing to notifications:', t);
+          let e = 'mock-fcm-token-' + Date.now();
+          return (localStorage.setItem('fcm_token', e), e);
+        }
+      };
+    function r() {
+      let [e, n] = (0, o.useState)(!1),
+        r = (0, i.useRouter)(),
+        a = async () => {
+          n(!0);
+          try {
+            console.log('Starting notification subscription...');
+            let e = await s();
+            (console.log('Notification token result:', e),
+              e
+                ? console.log('Notifications enabled successfully')
+                : console.log('Notification permission denied or failed'),
+              r.push('/'));
+          } catch (e) {
+            (console.error('Error enabling notifications:', e), r.push('/'));
+          } finally {
+            n(!1);
+          }
+        };
+      return (0, t.jsxs)('div', {
+        className: 'min-h-screen bg-white flex flex-col',
+        children: [
+          (0, t.jsx)('div', {
+            className: 'px-6 py-4 border-b',
+            children: (0, t.jsxs)('div', {
+              className: 'flex items-center gap-2',
+              children: [
+                (0, t.jsx)('img', { src: '/logo.svg', alt: 'Serenity+', className: 'w-6 h-6' }),
+                (0, t.jsx)('span', { className: 'font-bold text-lg', children: 'Serenity+' }),
+              ],
+            }),
+          }),
+          (0, t.jsxs)('div', {
+            className:
+              'px-6 py-8 flex-1 flex flex-col items-center justify-center text-center space-y-6',
+            children: [
+              (0, t.jsx)('img', {
+                src: '/logo.svg',
+                alt: 'Serenity+',
+                className: 'w-24 h-24 mx-auto',
+              }),
+              (0, t.jsxs)('div', {
+                className: 'space-y-4 flex-1 flex flex-col justify-center',
+                children: [
+                  (0, t.jsx)('h1', {
+                    className: 'text-3xl font-bold text-gray-900 leading-tight',
+                    children: 'Enable Notifications',
+                  }),
+                  (0, t.jsx)('p', {
+                    className: 'text-lg text-gray-600 max-w-md',
+                    children:
+                      "So we can best support you and your partner's meditation commitment, we will need you to enable notifications",
+                  }),
+                ],
+              }),
+              (0, t.jsx)('button', {
+                onClick: a,
+                disabled: e,
+                className:
+                  'w-full bg-black text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50',
+                children: e ? 'Enabling...' : 'Enable Notifications and Continue',
+              }),
+            ],
+          }),
+        ],
+      });
+    }
+  },
+]);
