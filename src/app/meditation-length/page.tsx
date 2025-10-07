@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createUser } from '../../lib/supabase-database'; // Import createUser from Supabase
 
 export default function MeditationLengthPage() {
-  const [selectedLength, setSelectedLength] = useState<number>(30);
+  const [selectedLength, setSelectedLength] = useState<number>(1);
   const router = useRouter();
 
   useEffect(() => {
@@ -18,6 +18,7 @@ export default function MeditationLengthPage() {
   }, []);
 
   const meditationLengths = [
+    { minutes: 1, label: '1 minute (testing)' },
     { minutes: 5, label: '5 minutes' },
     { minutes: 10, label: '10 minutes' },
     { minutes: 15, label: '15 minutes' },
