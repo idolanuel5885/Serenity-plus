@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,64 +10,78 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get partnership data
-    const partnership = await prisma.partnership.findFirst({
-      where: {
-        id: partnershipId,
-        OR: [
-          { user1Id: userId },
-          { user2Id: userId }
-        ],
-        isActive: true
-      }
-    });
+    // Get partnership data from Supabase
+    const { data: partnership, error: partnershipError } = await supabase
+      .from('partnerships')
+      .select('*')
+      .eq('id', partnershipId)
+      .or(`user1id.eq.${userId},user2id.eq.${userId}`)
+      .eq('isactive', true)
+      .single();
 
-    if (!partnership) {
+    if (partnershipError || !partnership) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
     // Only update database if session was completed
     if (completed) {
       // Determine which user completed the session
-      const isUser1 = partnership.user1Id === userId;
+      const isUser1 = partnership.user1id === userId;
       
-      // Create session record
-      await prisma.session.create({
-        data: {
-          userId,
-          partnershipId,
+      // Create session record in Supabase
+      const { error: sessionError } = await supabase
+        .from('sessions')
+        .insert({
+          userid: userId,
+          partnershipid: partnershipId,
           duration: Math.floor(sessionDuration / 60), // Convert seconds to minutes
-          isCompleted: true,
-          completedAt: new Date()
-        }
-      });
+          iscompleted: true,
+          completedat: new Date().toISOString()
+        });
+
+      if (sessionError) {
+        console.error('Error creating session:', sessionError);
+        return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
+      }
 
       // Update partnership sit counts
       const updateData = isUser1 
-        ? { user1Sits: partnership.user1Sits + 1 }
-        : { user2Sits: partnership.user2Sits + 1 };
+        ? { user1sits: partnership.user1sits + 1 }
+        : { user2sits: partnership.user2sits + 1 };
 
-      await prisma.partnership.update({
-        where: { id: partnershipId },
-        data: updateData
-      });
+      const { error: updateError } = await supabase
+        .from('partnerships')
+        .update(updateData)
+        .eq('id', partnershipId);
 
-      // Check if weekly goal is met
-      const updatedPartnership = await prisma.partnership.findUnique({
-        where: { id: partnershipId }
-      });
+      if (updateError) {
+        console.error('Error updating partnership:', updateError);
+        return NextResponse.json({ error: 'Failed to update partnership' }, { status: 500 });
+      }
 
-      const totalSits = (updatedPartnership?.user1Sits || 0) + (updatedPartnership?.user2Sits || 0);
-      const goalMet = totalSits >= partnership.weeklyGoal;
+      // Get updated partnership data
+      const { data: updatedPartnership, error: fetchError } = await supabase
+        .from('partnerships')
+        .select('user1sits, user2sits, weeklygoal')
+        .eq('id', partnershipId)
+        .single();
+
+      if (fetchError) {
+        console.error('Error fetching updated partnership:', fetchError);
+        return NextResponse.json({ error: 'Failed to fetch updated data' }, { status: 500 });
+      }
+
+      const totalSits = (updatedPartnership?.user1sits || 0) + (updatedPartnership?.user2sits || 0);
+      const goalMet = totalSits >= partnership.weeklygoal;
 
       return NextResponse.json({
         success: true,
         data: {
-          user1Sits: updatedPartnership?.user1Sits || 0,
-          user2Sits: updatedPartnership?.user2Sits || 0,
+          user1Sits: updatedPartnership?.user1sits || 0,
+          user2Sits: updatedPartnership?.user2sits || 0,
           totalSits,
           goalMet,
-          progress: Math.min((totalSits / partnership.weeklyGoal) * 100, 100)
+          progress: Math.min((totalSits / partnership.weeklygoal) * 100, 100)
         }
       });
     } else {
