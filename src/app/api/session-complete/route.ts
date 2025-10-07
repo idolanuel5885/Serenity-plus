@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
-import { ensureCurrentWeekExists, updateWeekSits } from '@/lib/supabase-database';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,129 +11,45 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Get partnership data from Supabase
-    const { data: partnership, error: partnershipError } = await supabase
-      .from('partnerships')
-      .select('*')
-      .eq('id', partnershipId)
-      .or(`userid.eq.${userId},partnerid.eq.${userId}`)
-      .eq('isactive', true)
-      .single();
-
-    if (partnershipError || !partnership) {
-      return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
-    }
-
-    // Create session record when session starts
+    // Demo mode: Handle session completion without database
     if (sessionStarted) {
-      const { data: sessionData, error: sessionError } = await supabase
-        .from('sessions')
-        .insert({
-          userid: userId,
-          partnershipid: partnershipId,
-          duration: Math.floor(sessionDuration / 60), // Convert seconds to minutes
-          iscompleted: false,
-          startedat: new Date().toISOString()
-        })
-        .select()
-        .single();
-
-      if (sessionError) {
-        console.error('Error creating session:', sessionError);
-        return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
-      }
-
+      // Session started - return session ID
+      const sessionId = `demo-session-${Date.now()}`;
+      
       return NextResponse.json({
         success: true,
         data: {
-          sessionId: sessionData.id,
-          message: 'Session started'
-        }
+          sessionId,
+          message: 'Session started (demo mode)'
+        },
+        demo: true
       });
     }
 
-    // Only update database if session was completed
+    // Session completed - return success
     if (completed) {
-      // Determine which user completed the session
-      const isUser1 = partnership.userid === userId;
-      
-      // Update session record to mark as completed
-      // First, get the most recent incomplete session
-      const { data: recentSession, error: findError } = await supabase
-        .from('sessions')
-        .select('id')
-        .eq('userid', userId)
-        .eq('partnershipid', partnershipId)
-        .eq('iscompleted', false)
-        .order('startedat', { ascending: false })
-        .limit(1)
-        .single();
-
-      if (findError || !recentSession) {
-        console.error('Error finding recent session:', findError);
-        return NextResponse.json({ error: 'No incomplete session found' }, { status: 404 });
-      }
-
-      // Update the specific session
-      const { error: sessionError } = await supabase
-        .from('sessions')
-        .update({
-          iscompleted: true,
-          completedat: new Date().toISOString()
-        })
-        .eq('id', recentSession.id);
-
-      if (sessionError) {
-        console.error('Error updating session:', sessionError);
-        return NextResponse.json({ error: 'Failed to update session' }, { status: 500 });
-      }
-
-      // Get current week data from weeks table
-      const { data: currentWeek, error: weekError } = await supabase
-        .from('weeks')
-        .select('*')
-        .eq('partnershipid', partnershipId)
-        .gte('weekstart', new Date(new Date().setDate(new Date().getDate() - new Date().getDay())).toISOString())
-        .lte('weekstart', new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 7)).toISOString())
-        .single();
-
-      if (weekError || !currentWeek) {
-        return NextResponse.json({ error: 'Current week not found' }, { status: 404 });
-      }
-
-      // Update week sit counts
-      const newSitCount = isUser1 ? currentWeek.user1sits + 1 : currentWeek.user2sits + 1;
-      const updatedWeek = await updateWeekSits(currentWeek.id, isUser1, newSitCount);
-      
-      if (!updatedWeek) {
-        return NextResponse.json({ error: 'Failed to update week sits' }, { status: 500 });
-      }
-
-      const totalSits = updatedWeek.user1sits + updatedWeek.user2sits;
-      const goalMet = totalSits >= updatedWeek.weeklygoal;
-
       return NextResponse.json({
         success: true,
         data: {
-          user1Sits: updatedWeek.user1sits,
-          user2Sits: updatedWeek.user2sits,
-          totalSits,
-          goalMet,
-          progress: Math.min((totalSits / updatedWeek.weeklygoal) * 100, 100)
-        }
-      });
-    } else {
-      // Session was interrupted, no database update
-      return NextResponse.json({
-        success: true,
-        data: {
-          message: 'Session interrupted, no progress saved'
-        }
+          message: 'Session completed successfully (demo mode)',
+          sessionDuration,
+          completed: true
+        },
+        demo: true
       });
     }
+
+    // Default response
+    return NextResponse.json({
+      success: true,
+      data: {
+        message: 'Session updated (demo mode)'
+      },
+      demo: true
+    });
 
   } catch (error) {
-    console.error('Error completing session:', error);
+    console.error('Error in session-complete:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
