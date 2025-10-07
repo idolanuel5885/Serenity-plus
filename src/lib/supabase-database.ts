@@ -27,6 +27,19 @@ export interface Partnership {
   createdat: string;
 }
 
+export interface Week {
+  id: string;
+  partnershipid: string;
+  weeknumber: number;
+  weekstart: string;
+  weekend: string;
+  user1sits: number;
+  user2sits: number;
+  weeklygoal: number;
+  goalmet: boolean;
+  createdat: string;
+}
+
 export async function createUser(userData: Omit<User, 'id' | 'createdat'>): Promise<string> {
   try {
     const { data, error } = await supabase.from('users').insert([userData]).select().single();
@@ -135,6 +148,120 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
     return allPartnerships;
   } catch (error) {
     console.error('Error fetching partnerships:', error);
+    return [];
+  }
+}
+
+// Week management functions
+export async function getCurrentWeek(partnershipId: string): Promise<Week | null> {
+  try {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const { data, error } = await supabase
+      .from('weeks')
+      .select('*')
+      .eq('partnershipid', partnershipId)
+      .gte('weekstart', startOfWeek.toISOString())
+      .lte('weekstart', endOfWeek.toISOString())
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
+    return data;
+  } catch (error) {
+    console.error('Error fetching current week:', error);
+    return null;
+  }
+}
+
+export async function createNewWeek(partnershipId: string, weeklyGoal: number): Promise<Week | null> {
+  try {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    // Get the next week number
+    const { data: lastWeek, error: lastWeekError } = await supabase
+      .from('weeks')
+      .select('weeknumber')
+      .eq('partnershipid', partnershipId)
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .single();
+
+    const weekNumber = lastWeekError ? 1 : (lastWeek?.weeknumber || 0) + 1;
+
+    const { data, error } = await supabase
+      .from('weeks')
+      .insert({
+        partnershipid: partnershipId,
+        weeknumber: weekNumber,
+        weekstart: startOfWeek.toISOString(),
+        weekend: endOfWeek.toISOString(),
+        weeklygoal: weeklyGoal,
+        user1sits: 0,
+        user2sits: 0,
+        goalmet: false
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error creating new week:', error);
+    return null;
+  }
+}
+
+export async function updateWeekSits(
+  weekId: string, 
+  isUser1: boolean, 
+  newSitCount: number
+): Promise<Week | null> {
+  try {
+    const updateData = isUser1 
+      ? { user1sits: newSitCount }
+      : { user2sits: newSitCount };
+
+    const { data, error } = await supabase
+      .from('weeks')
+      .update(updateData)
+      .eq('id', weekId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error updating week sits:', error);
+    return null;
+  }
+}
+
+export async function getWeekHistory(partnershipId: string): Promise<Week[]> {
+  try {
+    const { data, error } = await supabase
+      .from('weeks')
+      .select('*')
+      .eq('partnershipid', partnershipId)
+      .order('weeknumber', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching week history:', error);
     return [];
   }
 }

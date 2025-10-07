@@ -1,4 +1,5 @@
 import { Partnership } from '@prisma/client';
+import { Week } from './supabase-database';
 
 export interface LotusProgressData {
   currentProgress: number; // 0-100
@@ -9,17 +10,17 @@ export interface LotusProgressData {
 }
 
 /**
- * Calculate lotus opening progress based on partnership data
+ * Calculate lotus opening progress based on current week data
  * Each user sees their own animation based on their individual session
  */
 export function calculateLotusProgress(
-  partnership: Partnership,
+  currentWeek: Week,
   userId: string,
   currentSessionDuration?: number,
   currentSessionElapsed?: number
 ): LotusProgressData {
-  const totalSits = partnership.user1Sits + partnership.user2Sits;
-  const weeklyTarget = partnership.weeklyGoal;
+  const totalSits = currentWeek.user1sits + currentWeek.user2sits;
+  const weeklyTarget = currentWeek.weeklygoal;
   
   // Calculate base progress (completed sits this week from database)
   const baseProgress = Math.min((totalSits / weeklyTarget) * 100, 100);

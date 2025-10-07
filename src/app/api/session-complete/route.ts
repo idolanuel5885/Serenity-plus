@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getCurrentWeek, createNewWeek, updateWeekSits } from '@/lib/supabase-database';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,44 +45,35 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
       }
 
-      // Update partnership sit counts
-      const updateData = isUser1 
-        ? { user1sits: partnership.user1sits + 1 }
-        : { user2sits: partnership.user2sits + 1 };
-
-      const { error: updateError } = await supabase
-        .from('partnerships')
-        .update(updateData)
-        .eq('id', partnershipId);
-
-      if (updateError) {
-        console.error('Error updating partnership:', updateError);
-        return NextResponse.json({ error: 'Failed to update partnership' }, { status: 500 });
+      // Get or create current week
+      let currentWeek = await getCurrentWeek(partnershipId);
+      if (!currentWeek) {
+        // Create new week if it doesn't exist
+        currentWeek = await createNewWeek(partnershipId, partnership.weeklygoal);
+        if (!currentWeek) {
+          return NextResponse.json({ error: 'Failed to create new week' }, { status: 500 });
+        }
       }
 
-      // Get updated partnership data
-      const { data: updatedPartnership, error: fetchError } = await supabase
-        .from('partnerships')
-        .select('user1sits, user2sits, weeklygoal')
-        .eq('id', partnershipId)
-        .single();
-
-      if (fetchError) {
-        console.error('Error fetching updated partnership:', fetchError);
-        return NextResponse.json({ error: 'Failed to fetch updated data' }, { status: 500 });
+      // Update week sit counts
+      const newSitCount = isUser1 ? currentWeek.user1sits + 1 : currentWeek.user2sits + 1;
+      const updatedWeek = await updateWeekSits(currentWeek.id, isUser1, newSitCount);
+      
+      if (!updatedWeek) {
+        return NextResponse.json({ error: 'Failed to update week sits' }, { status: 500 });
       }
 
-      const totalSits = (updatedPartnership?.user1sits || 0) + (updatedPartnership?.user2sits || 0);
-      const goalMet = totalSits >= partnership.weeklygoal;
+      const totalSits = updatedWeek.user1sits + updatedWeek.user2sits;
+      const goalMet = totalSits >= updatedWeek.weeklygoal;
 
       return NextResponse.json({
         success: true,
         data: {
-          user1Sits: updatedPartnership?.user1sits || 0,
-          user2Sits: updatedPartnership?.user2sits || 0,
+          user1Sits: updatedWeek.user1sits,
+          user2Sits: updatedWeek.user2sits,
           totalSits,
           goalMet,
-          progress: Math.min((totalSits / partnership.weeklygoal) * 100, 100)
+          progress: Math.min((totalSits / updatedWeek.weeklygoal) * 100, 100)
         }
       });
     } else {

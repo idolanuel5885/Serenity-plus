@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { calculateLotusProgress } from '@/lib/lotusProgress';
+import { getCurrentWeek, createNewWeek } from '@/lib/supabase-database';
 
 export async function GET(request: NextRequest) {
   try {
@@ -28,9 +29,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
-    // Calculate current progress
+    // Get or create current week
+    let currentWeek = await getCurrentWeek(partnershipId);
+    if (!currentWeek) {
+      // Create new week if it doesn't exist
+      currentWeek = await createNewWeek(partnershipId, partnership.weeklygoal);
+      if (!currentWeek) {
+        return NextResponse.json({ error: 'Failed to create new week' }, { status: 500 });
+      }
+    }
+
+    // Calculate current progress using current week data
     const progressData = calculateLotusProgress(
-      partnership,
+      currentWeek,
       userId,
       sessionDuration,
       sessionElapsed
@@ -69,9 +80,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
-    // Calculate progress with current session data
+    // Get or create current week
+    let currentWeek = await getCurrentWeek(partnershipId);
+    if (!currentWeek) {
+      // Create new week if it doesn't exist
+      currentWeek = await createNewWeek(partnershipId, partnership.weeklygoal);
+      if (!currentWeek) {
+        return NextResponse.json({ error: 'Failed to create new week' }, { status: 500 });
+      }
+    }
+
+    // Calculate progress with current session data using current week
     const progressData = calculateLotusProgress(
-      partnership,
+      currentWeek,
       userId,
       sessionDuration,
       sessionElapsed
