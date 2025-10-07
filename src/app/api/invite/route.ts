@@ -10,15 +10,25 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing invite code' }, { status: 400 });
     }
 
-    // For now, return a simple response since the invitations table might not exist
-    // This will work with the existing database structure
+    // Get invitation from database
+    const { data: invitation, error: invitationError } = await supabase
+      .from('invitations')
+      .select(`
+        *,
+        inviter:users!invitations_inviterId_fkey(id, name)
+      `)
+      .eq('inviteCode', inviteCode)
+      .eq('isUsed', false)
+      .single();
+
+    if (invitationError || !invitation) {
+      return NextResponse.json({ error: 'Invitation not found or already used' }, { status: 404 });
+    }
+
     return NextResponse.json({
       success: true,
       invitation: {
-        inviter: {
-          id: 'demo-user-123',
-          name: 'Demo User',
-        },
+        inviter: invitation.inviter,
       },
     });
   } catch (error) {

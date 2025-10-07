@@ -16,32 +16,32 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing userId or partnershipId' }, { status: 400 });
     }
 
-    // Try to get partnership data from Supabase, fallback to mock data if connection fails
-    let partnership = null;
-    try {
-      const { data: partnershipData, error: partnershipError } = await supabase
-        .from('partnerships')
-        .select('*')
-        .eq('id', partnershipId)
-        .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
-        .eq('isActive', true)
-        .single();
+    // Get partnership data from Supabase
+    const { data: partnership, error: partnershipError } = await supabase
+      .from('partnerships')
+      .select('*')
+      .eq('id', partnershipId)
+      .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
+      .eq('isActive', true)
+      .single();
 
-      if (!partnershipError && partnershipData) {
-        partnership = partnershipData;
-      }
-    } catch (supabaseError) {
-      console.log('Supabase connection failed, using mock data:', supabaseError);
+    if (partnershipError || !partnership) {
+      return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
-    // Return progress data (real or mock)
-    const progressData = {
-      currentProgress: 25, // 25% progress
-      weeklyTarget: partnership?.weeklyGoal || 5,
-      currentWeekSits: 1,
-      isActive: sessionDuration !== undefined && sessionElapsed !== undefined,
-      sessionProgress: sessionElapsed && sessionDuration ? Math.min((sessionElapsed / sessionDuration) * 20, 20) : 0
-    };
+    // Get current week data
+    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklyGoal);
+    if (!currentWeek) {
+      return NextResponse.json({ error: 'Failed to get current week' }, { status: 500 });
+    }
+
+    // Calculate real progress
+    const progressData = calculateLotusProgress(
+      currentWeek,
+      userId,
+      sessionDuration,
+      sessionElapsed
+    );
 
     return NextResponse.json({
       success: true,

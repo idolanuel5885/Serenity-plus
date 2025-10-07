@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '../../../lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,41 +12,68 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Demo mode: Handle session completion without database
     if (sessionStarted) {
-      // Session started - return session ID
-      const sessionId = `demo-session-${Date.now()}`;
-      
+      // Session started - create session record
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('sessions')
+        .insert({
+          userId,
+          partnershipId,
+          sessionDuration,
+          startedAt: new Date().toISOString(),
+          isCompleted: false
+        })
+        .select()
+        .single();
+
+      if (sessionError) {
+        console.error('Error creating session:', sessionError);
+        return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
+      }
+
       return NextResponse.json({
         success: true,
         data: {
-          sessionId,
-          message: 'Session started (demo mode)'
-        },
-        demo: true
+          sessionId: sessionData.id,
+          message: 'Session started'
+        }
       });
     }
 
-    // Session completed - return success
     if (completed) {
+      // Session completed - update session record
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('sessions')
+        .update({
+          completedAt: new Date().toISOString(),
+          isCompleted: true
+        })
+        .eq('userId', userId)
+        .eq('partnershipId', partnershipId)
+        .eq('isCompleted', false)
+        .select()
+        .single();
+
+      if (sessionError) {
+        console.error('Error completing session:', sessionError);
+        return NextResponse.json({ error: 'Failed to complete session' }, { status: 500 });
+      }
+
       return NextResponse.json({
         success: true,
         data: {
-          message: 'Session completed successfully (demo mode)',
+          message: 'Session completed successfully',
           sessionDuration,
           completed: true
-        },
-        demo: true
+        }
       });
     }
 
-    // Default response
     return NextResponse.json({
       success: true,
       data: {
-        message: 'Session updated (demo mode)'
-      },
-      demo: true
+        message: 'Session updated'
+      }
     });
 
   } catch (error) {
