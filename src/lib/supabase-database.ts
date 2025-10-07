@@ -128,6 +128,8 @@ export async function getCurrentWeekForPartnership(partnershipId: string): Promi
 
 export async function getUserPartnerships(userId: string): Promise<Partnership[]> {
   try {
+    console.log('getUserPartnerships called with userId:', userId);
+    
     // Query partnerships where user is user1
     const { data: user1Partnerships, error: user1Error } = await supabase
       .from('partnerships')
@@ -145,7 +147,10 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
       .eq('user1id', userId)
       .order('createdat', { ascending: false });
 
-    if (user1Error) throw user1Error;
+    if (user1Error) {
+      console.error('Error fetching user1 partnerships:', user1Error);
+      throw user1Error;
+    }
 
     // Query partnerships where user is user2
     const { data: user2Partnerships, error: user2Error } = await supabase
@@ -164,7 +169,10 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
       .eq('user2id', userId)
       .order('createdat', { ascending: false });
 
-    if (user2Error) throw user2Error;
+    if (user2Error) {
+      console.error('Error fetching user2 partnerships:', user2Error);
+      throw user2Error;
+    }
 
     // Transform the data to match the Partnership interface
     const transformPartnership = async (partnership: any, isUser1: boolean) => {

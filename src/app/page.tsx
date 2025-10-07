@@ -224,20 +224,39 @@ export default function Home() {
     checkForUser();
   }, [router]);
 
-  // Add a refresh mechanism to check for new partnerships
+  // Add a refresh mechanism to check for new partnerships (only if no partnerships exist)
   useEffect(() => {
-    if (userId) {
+    if (userId && partnerships.length === 0) {
       const refreshPartnerships = () => {
         console.log('Refreshing partnerships...');
         fetchPartnerships(userId);
       };
 
-      // Refresh partnerships every 2 seconds to catch new users
-      const interval = setInterval(refreshPartnerships, 2000);
+      // Only refresh if no partnerships exist, and stop after 10 attempts
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      const interval = setInterval(() => {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          console.log('Max refresh attempts reached, stopping');
+          clearInterval(interval);
+          return;
+        }
+        
+        // Stop refreshing if partnerships are found
+        if (partnerships.length > 0) {
+          console.log('Partnerships found, stopping refresh');
+          clearInterval(interval);
+          return;
+        }
+        
+        refreshPartnerships();
+      }, 5000); // Increased to 5 seconds to reduce load
 
       return () => clearInterval(interval);
     }
-  }, [userId]);
+  }, [userId, partnerships.length]);
 
   // If we have a userId, show the homepage
   if (userId) {
