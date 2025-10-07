@@ -130,7 +130,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
   try {
     console.log('getUserPartnerships called with userId:', userId);
     
-    // Query partnerships where user is user1 (using correct column names: userid, partnerid)
+    // Query partnerships where user is user1 (using correct column names: userid, partnerid, usersits, partnersits)
     const { data: user1Partnerships, error: user1Error } = await supabase
       .from('partnerships')
       .select(`
@@ -138,8 +138,8 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         weeklygoal,
         score,
         currentweekstart,
-        user1sits,
-        user2sits,
+        usersits,
+        partnersits,
         userid,
         partnerid,
         user2:partnerid(name, email, image, weeklytarget)
@@ -152,7 +152,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
       throw user1Error;
     }
 
-    // Query partnerships where user is user2 (using correct column names: userid, partnerid)
+    // Query partnerships where user is user2 (using correct column names: userid, partnerid, usersits, partnersits)
     const { data: user2Partnerships, error: user2Error } = await supabase
       .from('partnerships')
       .select(`
@@ -160,8 +160,8 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         weeklygoal,
         score,
         currentweekstart,
-        user1sits,
-        user2sits,
+        usersits,
+        partnersits,
         userid,
         partnerid,
         user1:userid(name, email, image, weeklytarget)
@@ -188,8 +188,8 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
           partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
           partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
           partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
-          usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : (isUser1 ? partnership.user1sits : partnership.user2sits),
-          partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : (isUser1 ? partnership.user2sits : partnership.user1sits),
+          usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : (isUser1 ? partnership.usersits : partnership.partnersits),
+          partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : (isUser1 ? partnership.partnersits : partnership.usersits),
           weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
           score: partnership.score,
           currentweekstart: currentWeek ? currentWeek.weekstart : partnership.currentweekstart,
@@ -206,8 +206,8 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
           partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
           partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
           partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
-          usersits: isUser1 ? partnership.user1sits : partnership.user2sits,
-          partnersits: isUser1 ? partnership.user2sits : partnership.user1sits,
+          usersits: isUser1 ? partnership.usersits : partnership.partnersits,
+          partnersits: isUser1 ? partnership.partnersits : partnership.usersits,
           weeklygoal: partnership.weeklygoal,
           score: partnership.score,
           currentweekstart: partnership.currentweekstart,
@@ -378,7 +378,7 @@ export async function createPartnershipsForUser(
       const { data: existingPartnership, error: checkError } = await supabase
         .from('partnerships')
         .select('*')
-        .or(`and(user1id.eq.${userId},user2id.eq.${otherUser.id}),and(user1id.eq.${otherUser.id},user2id.eq.${userId})`)
+        .or(`and(userid.eq.${userId},partnerid.eq.${otherUser.id}),and(userid.eq.${otherUser.id},partnerid.eq.${userId})`)
         .eq('isactive', true)
         .single();
 
