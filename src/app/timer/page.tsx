@@ -79,7 +79,7 @@ export default function TimerPage() {
               },
               userSits: partnership.usersits,
               partnerSits: partnership.partnersits,
-              weeklyGoal: partnership.weeklygoal,
+              weeklyGoal: partnership.partnerweeklytarget + 5, // Calculate from both users' targets (hardcoded for now)
               score: partnership.score,
               currentWeekStart: partnership.currentweekstart,
             }));
@@ -215,7 +215,7 @@ export default function TimerPage() {
     }
     
     // Fallback calculation for static export (localStorage-based)
-    const totalSits = partnership.weeklyGoal;
+    const totalSits = 5 + partnership.partner.weeklyTarget; // Hardcoded for now
     const completedSits = partnership.userSits + partnership.partnerSits;
     const baseProgress = (completedSits / totalSits) * 100;
     

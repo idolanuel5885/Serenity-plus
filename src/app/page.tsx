@@ -58,7 +58,7 @@ export default function Home() {
             userSits: partnership.usersits,
             partnerSits: partnership.partnersits,
             userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
-            weeklyGoal: partnership.weeklygoal,
+            weeklyGoal: userWeeklyTarget + partnership.partnerweeklytarget, // Calculate from both users' targets
             score: partnership.score,
             currentWeekStart: partnership.currentweekstart,
           }));
@@ -91,7 +91,7 @@ export default function Home() {
               userSits: partnership.usersits,
               partnerSits: partnership.partnersits,
               userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
-              weeklyGoal: partnership.weeklygoal,
+              weeklyGoal: userWeeklyTarget + partnership.partnerweeklytarget, // Calculate from both users' targets
               score: partnership.score,
               currentWeekStart: partnership.currentweekstart,
             }));

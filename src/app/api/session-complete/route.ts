@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
+    console.log('Session API called with:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
+
     if (!userId || !partnershipId || !sessionDuration) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -58,27 +60,47 @@ export async function POST(request: NextRequest) {
       const isUser1 = partnership.userid === userId;
       
       // Update session record to mark as completed
+      // First, get the most recent incomplete session
+      const { data: recentSession, error: findError } = await supabase
+        .from('sessions')
+        .select('id')
+        .eq('userid', userId)
+        .eq('partnershipid', partnershipId)
+        .eq('iscompleted', false)
+        .order('startedat', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (findError || !recentSession) {
+        console.error('Error finding recent session:', findError);
+        return NextResponse.json({ error: 'No incomplete session found' }, { status: 404 });
+      }
+
+      // Update the specific session
       const { error: sessionError } = await supabase
         .from('sessions')
         .update({
           iscompleted: true,
           completedat: new Date().toISOString()
         })
-        .eq('userid', userId)
-        .eq('partnershipid', partnershipId)
-        .eq('iscompleted', false)
-        .order('startedat', { ascending: false })
-        .limit(1);
+        .eq('id', recentSession.id);
 
       if (sessionError) {
         console.error('Error updating session:', sessionError);
         return NextResponse.json({ error: 'Failed to update session' }, { status: 500 });
       }
 
-      // Ensure current week exists (should already exist)
-      const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
-      if (!currentWeek) {
-        return NextResponse.json({ error: 'Failed to get or create current week' }, { status: 500 });
+      // Get current week data from weeks table
+      const { data: currentWeek, error: weekError } = await supabase
+        .from('weeks')
+        .select('*')
+        .eq('partnershipid', partnershipId)
+        .gte('weekstart', new Date(new Date().setDate(new Date().getDate() - new Date().getDay())).toISOString())
+        .lte('weekstart', new Date(new Date().setDate(new Date().getDate() - new Date().getDay() + 7)).toISOString())
+        .single();
+
+      if (weekError || !currentWeek) {
+        return NextResponse.json({ error: 'Current week not found' }, { status: 404 });
       }
 
       // Update week sit counts

@@ -21,7 +21,6 @@ export interface Partnership {
   partnerweeklytarget: number;
   usersits: number;
   partnersits: number;
-  weeklygoal: number;
   score: number;
   currentweekstart: string;
   createdat: string;
@@ -389,18 +388,34 @@ export async function createPartnershipsForUser(
 
     for (const otherUser of otherUsers || []) {
       // Check if partnership already exists between these users
-      const { data: existingPartnership, error: checkError } = await supabase
+      // Use separate queries instead of complex or() clause to avoid 400 errors
+      const { data: existingPartnership1, error: checkError1 } = await supabase
         .from('partnerships')
         .select('*')
-        .or(`and(userid.eq.${userId},partnerid.eq.${otherUser.id}),and(userid.eq.${otherUser.id},partnerid.eq.${userId})`)
+        .eq('userid', userId)
+        .eq('partnerid', otherUser.id)
         .eq('isactive', true)
-        .maybeSingle(); // Use maybeSingle() instead of single() to avoid error when no partnership exists
+        .maybeSingle();
+
+      const { data: existingPartnership2, error: checkError2 } = await supabase
+        .from('partnerships')
+        .select('*')
+        .eq('userid', otherUser.id)
+        .eq('partnerid', userId)
+        .eq('isactive', true)
+        .maybeSingle();
+
+      const existingPartnership = existingPartnership1 || existingPartnership2;
 
       if (existingPartnership) {
         console.log('Partnership already exists between users, skipping');
         continue;
       }
 
+      // Calculate combined weekly goal from both users' targets
+      const currentUser = await getUser(userId);
+      const combinedWeeklyGoal = (currentUser?.weeklytarget || 0) + otherUser.weeklytarget;
+      
       const partnershipData = {
         userid: userId,
         partnerid: otherUser.id,
@@ -410,7 +425,6 @@ export async function createPartnershipsForUser(
         partnerweeklytarget: otherUser.weeklytarget,
         usersits: 0,
         partnersits: 0,
-        weeklygoal: 5,
         score: 0,
         currentweekstart: new Date().toISOString(),
       };
@@ -418,8 +432,8 @@ export async function createPartnershipsForUser(
       const partnershipId = await createPartnership(partnershipData);
       
       // Create Week 1 immediately for this new partnership
-      console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', partnershipData.weeklygoal);
-      const week1 = await createNewWeek(partnershipId, partnershipData.weeklygoal);
+      console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', combinedWeeklyGoal);
+      const week1 = await createNewWeek(partnershipId, combinedWeeklyGoal);
       if (week1) {
         console.log('Created Week 1 for new partnership:', week1);
       } else {
