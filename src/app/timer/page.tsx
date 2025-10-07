@@ -64,7 +64,10 @@ export default function TimerPage() {
         const partnershipsData = localStorage.getItem('partnerships');
         if (partnershipsData) {
           const partnerships = JSON.parse(partnershipsData);
+          console.log('Loaded partnerships:', partnerships);
           setPartnerships(partnerships);
+        } else {
+          console.log('No partnerships found in localStorage');
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -126,10 +129,14 @@ export default function TimerPage() {
   };
 
   // Get partnership data for lotus progress
-    const partnership = partnerships[0];
+  const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
+  
+  console.log('Partnerships array:', partnerships);
+  console.log('First partnership:', partnership);
+  console.log('Partnership ID:', partnershipId);
 
-  // Use lotus progress hook
+  // Use lotus progress hook (only if we have a real partnership ID)
   const { progressData } = useLotusProgress({
     userId: user?.id || '',
     partnershipId,
@@ -141,10 +148,26 @@ export default function TimerPage() {
 
   // Calculate progress for lotus animation (individual per user)
   const getLotusProgress = () => {
-    if (!partnership || !progressData) return 0;
+    if (!partnership) return 0;
     
-    // Use the progress data from the API which handles individual calculation
-    return progressData.currentProgress;
+    // If we have API data, use it
+    if (progressData) {
+      return progressData.currentProgress;
+    }
+    
+    // Fallback calculation for static export (localStorage-based)
+    const totalSits = partnership.weeklyGoal;
+    const completedSits = partnership.userSits + partnership.partnerSits;
+    const baseProgress = (completedSits / totalSits) * 100;
+    
+    // Add current session progress if running
+    if (isRunning && user?.usualSitLength) {
+      const sessionProgress = ((user.usualSitLength * 60 - timeLeft) / (user.usualSitLength * 60)) * 100;
+      const sessionContribution = (1 / totalSits) * 100;
+      return Math.min(baseProgress + (sessionProgress / 100) * sessionContribution, 100);
+    }
+    
+    return baseProgress;
   };
 
   // Handle meditation completion - update database
