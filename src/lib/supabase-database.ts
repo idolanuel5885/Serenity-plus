@@ -354,6 +354,13 @@ export async function createPartnershipsForUser(
       };
 
       const partnershipId = await createPartnership(partnershipData);
+      
+      // Create Week 1 immediately for this new partnership
+      const week1 = await createNewWeek(partnershipId, partnershipData.weeklygoal);
+      if (week1) {
+        console.log('Created Week 1 for new partnership:', week1);
+      }
+      
       partnerships.push({
         id: partnershipId,
         ...partnershipData,
