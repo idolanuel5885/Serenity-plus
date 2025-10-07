@@ -166,35 +166,55 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
 
     if (user2Error) throw user2Error;
 
-            // Transform the data to match the Partnership interface
-            const transformPartnership = async (partnership: any, isUser1: boolean) => {
-              // Get current week data for this partnership
-              const currentWeek = await getCurrentWeekForPartnership(partnership.id);
-              
-              return {
-                id: partnership.id,
-                userid: userId,
-                partnerid: isUser1 ? partnership.user2id : partnership.user1id,
-                partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
-                partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
-                partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
-                partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
-                usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : 0,
-                partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : 0,
-                weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
-                score: partnership.score,
-                currentweekstart: currentWeek ? currentWeek.weekstart : partnership.currentweekstart,
-                createdat: partnership.createdat
-              };
-            };
+    // Transform the data to match the Partnership interface
+    const transformPartnership = async (partnership: any, isUser1: boolean) => {
+      try {
+        // Get current week data for this partnership (with error handling)
+        const currentWeek = await getCurrentWeekForPartnership(partnership.id);
+        
+        return {
+          id: partnership.id,
+          userid: userId,
+          partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+          partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
+          partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
+          partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
+          partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
+          usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : (isUser1 ? partnership.user1sits : partnership.user2sits),
+          partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : (isUser1 ? partnership.user2sits : partnership.user1sits),
+          weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
+          score: partnership.score,
+          currentweekstart: currentWeek ? currentWeek.weekstart : partnership.currentweekstart,
+          createdat: partnership.createdat
+        };
+      } catch (weekError) {
+        console.error('Error fetching week for partnership:', partnership.id, weekError);
+        // Fallback to partnership data if week fetch fails
+        return {
+          id: partnership.id,
+          userid: userId,
+          partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+          partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
+          partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
+          partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
+          partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
+          usersits: isUser1 ? partnership.user1sits : partnership.user2sits,
+          partnersits: isUser1 ? partnership.user2sits : partnership.user1sits,
+          weeklygoal: partnership.weeklygoal,
+          score: partnership.score,
+          currentweekstart: partnership.currentweekstart,
+          createdat: partnership.createdat
+        };
+      }
+    };
 
-            // Transform both results
-            const transformedUser1 = await Promise.all((user1Partnerships || []).map(p => transformPartnership(p, true)));
-            const transformedUser2 = await Promise.all((user2Partnerships || []).map(p => transformPartnership(p, false)));
+    // Transform both results
+    const transformedUser1 = await Promise.all((user1Partnerships || []).map(p => transformPartnership(p, true)));
+    const transformedUser2 = await Promise.all((user2Partnerships || []).map(p => transformPartnership(p, false)));
 
-            // Combine both results
-            const allPartnerships = [...transformedUser1, ...transformedUser2];
-            return allPartnerships;
+    // Combine both results
+    const allPartnerships = [...transformedUser1, ...transformedUser2];
+    return allPartnerships;
   } catch (error) {
     console.error('Error fetching partnerships:', error);
     return [];
@@ -322,6 +342,13 @@ export async function createPartnershipsForUser(
   try {
     console.log('createPartnershipsForUser called with:', { userId, inviteCode });
 
+    // Check if partnerships already exist for this user
+    const existingPartnerships = await getUserPartnerships(userId);
+    if (existingPartnerships.length > 0) {
+      console.log('Partnerships already exist for user, returning existing ones');
+      return existingPartnerships;
+    }
+
     // Find other users with matching invite codes
     const { data: otherUsers, error: usersError } = await supabase
       .from('users')
@@ -339,6 +366,19 @@ export async function createPartnershipsForUser(
     const partnerships: Partnership[] = [];
 
     for (const otherUser of otherUsers || []) {
+      // Check if partnership already exists between these users
+      const { data: existingPartnership, error: checkError } = await supabase
+        .from('partnerships')
+        .select('*')
+        .or(`and(user1id.eq.${userId},user2id.eq.${otherUser.id}),and(user1id.eq.${otherUser.id},user2id.eq.${userId})`)
+        .eq('isactive', true)
+        .single();
+
+      if (existingPartnership) {
+        console.log('Partnership already exists between users, skipping');
+        continue;
+      }
+
       const partnershipData = {
         userid: userId,
         partnerid: otherUser.id,

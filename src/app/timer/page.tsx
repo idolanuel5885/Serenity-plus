@@ -147,9 +147,34 @@ export default function TimerPage() {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const startTimer = () => {
+  const startTimer = async () => {
     setIsRunning(true);
     setIsCompleted(false);
+    
+    // Create session record when starting
+    if (partnershipId && user?.id) {
+      try {
+        const response = await fetch('/api/session-complete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user.id,
+            partnershipId,
+            sessionDuration: user.usualSitLength * 60,
+            sessionStarted: true
+          }),
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Session started:', result.data);
+        }
+      } catch (error) {
+        console.error('Error starting session:', error);
+      }
+    }
   };
 
   const pauseTimer = () => {
