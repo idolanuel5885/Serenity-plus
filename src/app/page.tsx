@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserPartnerships, createPartnershipsForUser } from '../lib/supabase-database';
+import { getUserPartnerships, createPartnershipsForUser, getUser } from '../lib/supabase-database';
 
 interface Partnership {
   id: string;
@@ -16,7 +16,6 @@ interface Partnership {
   };
   userSits: number;
   partnerSits: number;
-  userWeeklyTarget: number; // Add this field
   weeklyGoal: number;
   score: number;
   currentWeekStart: string;
@@ -26,6 +25,7 @@ export default function Home() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
+  const [userWeeklyTarget, setUserWeeklyTarget] = useState<number>(0);
   const router = useRouter();
 
   const fetchPartnerships = async (userId: string) => {
@@ -34,6 +34,12 @@ export default function Home() {
 
       // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
+        // Get user's weekly target
+        const user = await getUser(userId);
+        if (user) {
+          setUserWeeklyTarget(user.weeklytarget);
+        }
+        
         // Get existing partnerships from database
         const existingPartnerships = await getUserPartnerships(userId);
         console.log('Existing partnerships:', existingPartnerships);
@@ -51,7 +57,7 @@ export default function Home() {
             },
             userSits: partnership.usersits,
             partnerSits: partnership.partnersits,
-            userWeeklyTarget: partnership.weeklygoal - partnership.partnerweeklytarget, // Calculate user's target
+            userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
             weeklyGoal: partnership.weeklygoal,
             score: partnership.score,
             currentWeekStart: partnership.currentweekstart,
@@ -84,7 +90,7 @@ export default function Home() {
               },
               userSits: partnership.usersits,
               partnerSits: partnership.partnersits,
-              userWeeklyTarget: partnership.weeklygoal - partnership.partnerweeklytarget, // Calculate user's target
+              userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
               weeklyGoal: partnership.weeklygoal,
               score: partnership.score,
               currentWeekStart: partnership.currentweekstart,
@@ -287,9 +293,8 @@ export default function Home() {
                     </div>
                     <div className="text-sm text-gray-600">
                       <div>
-                        You {partnership.userSits}/{partnership.userWeeklyTarget} *{' '}
-                        {partnership.partner.name} {partnership.partnerSits}/
-                        {partnership.partner.weeklyTarget}
+                        You {partnership.userSits}/{userWeeklyTarget} *{' '}
+                        {partnership.partner.name} {partnership.partnerSits}/{partnership.partner.weeklyTarget}
                       </div>
                       <div>Week Ends In {calculateWeekEndsIn(partnership.currentWeekStart)}</div>
                     </div>

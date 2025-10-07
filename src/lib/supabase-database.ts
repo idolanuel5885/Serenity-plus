@@ -71,10 +71,68 @@ export async function createPartnership(
 
 export async function getUserPartnerships(userId: string): Promise<Partnership[]> {
   try {
-    const { data, error } = await supabase.from('partnerships').select('*').eq('userid', userId);
+    // Query partnerships where user is user1
+    const { data: user1Partnerships, error: user1Error } = await supabase
+      .from('partnerships')
+      .select(`
+        id,
+        weeklygoal,
+        score,
+        currentweekstart,
+        user1sits,
+        user2sits,
+        user1id,
+        user2id,
+        user2:user2id(name, email, image, weeklytarget)
+      `)
+      .eq('user1id', userId)
+      .order('createdat', { ascending: false });
 
-    if (error) throw error;
-    return data || [];
+    if (user1Error) throw user1Error;
+
+    // Query partnerships where user is user2
+    const { data: user2Partnerships, error: user2Error } = await supabase
+      .from('partnerships')
+      .select(`
+        id,
+        weeklygoal,
+        score,
+        currentweekstart,
+        user1sits,
+        user2sits,
+        user1id,
+        user2id,
+        user1:user1id(name, email, image, weeklytarget)
+      `)
+      .eq('user2id', userId)
+      .order('createdat', { ascending: false });
+
+    if (user2Error) throw user2Error;
+
+    // Transform the data to match the Partnership interface
+    const transformPartnership = (partnership: any, isUser1: boolean) => ({
+      id: partnership.id,
+      userid: userId,
+      partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+      partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
+      partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
+      partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
+      partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
+      usersits: isUser1 ? partnership.user1sits : partnership.user2sits,
+      partnersits: isUser1 ? partnership.user2sits : partnership.user1sits,
+      weeklygoal: partnership.weeklygoal,
+      score: partnership.score,
+      currentweekstart: partnership.currentweekstart,
+      createdat: partnership.createdat
+    });
+
+    // Transform both results
+    const transformedUser1 = (user1Partnerships || []).map(p => transformPartnership(p, true));
+    const transformedUser2 = (user2Partnerships || []).map(p => transformPartnership(p, false));
+
+    // Combine both results
+    const allPartnerships = [...transformedUser1, ...transformedUser2];
+    return allPartnerships;
   } catch (error) {
     console.error('Error fetching partnerships:', error);
     return [];
