@@ -93,11 +93,11 @@ export default function TimerPage() {
         } catch (error) {
           console.log('Error fetching partnerships from database:', error);
           // Fallback to localStorage if database fails
-          const partnershipsData = localStorage.getItem('partnerships');
-          if (partnershipsData) {
-            const partnerships = JSON.parse(partnershipsData);
+        const partnershipsData = localStorage.getItem('partnerships');
+        if (partnershipsData) {
+          const partnerships = JSON.parse(partnershipsData);
             console.log('Loaded partnerships from localStorage fallback:', partnerships);
-            setPartnerships(partnerships);
+          setPartnerships(partnerships);
           } else {
             console.log('No partnerships found in localStorage either');
             setPartnerships([]);
@@ -163,7 +163,7 @@ export default function TimerPage() {
   };
 
   // Get partnership data for lotus progress
-  const partnership = partnerships[0];
+    const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
   
   console.log('Partnerships array:', partnerships);
