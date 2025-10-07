@@ -16,6 +16,7 @@ interface Partnership {
   };
   userSits: number;
   partnerSits: number;
+  userWeeklyTarget: number; // Add this field
   weeklyGoal: number;
   score: number;
   currentWeekStart: string;
@@ -50,6 +51,7 @@ export default function Home() {
             },
             userSits: partnership.usersits,
             partnerSits: partnership.partnersits,
+            userWeeklyTarget: partnership.weeklygoal - partnership.partnerweeklytarget, // Calculate user's target
             weeklyGoal: partnership.weeklygoal,
             score: partnership.score,
             currentWeekStart: partnership.currentweekstart,
@@ -82,6 +84,7 @@ export default function Home() {
               },
               userSits: partnership.usersits,
               partnerSits: partnership.partnersits,
+              userWeeklyTarget: partnership.weeklygoal - partnership.partnerweeklytarget, // Calculate user's target
               weeklyGoal: partnership.weeklygoal,
               score: partnership.score,
               currentWeekStart: partnership.currentweekstart,
@@ -284,7 +287,7 @@ export default function Home() {
                     </div>
                     <div className="text-sm text-gray-600">
                       <div>
-                        You {partnership.userSits}/{partnership.partner.weeklyTarget} *{' '}
+                        You {partnership.userSits}/{partnership.userWeeklyTarget} *{' '}
                         {partnership.partner.name} {partnership.partnerSits}/
                         {partnership.partner.weeklyTarget}
                       </div>

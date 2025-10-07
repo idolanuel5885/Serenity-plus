@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Lottie from 'lottie-react';
 // Import the animation data
 const lotusAnimationData = {
@@ -20,31 +20,31 @@ export default function LotusAnimation({
   elapsed 
 }: LotusAnimationProps) {
   const lottieRef = useRef<any>(null);
+  const [currentProgress, setCurrentProgress] = useState(0);
 
+  // Update current progress when base progress changes
   useEffect(() => {
-    if (lottieRef.current) {
-      // Calculate the animation frame based on progress
-      // The animation has 417 frames total (op: 417)
-      const targetFrame = Math.floor((progress / 100) * 417);
-      lottieRef.current.goToAndStop(targetFrame, true);
-    }
+    setCurrentProgress(progress);
   }, [progress]);
 
+  // Handle animation during active meditation
   useEffect(() => {
-    if (isActive && lottieRef.current) {
-      // During active meditation, animate smoothly based on elapsed time
-      const sessionProgress = Math.min((elapsed / duration) * 100, 100);
-      const totalProgress = Math.min(progress + sessionProgress, 100);
-      
-      // Calculate frame for smooth animation
-      const targetFrame = Math.floor((totalProgress / 100) * 417);
-      lottieRef.current.goToAndStop(targetFrame, true);
-    } else if (!isActive && lottieRef.current) {
-      // When paused, just show the current progress without session progress
-      const targetFrame = Math.floor((progress / 100) * 417);
-      lottieRef.current.goToAndStop(targetFrame, true);
+    if (lottieRef.current) {
+      if (isActive && duration > 0) {
+        // During active meditation, calculate session progress
+        const sessionProgress = Math.min((elapsed / duration) * 100, 100);
+        const totalProgress = Math.min(progress + sessionProgress, 100);
+        setCurrentProgress(totalProgress);
+        
+        const targetFrame = Math.floor((totalProgress / 100) * 417);
+        lottieRef.current.goToAndStop(targetFrame, true);
+      } else {
+        // When not active (paused or completed), show current progress
+        const targetFrame = Math.floor((currentProgress / 100) * 417);
+        lottieRef.current.goToAndStop(targetFrame, true);
+      }
     }
-  }, [isActive, elapsed, duration, progress]);
+  }, [isActive, elapsed, duration, progress, currentProgress]);
 
   return (
     <div className="flex justify-center items-center py-8">
