@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import LotusAnimation from '@/components/LotusAnimation';
 import { useLotusProgress } from '@/hooks/useLotusProgress';
+import { getUserPartnerships } from '@/lib/supabase-database';
 
 interface User {
   id: string;
@@ -60,14 +61,47 @@ export default function TimerPage() {
         setTimeLeft(usualSitLength * 60); // Convert minutes to seconds
         console.log('Timer set to:', usualSitLength, 'minutes');
 
-        // Get partnerships from localStorage
-        const partnershipsData = localStorage.getItem('partnerships');
-        if (partnershipsData) {
-          const partnerships = JSON.parse(partnershipsData);
-          console.log('Loaded partnerships:', partnerships);
-          setPartnerships(partnerships);
-        } else {
-          console.log('No partnerships found in localStorage');
+        // Get partnerships from database (same method as homepage)
+        try {
+          const existingPartnerships = await getUserPartnerships(userData.id);
+          console.log('Existing partnerships from database:', existingPartnerships);
+
+          if (existingPartnerships.length > 0) {
+            // Convert database partnerships to UI format (same as homepage)
+            const partnerships = existingPartnerships.map((partnership) => ({
+              id: partnership.id,
+              partner: {
+                id: partnership.partnerid,
+                name: partnership.partnername,
+                email: partnership.partneremail,
+                image: partnership.partnerimage || '/icons/meditation-1.svg',
+                weeklyTarget: partnership.partnerweeklytarget,
+              },
+              userSits: partnership.usersits,
+              partnerSits: partnership.partnersits,
+              weeklyGoal: partnership.weeklygoal,
+              score: partnership.score,
+              currentWeekStart: partnership.currentweekstart,
+            }));
+
+            console.log('Found existing partnerships:', partnerships);
+            setPartnerships(partnerships);
+          } else {
+            console.log('No partnerships found in database');
+            setPartnerships([]);
+          }
+        } catch (error) {
+          console.log('Error fetching partnerships from database:', error);
+          // Fallback to localStorage if database fails
+          const partnershipsData = localStorage.getItem('partnerships');
+          if (partnershipsData) {
+            const partnerships = JSON.parse(partnershipsData);
+            console.log('Loaded partnerships from localStorage fallback:', partnerships);
+            setPartnerships(partnerships);
+          } else {
+            console.log('No partnerships found in localStorage either');
+            setPartnerships([]);
+          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
