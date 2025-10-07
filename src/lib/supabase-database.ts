@@ -259,6 +259,8 @@ export async function getCurrentWeek(partnershipId: string): Promise<Week | null
 
 export async function createNewWeek(partnershipId: string, weeklyGoal: number): Promise<Week | null> {
   try {
+    console.log('createNewWeek called with:', { partnershipId, weeklyGoal });
+    
     const now = new Date();
     const startOfWeek = new Date(now);
     startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
@@ -268,6 +270,8 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
     endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
     endOfWeek.setHours(23, 59, 59, 999);
 
+    console.log('Week dates:', { startOfWeek: startOfWeek.toISOString(), endOfWeek: endOfWeek.toISOString() });
+
     // Get the next week number
     const { data: lastWeek, error: lastWeekError } = await supabase
       .from('weeks')
@@ -275,26 +279,36 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
       .eq('partnershipid', partnershipId)
       .order('weeknumber', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle(); // Use maybeSingle() to avoid error when no weeks exist
 
-    const weekNumber = lastWeekError ? 1 : (lastWeek?.weeknumber || 0) + 1;
+    const weekNumber = lastWeekError || !lastWeek ? 1 : (lastWeek.weeknumber || 0) + 1;
+    console.log('Week number:', weekNumber);
+
+    const weekData = {
+      partnershipid: partnershipId,
+      weeknumber: weekNumber,
+      weekstart: startOfWeek.toISOString(),
+      weekend: endOfWeek.toISOString(),
+      weeklygoal: weeklyGoal,
+      user1sits: 0,
+      user2sits: 0,
+      goalmet: false
+    };
+
+    console.log('Inserting week data:', weekData);
 
     const { data, error } = await supabase
       .from('weeks')
-      .insert({
-        partnershipid: partnershipId,
-        weeknumber: weekNumber,
-        weekstart: startOfWeek.toISOString(),
-        weekend: endOfWeek.toISOString(),
-        weeklygoal: weeklyGoal,
-        user1sits: 0,
-        user2sits: 0,
-        goalmet: false
-      })
+      .insert(weekData)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error inserting week:', error);
+      throw error;
+    }
+    
+    console.log('Successfully created week:', data);
     return data;
   } catch (error) {
     console.error('Error creating new week:', error);
@@ -380,7 +394,7 @@ export async function createPartnershipsForUser(
         .select('*')
         .or(`and(userid.eq.${userId},partnerid.eq.${otherUser.id}),and(userid.eq.${otherUser.id},partnerid.eq.${userId})`)
         .eq('isactive', true)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single() to avoid error when no partnership exists
 
       if (existingPartnership) {
         console.log('Partnership already exists between users, skipping');
@@ -404,9 +418,12 @@ export async function createPartnershipsForUser(
       const partnershipId = await createPartnership(partnershipData);
       
       // Create Week 1 immediately for this new partnership
+      console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', partnershipData.weeklygoal);
       const week1 = await createNewWeek(partnershipId, partnershipData.weeklygoal);
       if (week1) {
         console.log('Created Week 1 for new partnership:', week1);
+      } else {
+        console.error('Failed to create Week 1 for partnership:', partnershipId);
       }
       
       partnerships.push({
