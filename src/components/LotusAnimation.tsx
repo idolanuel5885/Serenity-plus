@@ -27,6 +27,16 @@ export default function LotusAnimation({
     setCurrentProgress(progress);
   }, [progress]);
 
+  // Update current progress when session completes
+  useEffect(() => {
+    if (!isActive && duration > 0 && elapsed >= duration) {
+      // Session completed - calculate final progress
+      const sessionContribution = (1 / (duration / 60)) * 100; // Each session contributes this percentage
+      const totalProgress = Math.min(progress + sessionContribution, 100);
+      setCurrentProgress(totalProgress);
+    }
+  }, [isActive, elapsed, duration, progress]);
+
   // Handle animation during active meditation
   useEffect(() => {
     if (lottieRef.current) {
@@ -39,8 +49,10 @@ export default function LotusAnimation({
         const targetFrame = Math.floor((totalProgress / 100) * 417);
         lottieRef.current.goToAndStop(targetFrame, true);
       } else {
-        // When not active (paused or completed), show current progress
-        const targetFrame = Math.floor((currentProgress / 100) * 417);
+        // When not active (paused or completed), show the last known progress
+        // Don't reset to 0, maintain the current state
+        const displayProgress = Math.max(currentProgress, progress);
+        const targetFrame = Math.floor((displayProgress / 100) * 417);
         lottieRef.current.goToAndStop(targetFrame, true);
       }
     }

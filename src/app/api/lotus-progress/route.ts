@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { supabase } from '@/lib/supabase';
 import { calculateLotusProgress } from '@/lib/lotusProgress';
 
 export async function GET(request: NextRequest) {
@@ -7,29 +7,34 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const partnershipId = searchParams.get('partnershipId');
+    const isMeditationActive = searchParams.get('isMeditationActive') === 'true';
+    const sessionDuration = searchParams.get('sessionDuration') ? parseInt(searchParams.get('sessionDuration')!) : undefined;
+    const sessionElapsed = searchParams.get('sessionElapsed') ? parseInt(searchParams.get('sessionElapsed')!) : undefined;
 
     if (!userId || !partnershipId) {
       return NextResponse.json({ error: 'Missing userId or partnershipId' }, { status: 400 });
     }
 
-    // Get partnership data
-    const partnership = await prisma.partnership.findFirst({
-      where: {
-        id: partnershipId,
-        OR: [
-          { user1Id: userId },
-          { user2Id: userId }
-        ],
-        isActive: true
-      }
-    });
+    // Get partnership data from Supabase
+    const { data: partnership, error: partnershipError } = await supabase
+      .from('partnerships')
+      .select('*')
+      .eq('id', partnershipId)
+      .or(`user1id.eq.${userId},user2id.eq.${userId}`)
+      .eq('isactive', true)
+      .single();
 
-    if (!partnership) {
+    if (partnershipError || !partnership) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
     // Calculate current progress
-    const progressData = calculateLotusProgress(partnership, userId);
+    const progressData = calculateLotusProgress(
+      partnership,
+      userId,
+      sessionDuration,
+      sessionElapsed
+    );
 
     return NextResponse.json({
       success: true,
@@ -52,18 +57,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Get partnership data
-    const partnership = await prisma.partnership.findFirst({
-      where: {
-        id: partnershipId,
-        OR: [
-          { user1Id: userId },
-          { user2Id: userId }
-        ],
-        isActive: true
-      }
-    });
+    const { data: partnership, error: partnershipError } = await supabase
+      .from('partnerships')
+      .select('*')
+      .eq('id', partnershipId)
+      .or(`user1id.eq.${userId},user2id.eq.${userId}`)
+      .eq('isactive', true)
+      .single();
 
-    if (!partnership) {
+    if (partnershipError || !partnership) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
