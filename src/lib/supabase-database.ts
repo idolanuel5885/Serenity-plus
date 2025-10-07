@@ -130,7 +130,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
   try {
     console.log('getUserPartnerships called with userId:', userId);
     
-    // Query partnerships where user is user1
+    // Query partnerships where user is user1 (using correct column names: userid, partnerid)
     const { data: user1Partnerships, error: user1Error } = await supabase
       .from('partnerships')
       .select(`
@@ -140,11 +140,11 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         currentweekstart,
         user1sits,
         user2sits,
-        user1id,
-        user2id,
-        user2:user2id(name, email, image, weeklytarget)
+        userid,
+        partnerid,
+        user2:partnerid(name, email, image, weeklytarget)
       `)
-      .eq('user1id', userId)
+      .eq('userid', userId)
       .order('createdat', { ascending: false });
 
     if (user1Error) {
@@ -152,7 +152,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
       throw user1Error;
     }
 
-    // Query partnerships where user is user2
+    // Query partnerships where user is user2 (using correct column names: userid, partnerid)
     const { data: user2Partnerships, error: user2Error } = await supabase
       .from('partnerships')
       .select(`
@@ -162,11 +162,11 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         currentweekstart,
         user1sits,
         user2sits,
-        user1id,
-        user2id,
-        user1:user1id(name, email, image, weeklytarget)
+        userid,
+        partnerid,
+        user1:userid(name, email, image, weeklytarget)
       `)
-      .eq('user2id', userId)
+      .eq('partnerid', userId)
       .order('createdat', { ascending: false });
 
     if (user2Error) {
@@ -183,7 +183,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         return {
           id: partnership.id,
           userid: userId,
-          partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+          partnerid: isUser1 ? partnership.partnerid : partnership.userid,
           partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
           partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
           partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
@@ -201,7 +201,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         return {
           id: partnership.id,
           userid: userId,
-          partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+          partnerid: isUser1 ? partnership.partnerid : partnership.userid,
           partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
           partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
           partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,

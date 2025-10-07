@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       .from('partnerships')
       .select('*')
       .eq('id', partnershipId)
-      .or(`user1id.eq.${userId},user2id.eq.${userId}`)
+      .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .eq('isactive', true)
       .single();
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     // Only update database if session was completed
     if (completed) {
       // Determine which user completed the session
-      const isUser1 = partnership.user1id === userId;
+      const isUser1 = partnership.userid === userId;
       
       // Update session record to mark as completed
       const { error: sessionError } = await supabase
