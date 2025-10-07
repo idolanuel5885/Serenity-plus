@@ -82,6 +82,50 @@ export async function createPartnership(
   }
 }
 
+export async function ensureCurrentWeekExists(partnershipId: string, weeklyGoal: number): Promise<Week | null> {
+  try {
+    // First check if current week exists
+    let currentWeek = await getCurrentWeekForPartnership(partnershipId);
+    
+    if (!currentWeek) {
+      // Create new week if it doesn't exist
+      currentWeek = await createNewWeek(partnershipId, weeklyGoal);
+    }
+    
+    return currentWeek;
+  } catch (error) {
+    console.error('Error ensuring current week exists:', error);
+    return null;
+  }
+}
+
+export async function getCurrentWeekForPartnership(partnershipId: string): Promise<Week | null> {
+  try {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
+    startOfWeek.setHours(0, 0, 0, 0);
+    
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    const { data, error } = await supabase
+      .from('weeks')
+      .select('*')
+      .eq('partnershipid', partnershipId)
+      .gte('weekstart', startOfWeek.toISOString())
+      .lte('weekstart', endOfWeek.toISOString())
+      .single();
+
+    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
+    return data;
+  } catch (error) {
+    console.error('Error fetching current week:', error);
+    return null;
+  }
+}
+
 export async function getUserPartnerships(userId: string): Promise<Partnership[]> {
   try {
     // Query partnerships where user is user1
@@ -122,30 +166,35 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
 
     if (user2Error) throw user2Error;
 
-    // Transform the data to match the Partnership interface
-    const transformPartnership = (partnership: any, isUser1: boolean) => ({
-      id: partnership.id,
-      userid: userId,
-      partnerid: isUser1 ? partnership.user2id : partnership.user1id,
-      partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
-      partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
-      partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
-      partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
-      usersits: isUser1 ? partnership.user1sits : partnership.user2sits,
-      partnersits: isUser1 ? partnership.user2sits : partnership.user1sits,
-      weeklygoal: partnership.weeklygoal,
-      score: partnership.score,
-      currentweekstart: partnership.currentweekstart,
-      createdat: partnership.createdat
-    });
+            // Transform the data to match the Partnership interface
+            const transformPartnership = async (partnership: any, isUser1: boolean) => {
+              // Get current week data for this partnership
+              const currentWeek = await getCurrentWeekForPartnership(partnership.id);
+              
+              return {
+                id: partnership.id,
+                userid: userId,
+                partnerid: isUser1 ? partnership.user2id : partnership.user1id,
+                partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
+                partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
+                partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
+                partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
+                usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : 0,
+                partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : 0,
+                weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
+                score: partnership.score,
+                currentweekstart: currentWeek ? currentWeek.weekstart : partnership.currentweekstart,
+                createdat: partnership.createdat
+              };
+            };
 
-    // Transform both results
-    const transformedUser1 = (user1Partnerships || []).map(p => transformPartnership(p, true));
-    const transformedUser2 = (user2Partnerships || []).map(p => transformPartnership(p, false));
+            // Transform both results
+            const transformedUser1 = await Promise.all((user1Partnerships || []).map(p => transformPartnership(p, true)));
+            const transformedUser2 = await Promise.all((user2Partnerships || []).map(p => transformPartnership(p, false)));
 
-    // Combine both results
-    const allPartnerships = [...transformedUser1, ...transformedUser2];
-    return allPartnerships;
+            // Combine both results
+            const allPartnerships = [...transformedUser1, ...transformedUser2];
+            return allPartnerships;
   } catch (error) {
     console.error('Error fetching partnerships:', error);
     return [];

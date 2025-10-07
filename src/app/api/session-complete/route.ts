@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { getCurrentWeek, createNewWeek, updateWeekSits } from '@/lib/supabase-database';
+import { ensureCurrentWeekExists, updateWeekSits } from '@/lib/supabase-database';
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,14 +45,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
       }
 
-      // Get or create current week
-      let currentWeek = await getCurrentWeek(partnershipId);
+      // Ensure current week exists (should already exist)
+      const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
       if (!currentWeek) {
-        // Create new week if it doesn't exist
-        currentWeek = await createNewWeek(partnershipId, partnership.weeklygoal);
-        if (!currentWeek) {
-          return NextResponse.json({ error: 'Failed to create new week' }, { status: 500 });
-        }
+        return NextResponse.json({ error: 'Failed to get or create current week' }, { status: 500 });
       }
 
       // Update week sit counts
