@@ -39,6 +39,10 @@ export default function LotusAnimation({
       // Calculate frame for smooth animation
       const targetFrame = Math.floor((totalProgress / 100) * 417);
       lottieRef.current.goToAndStop(targetFrame, true);
+    } else if (!isActive && lottieRef.current) {
+      // When paused, just show the current progress without session progress
+      const targetFrame = Math.floor((progress / 100) * 417);
+      lottieRef.current.goToAndStop(targetFrame, true);
     }
   }, [isActive, elapsed, duration, progress]);
 

@@ -194,8 +194,8 @@ export default function TimerPage() {
     const completedSits = partnership.userSits + partnership.partnerSits;
     const baseProgress = (completedSits / totalSits) * 100;
     
-    // Add current session progress if running
-    if (isRunning && user?.usualSitLength) {
+    // Add current session progress if running or just completed
+    if ((isRunning || isCompleted) && user?.usualSitLength) {
       const sessionProgress = ((user.usualSitLength * 60 - timeLeft) / (user.usualSitLength * 60)) * 100;
       const sessionContribution = (1 / totalSits) * 100;
       return Math.min(baseProgress + (sessionProgress / 100) * sessionContribution, 100);

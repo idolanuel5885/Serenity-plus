@@ -284,9 +284,9 @@ export default function Home() {
                     </div>
                     <div className="text-sm text-gray-600">
                       <div>
-                        You {partnership.userSits}/{partnership.weeklyGoal} *{' '}
+                        You {partnership.userSits}/{partnership.partner.weeklyTarget} *{' '}
                         {partnership.partner.name} {partnership.partnerSits}/
-                        {partnership.weeklyGoal}
+                        {partnership.partner.weeklyTarget}
                       </div>
                       <div>Week Ends In {calculateWeekEndsIn(partnership.currentWeekStart)}</div>
                     </div>
