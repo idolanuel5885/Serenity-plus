@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
       .from('partnerships')
       .select('*')
       .eq('id', partnershipId)
-      .or(`user1id.eq.${userId},user2id.eq.${userId}`)
-      .eq('isactive', true)
+      .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
+      .eq('isActive', true)
       .single();
 
     if (partnershipError || !partnership) {

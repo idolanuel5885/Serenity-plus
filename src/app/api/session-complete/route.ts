@@ -19,8 +19,7 @@ export async function POST(request: NextRequest) {
         .insert({
           userId,
           partnershipId,
-          sessionDuration,
-          startedAt: new Date().toISOString(),
+          duration: sessionDuration,
           isCompleted: false
         })
         .select()
