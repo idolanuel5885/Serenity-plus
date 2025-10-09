@@ -44,6 +44,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
+    console.log('Partnership data:', partnership);
+    console.log('Partnership weeklygoal:', partnership.weeklygoal);
     console.log('Step 2: Partnership found, getting current week...');
     // Get current week data
     const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
