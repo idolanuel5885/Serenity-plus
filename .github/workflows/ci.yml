@@ -154,10 +154,10 @@ jobs:
           name: partnership-test-results
           path: test-results/
 
-      onboarding-workflow-tests:
-        runs-on: ubuntu-latest
-        needs: build
-        steps:
+  onboarding-workflow-tests:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
           - uses: actions/checkout@v4
           
           - name: Setup Node.js
