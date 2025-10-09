@@ -117,7 +117,13 @@ export async function getCurrentWeekForPartnership(partnershipId: string): Promi
       .lte('weekstart', endOfWeek.toISOString())
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No rows found - this is expected if no week exists yet
+        return null;
+      }
+      throw error; // Re-throw other errors
+    }
     return data;
   } catch (error) {
     console.error('Error fetching current week:', error);
