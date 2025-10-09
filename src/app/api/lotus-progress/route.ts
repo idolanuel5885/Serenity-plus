@@ -4,8 +4,8 @@ import { calculateLotusProgress } from '../../../lib/lotusProgress';
 import { ensureCurrentWeekExists } from '../../../lib/supabase-database';
 
 export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
   try {
-    const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const partnershipId = searchParams.get('partnershipId');
     // const isMeditationActive = searchParams.get('isMeditationActive') === 'true';
