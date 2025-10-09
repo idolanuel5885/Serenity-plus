@@ -1,0 +1,508 @@
+<testsuites id="" name="" tests="2" failures="2" skipped="0" errors="0" time="11.011703">
+<testsuite name="partnership-flow-api.spec.ts" timestamp="2025-10-08T10:15:29.399Z" hostname="api-production" tests="2" failures="2" skipped="0" time="5.152" errors="0">
+<testcase name="API-Only Partnership Flow - Production Database Test › COMPLETE API-ONLY PARTNERSHIP FLOW: User1 → Invite → User2 → Partnership → Week Records" classname="partnership-flow-api.spec.ts" time="3.236">
+<failure message="partnership-flow-api.spec.ts:23:7 COMPLETE API-ONLY PARTNERSHIP FLOW: User1 → Invite → User2 → Partnership → Week Records" type="FAILURE">
+<![CDATA[  [api-production] › partnership-flow-api.spec.ts:23:7 › API-Only Partnership Flow - Production Database Test › COMPLETE API-ONLY PARTNERSHIP FLOW: User1 → Invite → User2 → Partnership → Week Records 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      92 |     }
+      93 |     
+    > 94 |     expect(inviteResponse.ok()).toBe(true);
+         |                                 ^
+      95 |     console.log(`✅ Invite generated successfully (Code: ${inviteCode})`);
+      96 |     
+      97 |     // Stage 4: Create User2 with invite code
+        at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:94:33
+]]>
+</failure>
+<system-out>
+<![CDATA[🧪 Starting API-only partnership flow test
+   - User1 ID: 49d77b58-d86f-4ab3-b38f-759918531645
+   - User2 ID: c912a06f-9bab-42f4-b847-759918531646
+   - Week Start: 2025-10-08
+🚀 Stage 1: Creating User1...
+📤 REQUEST: POST https://serenity-plus-kohl.vercel.app/api/user
+📤 DATA: {
+  id: [32m'49d77b58-d86f-4ab3-b38f-759918531645'[39m,
+  name: [32m'TestUser1_1759918531682'[39m,
+  email: [32m'testuser1_1759918531682@example.com'[39m,
+  weeklytarget: [33m5[39m,
+  usualsitlength: [33m30[39m,
+  image: [32m'/icons/meditation-1.svg'[39m,
+  invitecode: [32m'invite-1759918531682-kbka9d0vl'[39m
+}
+📥 RESPONSE: Status 200
+📥 RESPONSE DATA: {
+  success: [33mtrue[39m,
+  user: {
+    id: [32m'49d77b58-d86f-4ab3-b38f-759918531645'[39m,
+    name: [32m'TestUser1_1759918531684'[39m,
+    email: [32m'testuser1_1759918531684@example.com'[39m,
+    weeklytarget: [33m5[39m,
+    usualsitlength: [33m30[39m,
+    image: [32m'/icons/meditation-1.svg'[39m,
+    invitecode: [32m'invite-1759918531684-2mgjwo045'[39m,
+    createdat: [32m'2025-10-08T10:15:33.520808+00:00'[39m
+  }
+}
+✅ User1 created successfully (Status: 200)
+🚀 Stage 2: Skipping User1 onboarding (endpoint not available)...
+⚠️  NOTE: /api/onboarding endpoint does not exist in production
+✅ User1 onboarding skipped (endpoint not available)
+🚀 Stage 3: Generating invite for User1...
+📤 REQUEST: POST https://serenity-plus-kohl.vercel.app/api/invite
+📤 DATA: {
+  userId: [32m'49d77b58-d86f-4ab3-b38f-759918531645'[39m,
+  userName: [32m'TestUser1_1759918533703'[39m
+}
+📥 RESPONSE: Status 500
+📥 ERROR RESPONSE: {"error":"Failed to create invitation"}
+]]>
+</system-out>
+</testcase>
+<testcase name="API-Only Partnership Flow - Production Database Test › API Endpoint Health Check" classname="partnership-flow-api.spec.ts" time="1.916">
+<failure message="partnership-flow-api.spec.ts:254:7 API Endpoint Health Check" type="FAILURE">
+<![CDATA[  [api-production] › partnership-flow-api.spec.ts:254:7 › API-Only Partnership Flow - Production Database Test › API Endpoint Health Check 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      278 |       }
+      279 |       
+    > 280 |       expect(response.ok()).toBe(true);
+          |                             ^
+      281 |     }
+      282 |     
+      283 |     console.log('✅ All API endpoints are healthy and accessible');
+        at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:280:29
+]]>
+</failure>
+<system-out>
+<![CDATA[🧪 Starting API-only partnership flow test
+   - User1 ID: 49d77b58-d86f-4ab3-b38f-759918537003
+   - User2 ID: c912a06f-9bab-42f4-b847-759918537004
+   - Week Start: 2025-10-08
+🔍 Testing API endpoint health...
+📤 REQUEST: GET https://serenity-plus-kohl.vercel.app/api/user
+📥 RESPONSE: Status 200
+📥 RESPONSE DATA: {
+  success: [33mtrue[39m,
+  users: [
+    {
+      id: [32m'becd889a-9cdb-4565-ae21-4a2a19003073'[39m,
+      name: [32m'testttt'[39m,
+      email: [32m'user-1759828407964@example.com'[39m,
+      weeklytarget: [33m1[39m,
+      usualsitlength: [33m5[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759828407964-1pbrlo9rb'[39m,
+      createdat: [32m'2025-10-07T09:13:29.197552+00:00'[39m
+    },
+    {
+      id: [32m'62158439-a682-40d4-a8a9-95ad65916a00'[39m,
+      name: [32m'part'[39m,
+      email: [32m'user-1759828452701@example.com'[39m,
+      weeklytarget: [33m1[39m,
+      usualsitlength: [33m10[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759828407964-1pbrlo9rb'[39m,
+      createdat: [32m'2025-10-07T09:14:13.541779+00:00'[39m
+    },
+    {
+      id: [32m'c9c9d5b4-5bc4-4b11-890e-ed6d485e1444'[39m,
+      name: [32m'tired'[39m,
+      email: [32m'user-1759828882231@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759828882231-ughui7va8'[39m,
+      createdat: [32m'2025-10-07T09:21:23.410182+00:00'[39m
+    },
+    {
+      id: [32m'1e58ddf6-a72e-4e3c-828b-1bd1a6c0b869'[39m,
+      name: [32m'tiredpartner'[39m,
+      email: [32m'user-1759828910343@example.com'[39m,
+      weeklytarget: [33m2[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759828882231-ughui7va8'[39m,
+      createdat: [32m'2025-10-07T09:21:51.178384+00:00'[39m
+    },
+    {
+      id: [32m'53a3d72f-e9e2-473a-bf11-6d8ae66d5484'[39m,
+      name: [32m'weeeeks'[39m,
+      email: [32m'user-1759829225238@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829225238-2effcrvbx'[39m,
+      createdat: [32m'2025-10-07T09:27:06.277516+00:00'[39m
+    },
+    {
+      id: [32m'4ddc90f2-c104-48f3-b141-21eeae3b6962'[39m,
+      name: [32m'weeekspartner'[39m,
+      email: [32m'user-1759829249053@example.com'[39m,
+      weeklytarget: [33m2[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829225238-2effcrvbx'[39m,
+      createdat: [32m'2025-10-07T09:27:29.847341+00:00'[39m
+    },
+    {
+      id: [32m'79a57796-c5e7-4f96-8f21-8e4dc7ef1350'[39m,
+      name: [32m'fghfh'[39m,
+      email: [32m'user-1759829345829@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829345828-ugdu319fh'[39m,
+      createdat: [32m'2025-10-07T09:29:06.878829+00:00'[39m
+    },
+    {
+      id: [32m'cd43ac1e-de54-473e-9044-3959654d6d52'[39m,
+      name: [32m'vgjgkfjgj'[39m,
+      email: [32m'user-1759829372717@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829345828-ugdu319fh'[39m,
+      createdat: [32m'2025-10-07T09:29:33.535773+00:00'[39m
+    },
+    {
+      id: [32m'2b3c68d0-ec4c-49fa-88d6-e60ef9434b9c'[39m,
+      name: [32m'eeerrr'[39m,
+      email: [32m'user-1759829712361@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829712361-mbsp5ejzz'[39m,
+      createdat: [32m'2025-10-07T09:35:13.740531+00:00'[39m
+    },
+    {
+      id: [32m'4cff52dc-c71c-4af5-aff6-0d912c6c9a46'[39m,
+      name: [32m'dddsss'[39m,
+      email: [32m'user-1759829732020@example.com'[39m,
+      weeklytarget: [33m2[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759829712361-mbsp5ejzz'[39m,
+      createdat: [32m'2025-10-07T09:35:32.849235+00:00'[39m
+    },
+    {
+      id: [32m'5b20d355-2a7d-4672-a8e6-e040de97037c'[39m,
+      name: [32m'fdsfds'[39m,
+      email: [32m'user-1759830411796@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759830411796-kf4jzbgjv'[39m,
+      createdat: [32m'2025-10-07T09:46:52.585358+00:00'[39m
+    },
+    {
+      id: [32m'8910198a-093f-4c45-85b5-5fd1e1275d04'[39m,
+      name: [32m'tretre'[39m,
+      email: [32m'user-1759830427970@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759830411796-kf4jzbgjv'[39m,
+      createdat: [32m'2025-10-07T09:47:08.771985+00:00'[39m
+    },
+    {
+      id: [32m'8d68056a-ba25-4ae5-8cc5-aa313b0f2dce'[39m,
+      name: [32m'weeklytest123'[39m,
+      email: [32m'user-1759832534518@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759832534518-zs5lwcqtd'[39m,
+      createdat: [32m'2025-10-07T10:22:16.659596+00:00'[39m
+    },
+    {
+      id: [32m'7cf5ca16-f9aa-4514-979e-865e5ec4f451'[39m,
+      name: [32m'weeklytest123partner'[39m,
+      email: [32m'user-1759832560497@example.com'[39m,
+      weeklytarget: [33m3[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759832534518-zs5lwcqtd'[39m,
+      createdat: [32m'2025-10-07T10:22:41.363314+00:00'[39m
+    },
+    {
+      id: [32m'a87a1784-1737-42b1-ba70-917b59c8b811'[39m,
+      name: [32m'newer'[39m,
+      email: [32m'user-1759833077885@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759833077885-bl4cv2o5c'[39m,
+      createdat: [32m'2025-10-07T10:31:18.972535+00:00'[39m
+    },
+    {
+      id: [32m'ac3ad14d-1f3b-4f17-a908-ee0569e0af6c'[39m,
+      name: [32m'rewen'[39m,
+      email: [32m'user-1759833101000@example.com'[39m,
+      weeklytarget: [33m4[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759833077885-bl4cv2o5c'[39m,
+      createdat: [32m'2025-10-07T10:31:41.819538+00:00'[39m
+    },
+    {
+      id: [32m'57cbe0bf-fd3e-48f5-9481-bb46a70157f8'[39m,
+      name: [32m'apitest'[39m,
+      email: [32m'user-1759835227326@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759835227326-9mgqw615k'[39m,
+      createdat: [32m'2025-10-07T11:07:08.383153+00:00'[39m
+    },
+    {
+      id: [32m'37278b31-765c-47cf-af09-2e5987c50af2'[39m,
+      name: [32m'apipartner'[39m,
+      email: [32m'user-1759835244971@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759835227326-9mgqw615k'[39m,
+      createdat: [32m'2025-10-07T11:07:25.747349+00:00'[39m
+    },
+    {
+      id: [32m'152eeabd-9ec5-43fa-a352-f3aa71b06386'[39m,
+      name: [32m'apinow'[39m,
+      email: [32m'user-1759835751575@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759835751575-ti7lzsh75'[39m,
+      createdat: [32m'2025-10-07T11:15:52.691493+00:00'[39m
+    },
+    {
+      id: [32m'833ad1fa-b164-4cc2-b683-4dceba257b16'[39m,
+      name: [32m'nowapi'[39m,
+      email: [32m'user-1759835768962@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759835751575-ti7lzsh75'[39m,
+      createdat: [32m'2025-10-07T11:16:09.779545+00:00'[39m
+    },
+    {
+      id: [32m'e3538496-a011-4d87-8f57-40a656da212d'[39m,
+      name: [32m'qweqwe'[39m,
+      email: [32m'user-1759899924857@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759899924856-ewfz5z84z'[39m,
+      createdat: [32m'2025-10-08T05:05:26.702359+00:00'[39m
+    },
+    {
+      id: [32m'd8533054-2cc3-441c-9ac9-0dfd67eb5637'[39m,
+      name: [32m'ewqewq'[39m,
+      email: [32m'user-1759899949186@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759899924856-ewfz5z84z'[39m,
+      createdat: [32m'2025-10-08T05:05:49.947676+00:00'[39m
+    },
+    {
+      id: [32m'152db010-90ba-46cd-ae1f-34951de7045e'[39m,
+      name: [32m'sofa'[39m,
+      email: [32m'user-1759900442694@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759900442694-tx1qsr351'[39m,
+      createdat: [32m'2025-10-08T05:14:03.910157+00:00'[39m
+    },
+    {
+      id: [32m'e30a2691-8239-4117-991e-75874dfb0834'[39m,
+      name: [32m'sofapartner'[39m,
+      email: [32m'user-1759900468762@example.com'[39m,
+      weeklytarget: [33m2[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759900442694-tx1qsr351'[39m,
+      createdat: [32m'2025-10-08T05:14:29.55798+00:00'[39m
+    },
+    {
+      id: [32m'9c12cb1b-09a8-4824-a663-ac282d39d05b'[39m,
+      name: [32m'wah'[39m,
+      email: [32m'user-1759901659090@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759901659090-nfxozjlbl'[39m,
+      createdat: [32m'2025-10-08T05:34:20.268222+00:00'[39m
+    },
+    {
+      id: [32m'6607bdc8-dd02-49fb-b0b3-797ecb6b8fc2'[39m,
+      name: [32m'wahpartner'[39m,
+      email: [32m'user-1759901684148@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759901659090-nfxozjlbl'[39m,
+      createdat: [32m'2025-10-08T05:34:45.001482+00:00'[39m
+    },
+    {
+      id: [32m'45e0adee-8994-4d96-9945-c0f6f30829d4'[39m,
+      name: [32m'wahpartner'[39m,
+      email: [32m'user-1759901691370@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759901659090-nfxozjlbl'[39m,
+      createdat: [32m'2025-10-08T05:35:11.660538+00:00'[39m
+    },
+    {
+      id: [32m'6df5638c-97d0-413b-b8de-594eea8280c0'[39m,
+      name: [32m'shai'[39m,
+      email: [32m'user-1759902764790@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759902764790-i2ywr21af'[39m,
+      createdat: [32m'2025-10-08T05:52:46.039107+00:00'[39m
+    },
+    {
+      id: [32m'bfacb256-62eb-4bf1-9cc0-b9e93e40264f'[39m,
+      name: [32m'shaipartner'[39m,
+      email: [32m'user-1759902790816@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759902764790-i2ywr21af'[39m,
+      createdat: [32m'2025-10-08T05:53:11.677451+00:00'[39m
+    },
+    {
+      id: [32m'72f2b843-673f-4cdd-b236-df4ea8b5b024'[39m,
+      name: [32m'shaipartner'[39m,
+      email: [32m'user-1759902825588@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759902764790-i2ywr21af'[39m,
+      createdat: [32m'2025-10-08T05:53:46.305474+00:00'[39m
+    },
+    {
+      id: [32m'faad4069-c03f-4c7a-8bda-f7de5358762b'[39m,
+      name: [32m'sdfsdf'[39m,
+      email: [32m'user-1759904195367@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759904195367-4jyeqythu'[39m,
+      createdat: [32m'2025-10-08T06:16:52.037628+00:00'[39m
+    },
+    {
+      id: [32m'3a12f892-5af9-45c8-a38c-7dd37d2386be'[39m,
+      name: [32m'tytyty'[39m,
+      email: [32m'user-1759904582141@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759904582140-nmff7y256'[39m,
+      createdat: [32m'2025-10-08T06:23:02.817167+00:00'[39m
+    },
+    {
+      id: [32m'e8fcbbbe-2c34-4a4f-9890-aaafe89415ae'[39m,
+      name: [32m'ytytyt'[39m,
+      email: [32m'user-1759904863597@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759904582140-nmff7y256'[39m,
+      createdat: [32m'2025-10-08T06:27:44.733296+00:00'[39m
+    },
+    {
+      id: [32m'49d77b58-d86f-4ab3-b38f-04cfe29a3f50'[39m,
+      name: [32m'12234'[39m,
+      email: [32m'user-1759917930661@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759917930661-b4twy4xcp'[39m,
+      createdat: [32m'2025-10-08T10:05:31.274636+00:00'[39m
+    },
+    {
+      id: [32m'c912a06f-9bab-42f4-b847-198d375c8a76'[39m,
+      name: [32m'11223344'[39m,
+      email: [32m'user-1759917972985@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m1[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759917930661-b4twy4xcp'[39m,
+      createdat: [32m'2025-10-08T10:06:13.648266+00:00'[39m
+    },
+    {
+      id: [32m'49d77b58-d86f-4ab3-b38f-04cfe29a3f51'[39m,
+      name: [32m'TestUser'[39m,
+      email: [32m'test@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m30[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'test-invite-123'[39m,
+      createdat: [32m'2025-10-08T10:10:50.654412+00:00'[39m
+    },
+    {
+      id: [32m'49d77b58-d86f-4ab3-b38f-759918374017'[39m,
+      name: [32m'TestUser1_1759918374108'[39m,
+      email: [32m'testuser1_1759918374108@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m30[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759918374108-i2f6qqr27'[39m,
+      createdat: [32m'2025-10-08T10:12:55.740315+00:00'[39m
+    },
+    {
+      id: [32m'49d77b58-d86f-4ab3-b38f-759918531645'[39m,
+      name: [32m'TestUser1_1759918531684'[39m,
+      email: [32m'testuser1_1759918531684@example.com'[39m,
+      weeklytarget: [33m5[39m,
+      usualsitlength: [33m30[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759918531684-2mgjwo045'[39m,
+      createdat: [32m'2025-10-08T10:15:33.520808+00:00'[39m
+    },
+    {
+      id: [32m'256a5abe-7e14-4501-a227-422191ac33a3'[39m,
+      name: [32m'weekstest'[39m,
+      email: [32m'user-1759827942529@example.com'[39m,
+      weeklytarget: [33m1[39m,
+      usualsitlength: [33m5[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759827942529-6jpb7uh44'[39m,
+      createdat: [32m'2025-10-07T09:05:44.070665+00:00'[39m
+    },
+    {
+      id: [32m'cb0dc79c-5342-49d1-88f6-9ebd6f052855'[39m,
+      name: [32m'partner'[39m,
+      email: [32m'user-1759827968335@example.com'[39m,
+      weeklytarget: [33m1[39m,
+      usualsitlength: [33m30[39m,
+      image: [32m'/icons/meditation-1.svg'[39m,
+      invitecode: [32m'invite-1759827942529-6jpb7uh44'[39m,
+      createdat: [32m'2025-10-07T09:06:09.278797+00:00'[39m
+    }
+  ]
+}
+   /api/user: 200 ✅
+📤 REQUEST: GET https://serenity-plus-kohl.vercel.app/api/invite
+📥 RESPONSE: Status 400
+📥 ERROR RESPONSE: {"error":"Missing invite code"}
+   /api/invite: 400 ❌
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,793 @@
+{
+  "config": {
+    "configFile": "/home/idolanuel/serenity-plus/playwright.production.config.ts",
+    "rootDir": "/home/idolanuel/serenity-plus/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/home/idolanuel/serenity-plus/tests/e2e/global-setup-production.ts",
+    "globalTeardown": "/home/idolanuel/serenity-plus/tests/e2e/global-teardown-production.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-production"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results-production.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results-production.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/idolanuel/serenity-plus/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium-production",
+        "name": "chromium-production",
+        "testDir": "/home/idolanuel/serenity-plus/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 2,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "invite-flow.spec.ts",
+      "file": "invite-flow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Invite Flow",
+          "file": "invite-flow.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BR-002: Generate invite link and QR code",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-86a42ba0d3eb6c04c5da",
+              "file": "invite-flow.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "BR-002: Accept invite and create partnership",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-ae39d77d8f18687f497a",
+              "file": "invite-flow.spec.ts",
+              "line": 20,
+              "column": 7
+            },
+            {
+              "title": "BR-003: Partnership display on homepage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-127dd9bad69f7a054f1a",
+              "file": "invite-flow.spec.ts",
+              "line": 47,
+              "column": 7
+            },
+            {
+              "title": "BR-006: QR code generation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-53611c751285c0933c7a",
+              "file": "invite-flow.spec.ts",
+              "line": 60,
+              "column": 7
+            },
+            {
+              "title": "BR-008: Error handling for invalid invite",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-943de6940d069d513098",
+              "file": "invite-flow.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "BR-009: Security - invite code validation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-3bc1ee38288f59b272e5",
+              "file": "invite-flow.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "BR-010: Performance - invite page load",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "0e2f5b3912b5d74d09dc-e7b58bce8a00e73a0dd0",
+              "file": "invite-flow.spec.ts",
+              "line": 90,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "notification-redirect.spec.ts",
+      "file": "notification-redirect.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Notification Redirect Bug",
+          "file": "notification-redirect.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should redirect to homepage after notifications, not welcome",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "bab3c49f4f326bb60bb1-82f5c49ba7942d02c731",
+              "file": "notification-redirect.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should handle notification errors without crashing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "bab3c49f4f326bb60bb1-34e3760d6b9758243c89",
+              "file": "notification-redirect.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "should handle race condition between meditation-length and homepage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "bab3c49f4f326bb60bb1-a82fcfc88803058a3259",
+              "file": "notification-redirect.spec.ts",
+              "line": 85,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "onboarding-workflow.spec.ts",
+      "file": "onboarding-workflow.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Complete Onboarding Workflow",
+          "file": "onboarding-workflow.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should complete full onboarding without errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6aeb0a4c78c322ba6fb4-2bd6bc2ae755e7ba665e",
+              "file": "onboarding-workflow.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should handle notification permission denial gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6aeb0a4c78c322ba6fb4-76e3ecc7d40b5cfb534a",
+              "file": "onboarding-workflow.spec.ts",
+              "line": 62,
+              "column": 7
+            },
+            {
+              "title": "should handle missing userId gracefully",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "6aeb0a4c78c322ba6fb4-c57841f7bc0941f70fa9",
+              "file": "onboarding-workflow.spec.ts",
+              "line": 87,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "onboarding.spec.ts",
+      "file": "onboarding.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Onboarding Flow",
+          "file": "onboarding.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "BR-001: Complete onboarding flow for new user",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-27fa1828f88bcfb5ff57",
+              "file": "onboarding.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "BR-001: Onboarding with invite code",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-fb5836176336d49a6c50",
+              "file": "onboarding.spec.ts",
+              "line": 42,
+              "column": 7
+            },
+            {
+              "title": "BR-006: UI elements are present",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-7f616a0ac0104e1cc8b0",
+              "file": "onboarding.spec.ts",
+              "line": 54,
+              "column": 7
+            },
+            {
+              "title": "BR-006: Dropdowns have proper styling",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-666bd9acd4a658724549",
+              "file": "onboarding.spec.ts",
+              "line": 64,
+              "column": 7
+            },
+            {
+              "title": "BR-006: Contextual text appears",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-70f283ded52711aab370",
+              "file": "onboarding.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "BR-005: PWA functionality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-b3d8f9dc8147ccce6c0f",
+              "file": "onboarding.spec.ts",
+              "line": 82,
+              "column": 7
+            },
+            {
+              "title": "BR-008: Error handling for invalid input",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-26d99c4e95172104fcfa",
+              "file": "onboarding.spec.ts",
+              "line": 94,
+              "column": 7
+            },
+            {
+              "title": "BR-010: Performance - page load times",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "fe534f0825407f213faa-56a66d12a899b083a9ce",
+              "file": "onboarding.spec.ts",
+              "line": 105,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "partnership-flow-production.spec.ts",
+      "file": "partnership-flow-production.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Production Partnership Flow - Complete E2E Test",
+          "file": "partnership-flow-production.spec.ts",
+          "line": 5,
+          "column": 6,
+          "specs": [
+            {
+              "title": "COMPLETE PARTNERSHIP FLOW: User1 Onboarding → Invite → User2 Onboarding → Partnership → Week Records → API Verification",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "349173eba199dfde377d-319c25b65233328f0d71",
+              "file": "partnership-flow-production.spec.ts",
+              "line": 20,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "partnership-system.spec.ts",
+      "file": "partnership-system.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Partnership System",
+          "file": "partnership-system.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should show partnerships between users after onboarding",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "94bfdb7ece45eac1ae45-63c876a73eb98f1cc9b1",
+              "file": "partnership-system.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should handle invite flow and create partnerships",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "94bfdb7ece45eac1ae45-8502ec814505e11545cd",
+              "file": "partnership-system.spec.ts",
+              "line": 78,
+              "column": 7
+            },
+            {
+              "title": "should persist partnerships across page reloads",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "94bfdb7ece45eac1ae45-96cbb6a24b57b23e4f0b",
+              "file": "partnership-system.spec.ts",
+              "line": 114,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "ui-improvements.spec.ts",
+      "file": "ui-improvements.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "UI Improvements",
+          "file": "ui-improvements.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should show Sit Now button immediately on homepage",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4172322f5a1448c44606-fd13fbef306fd493c644",
+              "file": "ui-improvements.spec.ts",
+              "line": 4,
+              "column": 7
+            },
+            {
+              "title": "should use user-selected meditation length in timer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4172322f5a1448c44606-2df704e59b8735abbde7",
+              "file": "ui-improvements.spec.ts",
+              "line": 24,
+              "column": 7
+            },
+            {
+              "title": "should have Continue buttons at bottom of onboarding screens",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4172322f5a1448c44606-21a54adf82ff89b43ac2",
+              "file": "ui-improvements.spec.ts",
+              "line": 46,
+              "column": 7
+            },
+            {
+              "title": "should not have bottom logos on onboarding screens",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4172322f5a1448c44606-8b395a29d4a9c1035dbb",
+              "file": "ui-improvements.spec.ts",
+              "line": 75,
+              "column": 7
+            },
+            {
+              "title": "should have proper flexbox layout for button positioning",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-production",
+                  "projectName": "chromium-production",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "4172322f5a1448c44606-013f07013e675d84f395",
+              "file": "ui-improvements.spec.ts",
+              "line": 97,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-08T09:24:24.687Z",
+    "duration": 977.0550000000003,
+    "expected": 0,
+    "skipped": 30,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

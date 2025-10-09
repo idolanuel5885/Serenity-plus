@@ -1,0 +1,136 @@
+<testsuites id="" name="" tests="30" failures="0" skipped="30" errors="0" time="0.9770550000000003">
+<testsuite name="invite-flow.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="7" failures="0" skipped="7" time="0" errors="0">
+<testcase name="Invite Flow › BR-002: Generate invite link and QR code" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-002: Accept invite and create partnership" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-003: Partnership display on homepage" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-006: QR code generation" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-008: Error handling for invalid invite" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-009: Security - invite code validation" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Invite Flow › BR-010: Performance - invite page load" classname="invite-flow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="notification-redirect.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="3" failures="0" skipped="3" time="0" errors="0">
+<testcase name="Notification Redirect Bug › should redirect to homepage after notifications, not welcome" classname="notification-redirect.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Notification Redirect Bug › should handle notification errors without crashing" classname="notification-redirect.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Notification Redirect Bug › should handle race condition between meditation-length and homepage" classname="notification-redirect.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="onboarding-workflow.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="3" failures="0" skipped="3" time="0" errors="0">
+<testcase name="Complete Onboarding Workflow › should complete full onboarding without errors" classname="onboarding-workflow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Complete Onboarding Workflow › should handle notification permission denial gracefully" classname="onboarding-workflow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Complete Onboarding Workflow › should handle missing userId gracefully" classname="onboarding-workflow.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="onboarding.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="8" failures="0" skipped="8" time="0" errors="0">
+<testcase name="Onboarding Flow › BR-001: Complete onboarding flow for new user" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-001: Onboarding with invite code" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-006: UI elements are present" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-006: Dropdowns have proper styling" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-006: Contextual text appears" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-005: PWA functionality" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-008: Error handling for invalid input" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Onboarding Flow › BR-010: Performance - page load times" classname="onboarding.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="partnership-flow-production.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="1" failures="0" skipped="1" time="0" errors="0">
+<testcase name="Production Partnership Flow - Complete E2E Test › COMPLETE PARTNERSHIP FLOW: User1 Onboarding → Invite → User2 Onboarding → Partnership → Week Records → API Verification" classname="partnership-flow-production.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="partnership-system.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="3" failures="0" skipped="3" time="0" errors="0">
+<testcase name="Partnership System › should show partnerships between users after onboarding" classname="partnership-system.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Partnership System › should handle invite flow and create partnerships" classname="partnership-system.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Partnership System › should persist partnerships across page reloads" classname="partnership-system.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="ui-improvements.spec.ts" timestamp="2025-10-08T09:24:25.660Z" hostname="chromium-production" tests="5" failures="0" skipped="5" time="0" errors="0">
+<testcase name="UI Improvements › should show Sit Now button immediately on homepage" classname="ui-improvements.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="UI Improvements › should use user-selected meditation length in timer" classname="ui-improvements.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="UI Improvements › should have Continue buttons at bottom of onboarding screens" classname="ui-improvements.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="UI Improvements › should not have bottom logos on onboarding screens" classname="ui-improvements.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="UI Improvements › should have proper flexbox layout for button positioning" classname="ui-improvements.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

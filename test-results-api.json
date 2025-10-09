@@ -1,0 +1,310 @@
+{
+  "config": {
+    "configFile": "/home/idolanuel/serenity-plus/playwright.api.config.ts",
+    "rootDir": "/home/idolanuel/serenity-plus/tests/api",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/home/idolanuel/serenity-plus/tests/api/global-setup-api.ts",
+    "globalTeardown": "/home/idolanuel/serenity-plus/tests/api/global-teardown-api.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report-api"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results-api.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results-api.xml"
+        }
+      ],
+      [
+        "line",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/home/idolanuel/serenity-plus/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "api-production",
+        "name": "api-production",
+        "testDir": "/home/idolanuel/serenity-plus/tests/api",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.55.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "partnership-flow-api.spec.ts",
+      "file": "partnership-flow-api.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "API-Only Partnership Flow - Production Database Test",
+          "file": "partnership-flow-api.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "COMPLETE API-ONLY PARTNERSHIP FLOW: User1 → Invite → User2 → Partnership → Week Records",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api-production",
+                  "projectName": "api-production",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3236,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:94:33",
+                        "location": {
+                          "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                          "column": 33,
+                          "line": 94
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 92 |\u001b[39m     }\n \u001b[90m 93 |\u001b[39m     \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m     expect(inviteResponse\u001b[33m.\u001b[39mok())\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`✅ Invite generated successfully (Code: ${inviteCode})`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 96 |\u001b[39m     \n \u001b[90m 97 |\u001b[39m     \u001b[90m// Stage 4: Create User2 with invite code\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                            "column": 33,
+                            "line": 94
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 92 |\u001b[39m     }\n \u001b[90m 93 |\u001b[39m     \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 94 |\u001b[39m     expect(inviteResponse\u001b[33m.\u001b[39mok())\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 95 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`✅ Invite generated successfully (Code: ${inviteCode})`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 96 |\u001b[39m     \n \u001b[90m 97 |\u001b[39m     \u001b[90m// Stage 4: Create User2 with invite code\u001b[39m\u001b[0m\n\u001b[2m    at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:94:33\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🧪 Starting API-only partnership flow test\n"
+                        },
+                        {
+                          "text": "   - User1 ID: 49d77b58-d86f-4ab3-b38f-759918531645\n"
+                        },
+                        {
+                          "text": "   - User2 ID: c912a06f-9bab-42f4-b847-759918531646\n"
+                        },
+                        {
+                          "text": "   - Week Start: 2025-10-08\n"
+                        },
+                        {
+                          "text": "🚀 Stage 1: Creating User1...\n"
+                        },
+                        {
+                          "text": "📤 REQUEST: POST https://serenity-plus-kohl.vercel.app/api/user\n"
+                        },
+                        {
+                          "text": "📤 DATA: {\n  id: \u001b[32m'49d77b58-d86f-4ab3-b38f-759918531645'\u001b[39m,\n  name: \u001b[32m'TestUser1_1759918531682'\u001b[39m,\n  email: \u001b[32m'testuser1_1759918531682@example.com'\u001b[39m,\n  weeklytarget: \u001b[33m5\u001b[39m,\n  usualsitlength: \u001b[33m30\u001b[39m,\n  image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n  invitecode: \u001b[32m'invite-1759918531682-kbka9d0vl'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE: Status 200\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE DATA: {\n  success: \u001b[33mtrue\u001b[39m,\n  user: {\n    id: \u001b[32m'49d77b58-d86f-4ab3-b38f-759918531645'\u001b[39m,\n    name: \u001b[32m'TestUser1_1759918531684'\u001b[39m,\n    email: \u001b[32m'testuser1_1759918531684@example.com'\u001b[39m,\n    weeklytarget: \u001b[33m5\u001b[39m,\n    usualsitlength: \u001b[33m30\u001b[39m,\n    image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n    invitecode: \u001b[32m'invite-1759918531684-2mgjwo045'\u001b[39m,\n    createdat: \u001b[32m'2025-10-08T10:15:33.520808+00:00'\u001b[39m\n  }\n}\n"
+                        },
+                        {
+                          "text": "✅ User1 created successfully (Status: 200)\n"
+                        },
+                        {
+                          "text": "🚀 Stage 2: Skipping User1 onboarding (endpoint not available)...\n"
+                        },
+                        {
+                          "text": "⚠️  NOTE: /api/onboarding endpoint does not exist in production\n"
+                        },
+                        {
+                          "text": "✅ User1 onboarding skipped (endpoint not available)\n"
+                        },
+                        {
+                          "text": "🚀 Stage 3: Generating invite for User1...\n"
+                        },
+                        {
+                          "text": "📤 REQUEST: POST https://serenity-plus-kohl.vercel.app/api/invite\n"
+                        },
+                        {
+                          "text": "📤 DATA: {\n  userId: \u001b[32m'49d77b58-d86f-4ab3-b38f-759918531645'\u001b[39m,\n  userName: \u001b[32m'TestUser1_1759918533703'\u001b[39m\n}\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE: Status 500\n"
+                        },
+                        {
+                          "text": "📥 ERROR RESPONSE: {\"error\":\"Failed to create invitation\"}\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T10:15:31.554Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                        "column": 33,
+                        "line": 94
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "754021c2f3ee1b496bed-2e9d3ec3c7bf14bcddcc",
+              "file": "partnership-flow-api.spec.ts",
+              "line": 23,
+              "column": 7
+            },
+            {
+              "title": "API Endpoint Health Check",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "api-production",
+                  "projectName": "api-production",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 1916,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n    at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:280:29",
+                        "location": {
+                          "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                          "column": 29,
+                          "line": 280
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 278 |\u001b[39m       }\n \u001b[90m 279 |\u001b[39m       \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 280 |\u001b[39m       expect(response\u001b[33m.\u001b[39mok())\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 281 |\u001b[39m     }\n \u001b[90m 282 |\u001b[39m     \n \u001b[90m 283 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'✅ All API endpoints are healthy and accessible'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                            "column": 29,
+                            "line": 280
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32mtrue\u001b[39m\nReceived: \u001b[31mfalse\u001b[39m\n\n\u001b[0m \u001b[90m 278 |\u001b[39m       }\n \u001b[90m 279 |\u001b[39m       \n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 280 |\u001b[39m       expect(response\u001b[33m.\u001b[39mok())\u001b[33m.\u001b[39mtoBe(\u001b[36mtrue\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 281 |\u001b[39m     }\n \u001b[90m 282 |\u001b[39m     \n \u001b[90m 283 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m'✅ All API endpoints are healthy and accessible'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts:280:29\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🧪 Starting API-only partnership flow test\n"
+                        },
+                        {
+                          "text": "   - User1 ID: 49d77b58-d86f-4ab3-b38f-759918537003\n"
+                        },
+                        {
+                          "text": "   - User2 ID: c912a06f-9bab-42f4-b847-759918537004\n"
+                        },
+                        {
+                          "text": "   - Week Start: 2025-10-08\n"
+                        },
+                        {
+                          "text": "🔍 Testing API endpoint health...\n"
+                        },
+                        {
+                          "text": "📤 REQUEST: GET https://serenity-plus-kohl.vercel.app/api/user\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE: Status 200\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE DATA: {\n  success: \u001b[33mtrue\u001b[39m,\n  users: [\n    {\n      id: \u001b[32m'becd889a-9cdb-4565-ae21-4a2a19003073'\u001b[39m,\n      name: \u001b[32m'testttt'\u001b[39m,\n      email: \u001b[32m'user-1759828407964@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m1\u001b[39m,\n      usualsitlength: \u001b[33m5\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759828407964-1pbrlo9rb'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:13:29.197552+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'62158439-a682-40d4-a8a9-95ad65916a00'\u001b[39m,\n      name: \u001b[32m'part'\u001b[39m,\n      email: \u001b[32m'user-1759828452701@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m1\u001b[39m,\n      usualsitlength: \u001b[33m10\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759828407964-1pbrlo9rb'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:14:13.541779+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'c9c9d5b4-5bc4-4b11-890e-ed6d485e1444'\u001b[39m,\n      name: \u001b[32m'tired'\u001b[39m,\n      email: \u001b[32m'user-1759828882231@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759828882231-ughui7va8'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:21:23.410182+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'1e58ddf6-a72e-4e3c-828b-1bd1a6c0b869'\u001b[39m,\n      name: \u001b[32m'tiredpartner'\u001b[39m,\n      email: \u001b[32m'user-1759828910343@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m2\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759828882231-ughui7va8'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:21:51.178384+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'53a3d72f-e9e2-473a-bf11-6d8ae66d5484'\u001b[39m,\n      name: \u001b[32m'weeeeks'\u001b[39m,\n      email: \u001b[32m'user-1759829225238@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829225238-2effcrvbx'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:27:06.277516+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'4ddc90f2-c104-48f3-b141-21eeae3b6962'\u001b[39m,\n      name: \u001b[32m'weeekspartner'\u001b[39m,\n      email: \u001b[32m'user-1759829249053@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m2\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829225238-2effcrvbx'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:27:29.847341+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'79a57796-c5e7-4f96-8f21-8e4dc7ef1350'\u001b[39m,\n      name: \u001b[32m'fghfh'\u001b[39m,\n      email: \u001b[32m'user-1759829345829@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829345828-ugdu319fh'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:29:06.878829+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'cd43ac1e-de54-473e-9044-3959654d6d52'\u001b[39m,\n      name: \u001b[32m'vgjgkfjgj'\u001b[39m,\n      email: \u001b[32m'user-1759829372717@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829345828-ugdu319fh'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:29:33.535773+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'2b3c68d0-ec4c-49fa-88d6-e60ef9434b9c'\u001b[39m,\n      name: \u001b[32m'eeerrr'\u001b[39m,\n      email: \u001b[32m'user-1759829712361@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829712361-mbsp5ejzz'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:35:13.740531+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'4cff52dc-c71c-4af5-aff6-0d912c6c9a46'\u001b[39m,\n      name: \u001b[32m'dddsss'\u001b[39m,\n      email: \u001b[32m'user-1759829732020@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m2\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759829712361-mbsp5ejzz'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:35:32.849235+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'5b20d355-2a7d-4672-a8e6-e040de97037c'\u001b[39m,\n      name: \u001b[32m'fdsfds'\u001b[39m,\n      email: \u001b[32m'user-1759830411796@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759830411796-kf4jzbgjv'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:46:52.585358+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'8910198a-093f-4c45-85b5-5fd1e1275d04'\u001b[39m,\n      name: \u001b[32m'tretre'\u001b[39m,\n      email: \u001b[32m'user-1759830427970@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759830411796-kf4jzbgjv'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:47:08.771985+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'8d68056a-ba25-4ae5-8cc5-aa313b0f2dce'\u001b[39m,\n      name: \u001b[32m'weeklytest123'\u001b[39m,\n      email: \u001b[32m'user-1759832534518@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759832534518-zs5lwcqtd'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T10:22:16.659596+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'7cf5ca16-f9aa-4514-979e-865e5ec4f451'\u001b[39m,\n      name: \u001b[32m'weeklytest123partner'\u001b[39m,\n      email: \u001b[32m'user-1759832560497@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m3\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759832534518-zs5lwcqtd'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T10:22:41.363314+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'a87a1784-1737-42b1-ba70-917b59c8b811'\u001b[39m,\n      name: \u001b[32m'newer'\u001b[39m,\n      email: \u001b[32m'user-1759833077885@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759833077885-bl4cv2o5c'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T10:31:18.972535+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'ac3ad14d-1f3b-4f17-a908-ee0569e0af6c'\u001b[39m,\n      name: \u001b[32m'rewen'\u001b[39m,\n      email: \u001b[32m'user-1759833101000@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m4\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759833077885-bl4cv2o5c'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T10:31:41.819538+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'57cbe0bf-fd3e-48f5-9481-bb46a70157f8'\u001b[39m,\n      name: \u001b[32m'apitest'\u001b[39m,\n      email: \u001b[32m'user-1759835227326@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759835227326-9mgqw615k'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T11:07:08.383153+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'37278b31-765c-47cf-af09-2e5987c50af2'\u001b[39m,\n      name: \u001b[32m'apipartner'\u001b[39m,\n      email: \u001b[32m'user-1759835244971@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759835227326-9mgqw615k'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T11:07:25.747349+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'152eeabd-9ec5-43fa-a352-f3aa71b06386'\u001b[39m,\n      name: \u001b[32m'apinow'\u001b[39m,\n      email: \u001b[32m'user-1759835751575@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759835751575-ti7lzsh75'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T11:15:52.691493+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'833ad1fa-b164-4cc2-b683-4dceba257b16'\u001b[39m,\n      name: \u001b[32m'nowapi'\u001b[39m,\n      email: \u001b[32m'user-1759835768962@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759835751575-ti7lzsh75'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T11:16:09.779545+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'e3538496-a011-4d87-8f57-40a656da212d'\u001b[39m,\n      name: \u001b[32m'qweqwe'\u001b[39m,\n      email: \u001b[32m'user-1759899924857@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759899924856-ewfz5z84z'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:05:26.702359+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'd8533054-2cc3-441c-9ac9-0dfd67eb5637'\u001b[39m,\n      name: \u001b[32m'ewqewq'\u001b[39m,\n      email: \u001b[32m'user-1759899949186@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759899924856-ewfz5z84z'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:05:49.947676+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'152db010-90ba-46cd-ae1f-34951de7045e'\u001b[39m,\n      name: \u001b[32m'sofa'\u001b[39m,\n      email: \u001b[32m'user-1759900442694@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759900442694-tx1qsr351'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:14:03.910157+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'e30a2691-8239-4117-991e-75874dfb0834'\u001b[39m,\n      name: \u001b[32m'sofapartner'\u001b[39m,\n      email: \u001b[32m'user-1759900468762@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m2\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759900442694-tx1qsr351'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:14:29.55798+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'9c12cb1b-09a8-4824-a663-ac282d39d05b'\u001b[39m,\n      name: \u001b[32m'wah'\u001b[39m,\n      email: \u001b[32m'user-1759901659090@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759901659090-nfxozjlbl'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:34:20.268222+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'6607bdc8-dd02-49fb-b0b3-797ecb6b8fc2'\u001b[39m,\n      name: \u001b[32m'wahpartner'\u001b[39m,\n      email: \u001b[32m'user-1759901684148@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759901659090-nfxozjlbl'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:34:45.001482+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'45e0adee-8994-4d96-9945-c0f6f30829d4'\u001b[39m,\n      name: \u001b[32m'wahpartner'\u001b[39m,\n      email: \u001b[32m'user-1759901691370@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759901659090-nfxozjlbl'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:35:11.660538+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'6df5638c-97d0-413b-b8de-594eea8280c0'\u001b[39m,\n      name: \u001b[32m'shai'\u001b[39m,\n      email: \u001b[32m'user-1759902764790@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759902764790-i2ywr21af'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:52:46.039107+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'bfacb256-62eb-4bf1-9cc0-b9e93e40264f'\u001b[39m,\n      name: \u001b[32m'shaipartner'\u001b[39m,\n      email: \u001b[32m'user-1759902790816@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759902764790-i2ywr21af'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:53:11.677451+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'72f2b843-673f-4cdd-b236-df4ea8b5b024'\u001b[39m,\n      name: \u001b[32m'shaipartner'\u001b[39m,\n      email: \u001b[32m'user-1759902825588@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759902764790-i2ywr21af'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T05:53:46.305474+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'faad4069-c03f-4c7a-8bda-f7de5358762b'\u001b[39m,\n      name: \u001b[32m'sdfsdf'\u001b[39m,\n      email: \u001b[32m'user-1759904195367@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759904195367-4jyeqythu'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T06:16:52.037628+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'3a12f892-5af9-45c8-a38c-7dd37d2386be'\u001b[39m,\n      name: \u001b[32m'tytyty'\u001b[39m,\n      email: \u001b[32m'user-1759904582141@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759904582140-nmff7y256'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T06:23:02.817167+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'e8fcbbbe-2c34-4a4f-9890-aaafe89415ae'\u001b[39m,\n      name: \u001b[32m'ytytyt'\u001b[39m,\n      email: \u001b[32m'user-1759904863597@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759904582140-nmff7y256'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T06:27:44.733296+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'49d77b58-d86f-4ab3-b38f-04cfe29a3f50'\u001b[39m,\n      name: \u001b[32m'12234'\u001b[39m,\n      email: \u001b[32m'user-1759917930661@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759917930661-b4twy4xcp'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T10:05:31.274636+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'c912a06f-9bab-42f4-b847-198d375c8a76'\u001b[39m,\n      name: \u001b[32m'11223344'\u001b[39m,\n      email: \u001b[32m'user-1759917972985@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m1\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759917930661-b4twy4xcp'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T10:06:13.648266+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'49d77b58-d86f-4ab3-b38f-04cfe29a3f51'\u001b[39m,\n      name: \u001b[32m'TestUser'\u001b[39m,\n      email: \u001b[32m'test@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m30\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'test-invite-123'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T10:10:50.654412+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'49d77b58-d86f-4ab3-b38f-759918374017'\u001b[39m,\n      name: \u001b[32m'TestUser1_1759918374108'\u001b[39m,\n      email: \u001b[32m'testuser1_1759918374108@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m30\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759918374108-i2f6qqr27'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T10:12:55.740315+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'49d77b58-d86f-4ab3-b38f-759918531645'\u001b[39m,\n      name: \u001b[32m'TestUser1_1759918531684'\u001b[39m,\n      email: \u001b[32m'testuser1_1759918531684@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m5\u001b[39m,\n      usualsitlength: \u001b[33m30\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759918531684-2mgjwo045'\u001b[39m,\n      createdat: \u001b[32m'2025-10-08T10:15:33.520808+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'256a5abe-7e14-4501-a227-422191ac33a3'\u001b[39m,\n      name: \u001b[32m'weekstest'\u001b[39m,\n      email: \u001b[32m'user-1759827942529@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m1\u001b[39m,\n      usualsitlength: \u001b[33m5\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759827942529-6jpb7uh44'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:05:44.070665+00:00'\u001b[39m\n    },\n    {\n      id: \u001b[32m'cb0dc79c-5342-49d1-88f6-9ebd6f052855'\u001b[39m,\n      name: \u001b[32m'partner'\u001b[39m,\n      email: \u001b[32m'user-1759827968335@example.com'\u001b[39m,\n      weeklytarget: \u001b[33m1\u001b[39m,\n      usualsitlength: \u001b[33m30\u001b[39m,\n      image: \u001b[32m'/icons/meditation-1.svg'\u001b[39m,\n      invitecode: \u001b[32m'invite-1759827942529-6jpb7uh44'\u001b[39m,\n      createdat: \u001b[32m'2025-10-07T09:06:09.278797+00:00'\u001b[39m\n    }\n  ]\n}\n"
+                        },
+                        {
+                          "text": "   /api/user: 200 ✅\n"
+                        },
+                        {
+                          "text": "📤 REQUEST: GET https://serenity-plus-kohl.vercel.app/api/invite\n"
+                        },
+                        {
+                          "text": "📥 RESPONSE: Status 400\n"
+                        },
+                        {
+                          "text": "📥 ERROR RESPONSE: {\"error\":\"Missing invite code\"}\n"
+                        },
+                        {
+                          "text": "   /api/invite: 400 ❌\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-08T10:15:36.937Z",
+                      "annotations": [],
+                      "attachments": [],
+                      "errorLocation": {
+                        "file": "/home/idolanuel/serenity-plus/tests/api/partnership-flow-api.spec.ts",
+                        "column": 29,
+                        "line": 280
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "754021c2f3ee1b496bed-c8641d63379ce7328b5e",
+              "file": "partnership-flow-api.spec.ts",
+              "line": 254,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-08T10:15:28.020Z",
+    "duration": 11011.703000000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}
