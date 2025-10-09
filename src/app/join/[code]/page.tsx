@@ -23,14 +23,9 @@ export default function JoinPage({ params }: { params: Promise<{ code: string }>
         localStorage.setItem('pendingInviteCode', code);
 
         if (code.includes('invite-')) {
-          // This is a real invite code - fetch inviter info from API
-          const response = await fetch(`/api/invite?code=${code}`);
-          if (response.ok) {
-            const data = await response.json();
-            setInviterName(data.invitation.inviter.name);
-          } else {
-            setInviterName('Your Partner');
-          }
+          // Note: Invite API calls removed as they are not used by the app
+          // Set inviter name to default since we can't fetch from broken API
+          setInviterName('Your Partner');
         } else {
           // Handle demo codes
           const demoNames: Record<string, string> = {

@@ -394,7 +394,6 @@ export async function createPartnershipsForUser(
         .select('*')
         .eq('userid', userId)
         .eq('partnerid', otherUser.id)
-        .eq('isactive', true)
         .maybeSingle();
 
       const { data: existingPartnership2, error: checkError2 } = await supabase
@@ -402,7 +401,6 @@ export async function createPartnershipsForUser(
         .select('*')
         .eq('userid', otherUser.id)
         .eq('partnerid', userId)
-        .eq('isactive', true)
         .maybeSingle();
 
       const existingPartnership = existingPartnership1 || existingPartnership2;

@@ -21,8 +21,7 @@ export async function GET(request: NextRequest) {
       .from('partnerships')
       .select('*')
       .eq('id', partnershipId)
-      .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
-      .eq('isActive', true)
+      .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .single();
 
     if (partnershipError || !partnership) {
@@ -68,8 +67,7 @@ export async function POST(request: NextRequest) {
       .from('partnerships')
       .select('*')
       .eq('id', partnershipId)
-      .or(`user1Id.eq.${userId},user2Id.eq.${userId}`)
-      .eq('isActive', true)
+      .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .single();
 
     if (partnershipError || !partnership) {

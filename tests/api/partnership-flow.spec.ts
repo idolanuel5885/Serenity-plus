@@ -14,7 +14,6 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     // Step 1: Create User1
     const user1Response = await request.post(`${baseUrl}/api/user`, {
       data: { 
-        id: user1Id, 
         name: `User1_${timestamp}`, 
         email: `user1_${timestamp}@test.com`, 
         weeklytarget: 5, 
@@ -23,13 +22,19 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         invitecode: inviteCode 
       }
     });
+    if (!user1Response.ok()) {
+      const responseText = await user1Response.text();
+      console.log('❌ User1 creation failed. Status:', user1Response.status());
+      console.log('❌ Response:', responseText.substring(0, 200));
+    }
     expect(user1Response.ok()).toBe(true);
-    console.log('✅ User1 created successfully');
+    const user1Data = await user1Response.json();
+    const actualUser1Id = user1Data.user.id;
+    console.log('✅ User1 created successfully with ID:', actualUser1Id);
 
     // Step 2: Create User2 with same invite code
     const user2Response = await request.post(`${baseUrl}/api/user`, {
       data: { 
-        id: user2Id, 
         name: `User2_${timestamp}`, 
         email: `user2_${timestamp}@test.com`, 
         weeklytarget: 3, 
@@ -39,22 +44,24 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
       }
     });
     expect(user2Response.ok()).toBe(true);
-    console.log('✅ User2 created successfully');
+    const user2Data = await user2Response.json();
+    const actualUser2Id = user2Data.user.id;
+    console.log('✅ User2 created successfully with ID:', actualUser2Id);
 
     // Step 3: Call createPartnershipsForUser directly (like the app does)
     console.log('🔄 Calling createPartnershipsForUser...');
-    const partnerships = await createPartnershipsForUser(user1Id, inviteCode);
+    const partnerships = await createPartnershipsForUser(actualUser1Id, inviteCode);
     
     expect(partnerships.length).toBeGreaterThan(0);
     console.log(`✅ Created ${partnerships.length} partnership(s)`);
 
     // Step 4: Verify partnership exists in database
-    const userPartnerships = await getUserPartnerships(user1Id);
+    const userPartnerships = await getUserPartnerships(actualUser1Id);
     expect(userPartnerships.length).toBeGreaterThan(0);
     console.log('✅ Partnership verified in database');
 
     // Step 5: Test lotus progress (verifies weeks were created automatically)
-    const lotusResponse = await request.get(`${baseUrl}/api/lotus-progress?userId=${user1Id}&partnershipId=${partnerships[0].id}`);
+    const lotusResponse = await request.get(`${baseUrl}/api/lotus-progress?userId=${actualUser1Id}&partnershipId=${partnerships[0].id}`);
     
     if (lotusResponse.ok()) {
       const lotusData = await lotusResponse.json();

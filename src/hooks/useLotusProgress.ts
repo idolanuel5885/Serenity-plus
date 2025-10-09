@@ -21,6 +21,7 @@ export function useLotusProgress({
   const [progressData, setProgressData] = useState<LotusProgressData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const fetchProgress = useCallback(async () => {
     if (!userId || !partnershipId) return;
@@ -48,6 +49,12 @@ export function useLotusProgress({
 
   const updateProgress = useCallback(async () => {
     if (!userId || !partnershipId) return;
+    
+    // Stop retrying after 3 failed attempts
+    if (retryCount >= 3) {
+      console.log('Stopping lotus progress updates after 3 failed attempts');
+      return;
+    }
 
     try {
       const response = await fetch('/api/lotus-progress', {
@@ -69,10 +76,12 @@ export function useLotusProgress({
 
       const result = await response.json();
       setProgressData(result.data);
+      setRetryCount(0); // Reset retry count on success
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
+      setRetryCount(prev => prev + 1);
     }
-  }, [userId, partnershipId, sessionDuration, sessionElapsed]);
+  }, [userId, partnershipId, sessionDuration, retryCount]);
 
   // Fetch initial progress
   useEffect(() => {
@@ -89,13 +98,14 @@ export function useLotusProgress({
   // Update progress periodically during active meditation
   useEffect(() => {
     if (!isMeditationActive || !sessionElapsed) return;
-
+    
+    // Only update every 5 seconds to prevent spam
     const interval = setInterval(() => {
       updateProgress();
-    }, 1000); // Update every second
+    }, 5000); // Update every 5 seconds instead of every second
 
     return () => clearInterval(interval);
-  }, [isMeditationActive, sessionElapsed, updateProgress]);
+  }, [isMeditationActive, updateProgress]);
 
   return {
     progressData,

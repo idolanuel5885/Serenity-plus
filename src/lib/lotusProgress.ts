@@ -1,5 +1,4 @@
-import { Partnership } from '@prisma/client';
-import { Week } from './supabase-database';
+import { Partnership, Week } from './supabase-database';
 
 export interface LotusProgressData {
   currentProgress: number; // 0-100
@@ -50,8 +49,8 @@ export function calculateLotusProgress(
  * This ensures the lotus starts where it left off from previous sessions
  */
 export function getSessionStartProgress(partnership: Partnership): number {
-  const totalSits = partnership.user1Sits + partnership.user2Sits;
-  const weeklyTarget = partnership.weeklyGoal;
+  const totalSits = partnership.usersits + partnership.partnersits;
+  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
   
   return Math.min((totalSits / weeklyTarget) * 100, 100);
 }
@@ -60,7 +59,7 @@ export function getSessionStartProgress(partnership: Partnership): number {
  * Calculate progress increment for each completed meditation
  */
 export function getProgressIncrement(partnership: Partnership): number {
-  const weeklyTarget = partnership.weeklyGoal;
+  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
   return (1 / weeklyTarget) * 100; // Each sit adds this percentage
 }
 
@@ -68,10 +67,11 @@ export function getProgressIncrement(partnership: Partnership): number {
  * Check if both partners have completed their weekly goal
  */
 export function isWeeklyGoalComplete(partnership: Partnership): boolean {
-  const user1Target = Math.ceil(partnership.weeklyGoal / 2); // Split goal between partners
-  const user2Target = partnership.weeklyGoal - user1Target;
+  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
+  const user1Target = Math.ceil(weeklyTarget / 2); // Split goal between partners
+  const user2Target = weeklyTarget - user1Target;
   
-  return partnership.user1Sits >= user1Target && partnership.user2Sits >= user2Target;
+  return partnership.usersits >= user1Target && partnership.partnersits >= user2Target;
 }
 
 /**

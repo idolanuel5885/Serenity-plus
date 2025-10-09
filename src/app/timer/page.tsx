@@ -191,9 +191,7 @@ export default function TimerPage() {
     const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
   
-  console.log('Partnerships array:', partnerships);
-  console.log('First partnership:', partnership);
-  console.log('Partnership ID:', partnershipId);
+  // Debug logging removed to prevent console spam
 
   // Use lotus progress hook (only if we have a real partnership ID)
   const { progressData } = useLotusProgress({

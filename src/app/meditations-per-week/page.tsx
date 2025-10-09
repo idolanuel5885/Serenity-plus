@@ -14,15 +14,9 @@ export default function MeditationsPerWeekPage() {
     // Check if user came through an invite
     const pendingInviteCode = localStorage.getItem('pendingInviteCode');
     if (pendingInviteCode) {
-      // Fetch partner name from invite
-      fetch(`/api/invite?code=${pendingInviteCode}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.success) {
-            setPartnerName(data.invitation.inviter.name);
-          }
-        })
-        .catch(console.error);
+      // Note: Invite API calls removed as they are not used by the app
+      // Set partner name to default since we can't fetch from broken API
+      setPartnerName('Your Partner');
     }
   }, []);
 
