@@ -63,8 +63,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  let body: any = null;
   try {
-    const body = await request.json();
+    body = await request.json();
     const { userId, partnershipId, sessionDuration, sessionElapsed } = body;
 
     if (!userId || !partnershipId) {
