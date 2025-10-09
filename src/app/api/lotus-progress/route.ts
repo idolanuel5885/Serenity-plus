@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     console.log('Step 2: Partnership found, getting current week...');
     // Get current week data
-    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklyGoal);
+    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
     if (!currentWeek) {
       console.log('Failed to get or create current week');
       return NextResponse.json({ error: 'Failed to get current week' }, { status: 500 });
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure current week exists (should already exist)
-    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklyGoal);
+    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
     if (!currentWeek) {
       return NextResponse.json({ error: 'Failed to get or create current week' }, { status: 500 });
     }
