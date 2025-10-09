@@ -6,6 +6,11 @@ import { ensureCurrentWeekExists } from '../../../lib/supabase-database';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   try {
+    console.log('Lotus progress API called with:', { 
+      userId: searchParams.get('userId'), 
+      partnershipId: searchParams.get('partnershipId') 
+    });
+
     const userId = searchParams.get('userId');
     const partnershipId = searchParams.get('partnershipId');
     // const isMeditationActive = searchParams.get('isMeditationActive') === 'true';
@@ -13,9 +18,11 @@ export async function GET(request: NextRequest) {
     const sessionElapsed = searchParams.get('sessionElapsed') ? parseInt(searchParams.get('sessionElapsed')!) : undefined;
 
     if (!userId || !partnershipId) {
+      console.log('Missing required parameters');
       return NextResponse.json({ error: 'Missing userId or partnershipId' }, { status: 400 });
     }
 
+    console.log('Step 1: Querying partnership data...');
     // Get partnership data from Supabase
     const { data: partnership, error: partnershipError } = await supabase
       .from('partnerships')
@@ -24,16 +31,28 @@ export async function GET(request: NextRequest) {
       .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .single();
 
-    if (partnershipError || !partnership) {
+    if (partnershipError) {
+      console.log('Partnership query error:', partnershipError);
+      return NextResponse.json({ 
+        error: 'Partnership query failed', 
+        details: partnershipError.message 
+      }, { status: 500 });
+    }
+
+    if (!partnership) {
+      console.log('Partnership not found');
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
+    console.log('Step 2: Partnership found, getting current week...');
     // Get current week data
     const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklyGoal);
     if (!currentWeek) {
+      console.log('Failed to get or create current week');
       return NextResponse.json({ error: 'Failed to get current week' }, { status: 500 });
     }
 
+    console.log('Step 3: Calculating progress...');
     // Calculate real progress
     const progressData = calculateLotusProgress(
       currentWeek,
@@ -42,6 +61,7 @@ export async function GET(request: NextRequest) {
       sessionElapsed
     );
 
+    console.log('Step 4: Returning success response');
     return NextResponse.json({
       success: true,
       data: progressData
