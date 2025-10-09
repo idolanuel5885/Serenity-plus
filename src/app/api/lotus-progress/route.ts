@@ -52,8 +52,8 @@ export async function GET(request: NextRequest) {
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      userId,
-      partnershipId
+      userId: searchParams.get('userId'),
+      partnershipId: searchParams.get('partnershipId')
     });
     return NextResponse.json({ 
       error: 'Internal server error',
@@ -107,8 +107,8 @@ export async function POST(request: NextRequest) {
     console.error('Error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      userId,
-      partnershipId
+      userId: body?.userId,
+      partnershipId: body?.partnershipId
     });
     return NextResponse.json({ 
       error: 'Internal server error',
