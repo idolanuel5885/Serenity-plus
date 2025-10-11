@@ -102,14 +102,14 @@ export function useLotusProgress({
   // Fetch initial progress
   useEffect(() => {
     fetchProgress();
-  }, [fetchProgress]);
+  }, [userId, partnershipId]);
 
   // Update progress when meditation state changes
   useEffect(() => {
     if (isMeditationActive) {
       updateProgress();
     }
-  }, [isMeditationActive, updateProgress]);
+  }, [isMeditationActive, userId, partnershipId, sessionDuration, sessionElapsed]);
 
   // Update progress periodically during active meditation
   useEffect(() => {
@@ -121,7 +121,7 @@ export function useLotusProgress({
     }, 5000); // Update every 5 seconds instead of every second
 
     return () => clearInterval(interval);
-  }, [isMeditationActive, updateProgress]);
+  }, [isMeditationActive, sessionElapsed, userId, partnershipId, sessionDuration]);
 
   return {
     progressData,
