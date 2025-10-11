@@ -118,12 +118,81 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
+      // Update the weeks table to increment sit count
+      console.log('Updating weeks table for completed session...');
+      
+      // First, get the partnership to determine if user is user1 or user2
+      const { data: partnershipData, error: partnershipError } = await supabase
+        .from('partnerships')
+        .select('userid, partnerid')
+        .eq('id', partnershipId)
+        .single();
+
+      if (partnershipError) {
+        console.error('Error fetching partnership data:', partnershipError);
+        return NextResponse.json({ 
+          error: 'Failed to fetch partnership data',
+          details: partnershipError.message
+        }, { status: 500 });
+      }
+
+      // Determine if the user is user1 or user2 in the partnership
+      const isUser1 = partnershipData.userid === userId;
+      const isUser2 = partnershipData.partnerid === userId;
+
+      if (!isUser1 && !isUser2) {
+        console.error('User is not part of this partnership');
+        return NextResponse.json({ 
+          error: 'User is not part of this partnership'
+        }, { status: 400 });
+      }
+
+      // Get current week for this partnership
+      const { data: currentWeek, error: weekError } = await supabase
+        .from('weeks')
+        .select('*')
+        .eq('partnershipid', partnershipId)
+        .order('weeknumber', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (weekError) {
+        console.error('Error fetching current week:', weekError);
+        return NextResponse.json({ 
+          error: 'Failed to fetch current week',
+          details: weekError.message
+        }, { status: 500 });
+      }
+
+      // Update the appropriate sit count in the weeks table
+      const updateData = isUser1 
+        ? { user1sits: (currentWeek.user1sits || 0) + 1 }
+        : { user2sits: (currentWeek.user2sits || 0) + 1 };
+
+      const { data: updatedWeek, error: updateWeekError } = await supabase
+        .from('weeks')
+        .update(updateData)
+        .eq('id', currentWeek.id)
+        .select()
+        .single();
+
+      if (updateWeekError) {
+        console.error('Error updating week sits:', updateWeekError);
+        return NextResponse.json({ 
+          error: 'Failed to update week sits',
+          details: updateWeekError.message
+        }, { status: 500 });
+      }
+
+      console.log('Successfully updated week sits:', updatedWeek);
+
       return NextResponse.json({
         success: true,
         data: {
           message: 'Session completed successfully',
           sessionDuration,
-          completed: true
+          completed: true,
+          weekUpdated: true
         }
       });
     }
