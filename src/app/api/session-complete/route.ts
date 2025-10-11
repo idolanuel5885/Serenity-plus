@@ -15,6 +15,35 @@ export async function POST(request: NextRequest) {
     }
 
     if (sessionStarted) {
+      // First, verify that user and partnership exist
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', userId)
+        .single();
+
+      if (userError || !userData) {
+        console.error('User not found:', userId, userError);
+        return NextResponse.json({ 
+          error: 'User not found',
+          details: `User ${userId} does not exist in database`
+        }, { status: 400 });
+      }
+
+      const { data: partnershipData, error: partnershipError } = await supabase
+        .from('partnerships')
+        .select('id')
+        .eq('id', partnershipId)
+        .single();
+
+      if (partnershipError || !partnershipData) {
+        console.error('Partnership not found:', partnershipId, partnershipError);
+        return NextResponse.json({ 
+          error: 'Partnership not found',
+          details: `Partnership ${partnershipId} does not exist in database`
+        }, { status: 400 });
+      }
+
       // Session started - create session record
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')
