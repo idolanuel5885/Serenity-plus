@@ -23,9 +23,16 @@ export function useLotusProgress({
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
-  const fetchProgress = useCallback(async () => {
-    if (!userId || !partnershipId) return;
+  // Debug logging
+  console.log('useLotusProgress called with:', { userId, partnershipId, isMeditationActive });
 
+  const fetchProgress = useCallback(async () => {
+    if (!userId || !partnershipId) {
+      console.log('fetchProgress: Missing userId or partnershipId:', { userId, partnershipId });
+      return;
+    }
+
+    console.log('fetchProgress called with:', { userId, partnershipId });
     setIsLoading(true);
     setError(null);
 
@@ -39,8 +46,10 @@ export function useLotusProgress({
       }
 
       const result = await response.json();
+      console.log('fetchProgress result:', result);
       setProgressData(result.data);
     } catch (err) {
+      console.error('fetchProgress error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setIsLoading(false);
@@ -48,13 +57,18 @@ export function useLotusProgress({
   }, [userId, partnershipId]);
 
   const updateProgress = useCallback(async () => {
-    if (!userId || !partnershipId) return;
+    if (!userId || !partnershipId) {
+      console.log('updateProgress: Missing userId or partnershipId:', { userId, partnershipId });
+      return;
+    }
     
     // Stop retrying after 3 failed attempts
     if (retryCount >= 3) {
       console.log('Stopping lotus progress updates after 3 failed attempts');
       return;
     }
+
+    console.log('updateProgress called with:', { userId, partnershipId, sessionDuration, sessionElapsed });
 
     try {
       const response = await fetch('/api/lotus-progress', {
@@ -75,9 +89,11 @@ export function useLotusProgress({
       }
 
       const result = await response.json();
+      console.log('updateProgress result:', result);
       setProgressData(result.data);
       setRetryCount(0); // Reset retry count on success
     } catch (err) {
+      console.error('updateProgress error:', err);
       setError(err instanceof Error ? err.message : 'Unknown error');
       setRetryCount(prev => prev + 1);
     }

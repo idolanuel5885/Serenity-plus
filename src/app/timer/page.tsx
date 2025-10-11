@@ -191,7 +191,17 @@ export default function TimerPage() {
     const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
   
-  // Debug logging removed to prevent console spam
+  // Debug logging for lotus progress
+  console.log('Timer: Partnerships loaded:', partnerships);
+  console.log('Timer: First partnership:', partnership);
+  console.log('Timer: Partnership ID:', partnershipId);
+  console.log('Timer: About to call useLotusProgress with:', {
+    userId: user?.id,
+    partnershipId,
+    isMeditationActive: isRunning,
+    sessionDuration: user?.usualSitLength ? user.usualSitLength * 60 : undefined,
+    sessionElapsed: user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined
+  });
 
   // Use lotus progress hook (only if we have a real partnership ID)
   const { progressData } = useLotusProgress({
