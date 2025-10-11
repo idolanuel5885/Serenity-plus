@@ -16,128 +16,78 @@ export async function POST(request: NextRequest) {
 
     if (sessionStarted) {
       // Session started - create session record
-      try {
-        const { data: sessionData, error: sessionError } = await supabase
-          .from('sessions')
-          .insert({
-            userid: userId,
-            partnershipid: partnershipId,
-            duration: sessionDuration,
-            iscompleted: false
-          })
-          .select()
-          .single();
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('sessions')
+        .insert({
+          userid: userId,
+          partnershipid: partnershipId,
+          duration: sessionDuration,
+          iscompleted: false
+        })
+        .select()
+        .single();
 
-        if (sessionError) {
-          console.error('Error creating session:', sessionError);
-          console.error('Session error details:', {
-            code: sessionError.code,
-            message: sessionError.message,
-            details: sessionError.details,
-            hint: sessionError.hint
-          });
-          
-          // If it's a table doesn't exist error or RLS error, return success anyway
-          if (sessionError.code === 'PGRST116' || sessionError.code === '42P01' || sessionError.message.includes('relation "sessions" does not exist')) {
-            console.log('Sessions table not accessible, continuing without session tracking');
-            return NextResponse.json({
-              success: true,
-              data: {
-                message: 'Session started (tracking unavailable)'
-              }
-            });
-          }
-          
-          return NextResponse.json({ 
-            error: 'Failed to create session',
-            details: sessionError.message,
-            code: sessionError.code
-          }, { status: 500 });
-        }
-
-        return NextResponse.json({
-          success: true,
-          data: {
-            sessionId: sessionData.id,
-            message: 'Session started'
-          }
+      if (sessionError) {
+        console.error('Error creating session:', sessionError);
+        console.error('Session error details:', {
+          code: sessionError.code,
+          message: sessionError.message,
+          details: sessionError.details,
+          hint: sessionError.hint
         });
-      } catch (error) {
-        console.error('Unexpected error creating session:', error);
-        // Return success anyway to not break the meditation flow
-        return NextResponse.json({
-          success: true,
-          data: {
-            message: 'Session started (tracking unavailable)'
-          }
-        });
+        return NextResponse.json({ 
+          error: 'Failed to create session',
+          details: sessionError.message,
+          code: sessionError.code
+        }, { status: 500 });
       }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          sessionId: sessionData.id,
+          message: 'Session started'
+        }
+      });
     }
 
     if (completed) {
       // Session completed - update session record
-      try {
-        const { data: sessionData, error: sessionError } = await supabase
-          .from('sessions')
-          .update({
-            completedat: new Date().toISOString(),
-            iscompleted: true
-          })
-          .eq('userid', userId)
-          .eq('partnershipid', partnershipId)
-          .eq('iscompleted', false)
-          .select()
-          .single();
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('sessions')
+        .update({
+          completedat: new Date().toISOString(),
+          iscompleted: true
+        })
+        .eq('userid', userId)
+        .eq('partnershipid', partnershipId)
+        .eq('iscompleted', false)
+        .select()
+        .single();
 
-        if (sessionError) {
-          console.error('Error completing session:', sessionError);
-          console.error('Session completion error details:', {
-            code: sessionError.code,
-            message: sessionError.message,
-            details: sessionError.details,
-            hint: sessionError.hint
-          });
-          
-          // If it's a table doesn't exist error or RLS error, return success anyway
-          if (sessionError.code === 'PGRST116' || sessionError.code === '42P01' || sessionError.message.includes('relation "sessions" does not exist')) {
-            console.log('Sessions table not accessible, continuing without session tracking');
-            return NextResponse.json({
-              success: true,
-              data: {
-                message: 'Session completed (tracking unavailable)',
-                sessionDuration,
-                completed: true
-              }
-            });
-          }
-          
-          return NextResponse.json({ 
-            error: 'Failed to complete session',
-            details: sessionError.message,
-            code: sessionError.code
-          }, { status: 500 });
-        }
-
-        return NextResponse.json({
-          success: true,
-          data: {
-            message: 'Session completed successfully',
-            sessionDuration,
-            completed: true
-          }
+      if (sessionError) {
+        console.error('Error completing session:', sessionError);
+        console.error('Session completion error details:', {
+          code: sessionError.code,
+          message: sessionError.message,
+          details: sessionError.details,
+          hint: sessionError.hint
         });
-      } catch (error) {
-        console.error('Unexpected error completing session:', error);
-        // Return success anyway to not break the meditation flow
-        return NextResponse.json({
-          success: true,
-          data: {
-            message: 'Session completed (tracking unavailable)',
-            sessionDuration,
-            completed: true
-          }
-        });
+        return NextResponse.json({ 
+          error: 'Failed to complete session',
+          details: sessionError.message,
+          code: sessionError.code
+        }, { status: 500 });
       }
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          message: 'Session completed successfully',
+          sessionDuration,
+          completed: true
+        }
+      });
     }
 
     return NextResponse.json({
