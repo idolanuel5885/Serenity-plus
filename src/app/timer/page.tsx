@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import LotusAnimation from '@/components/LotusAnimation';
 import { useLotusProgress } from '@/hooks/useLotusProgress';
@@ -195,22 +195,32 @@ export default function TimerPage() {
   console.log('Timer: Partnerships loaded:', partnerships);
   console.log('Timer: First partnership:', partnership);
   console.log('Timer: Partnership ID:', partnershipId);
-  console.log('Timer: About to call useLotusProgress with:', {
-    userId: user?.id,
-    partnershipId,
-    isMeditationActive: isRunning,
-    sessionDuration: user?.usualSitLength ? user.usualSitLength * 60 : undefined,
-    sessionElapsed: user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined
-  });
+  
+  // Memoize the lotus progress hook parameters to prevent infinite re-renders
+  // Only update when meditation state changes, not every second
+  const lotusProgressParams = useMemo(() => {
+    const sessionElapsed = user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined;
+    const sessionDuration = user?.usualSitLength ? user.usualSitLength * 60 : undefined;
+    
+    console.log('Timer: About to call useLotusProgress with:', {
+      userId: user?.id,
+      partnershipId,
+      isMeditationActive: isRunning,
+      sessionDuration,
+      sessionElapsed
+    });
+    
+    return {
+      userId: user?.id || '',
+      partnershipId,
+      isMeditationActive: isRunning,
+      sessionDuration,
+      sessionElapsed
+    };
+  }, [user?.id, partnershipId, isRunning, user?.usualSitLength]); // Removed timeLeft from dependencies
 
   // Use lotus progress hook (only if we have a real partnership ID)
-  const { progressData } = useLotusProgress({
-    userId: user?.id || '',
-    partnershipId,
-    isMeditationActive: isRunning,
-    sessionDuration: user?.usualSitLength ? user.usualSitLength * 60 : undefined,
-    sessionElapsed: user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined
-  });
+  const { progressData } = useLotusProgress(lotusProgressParams);
 
 
   // Calculate progress for lotus animation (individual per user)
