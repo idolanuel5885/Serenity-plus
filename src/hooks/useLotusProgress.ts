@@ -97,7 +97,7 @@ export function useLotusProgress({
       setError(err instanceof Error ? err.message : 'Unknown error');
       setRetryCount(prev => prev + 1);
     }
-  }, [userId, partnershipId, sessionDuration, retryCount]);
+  }, [userId, partnershipId, sessionDuration, sessionElapsed, retryCount]);
 
   // Fetch initial progress
   useEffect(() => {
@@ -109,11 +109,11 @@ export function useLotusProgress({
     if (isMeditationActive) {
       updateProgress();
     }
-  }, [isMeditationActive, userId, partnershipId, sessionDuration, sessionElapsed]);
+  }, [isMeditationActive]);
 
   // Update progress periodically during active meditation
   useEffect(() => {
-    if (!isMeditationActive || !sessionElapsed) return;
+    if (!isMeditationActive) return;
     
     // Only update every 5 seconds to prevent spam
     const interval = setInterval(() => {
@@ -121,7 +121,7 @@ export function useLotusProgress({
     }, 5000); // Update every 5 seconds instead of every second
 
     return () => clearInterval(interval);
-  }, [isMeditationActive, sessionElapsed, userId, partnershipId, sessionDuration]);
+  }, [isMeditationActive]);
 
   return {
     progressData,
