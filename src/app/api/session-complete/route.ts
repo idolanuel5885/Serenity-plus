@@ -148,6 +148,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Get current week for this partnership
+      console.log('Fetching current week for partnership:', partnershipId);
       const { data: currentWeek, error: weekError } = await supabase
         .from('weeks')
         .select('*')
@@ -158,11 +159,106 @@ export async function POST(request: NextRequest) {
 
       if (weekError) {
         console.error('Error fetching current week:', weekError);
+        console.error('Week error details:', {
+          code: weekError.code,
+          message: weekError.message,
+          details: weekError.details
+        });
+        
+        // If no week exists, we need to create one
+        if (weekError.code === 'PGRST116') {
+          console.log('No week exists, creating new week...');
+          
+          // Get partnership data to get weekly goal
+          const { data: partnershipForWeek, error: partnershipWeekError } = await supabase
+            .from('partnerships')
+            .select('weeklygoal')
+            .eq('id', partnershipId)
+            .single();
+
+          if (partnershipWeekError) {
+            console.error('Error fetching partnership for week creation:', partnershipWeekError);
+            return NextResponse.json({ 
+              error: 'Failed to fetch partnership for week creation',
+              details: partnershipWeekError.message
+            }, { status: 500 });
+          }
+
+          // Create new week
+          const now = new Date();
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
+          startOfWeek.setHours(0, 0, 0, 0);
+          
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
+          endOfWeek.setHours(23, 59, 59, 999);
+
+          const { data: newWeek, error: createWeekError } = await supabase
+            .from('weeks')
+            .insert({
+              partnershipid: partnershipId,
+              weeknumber: 1,
+              weekstart: startOfWeek.toISOString(),
+              weekend: endOfWeek.toISOString(),
+              weeklygoal: partnershipForWeek.weeklygoal,
+              user1sits: 0,
+              user2sits: 0
+            })
+            .select()
+            .single();
+
+          if (createWeekError) {
+            console.error('Error creating new week:', createWeekError);
+            return NextResponse.json({ 
+              error: 'Failed to create new week',
+              details: createWeekError.message
+            }, { status: 500 });
+          }
+
+          console.log('Created new week:', newWeek);
+          
+          // Now update the sit count
+          const updateData = isUser1 
+            ? { user1sits: 1 }
+            : { user2sits: 1 };
+
+          const { data: updatedWeek, error: updateWeekError } = await supabase
+            .from('weeks')
+            .update(updateData)
+            .eq('id', newWeek.id)
+            .select()
+            .single();
+
+          if (updateWeekError) {
+            console.error('Error updating new week sits:', updateWeekError);
+            return NextResponse.json({ 
+              error: 'Failed to update new week sits',
+              details: updateWeekError.message
+            }, { status: 500 });
+          }
+
+          console.log('Successfully updated new week sits:', updatedWeek);
+
+          return NextResponse.json({
+            success: true,
+            data: {
+              message: 'Session completed successfully',
+              sessionDuration,
+              completed: true,
+              weekCreated: true,
+              weekUpdated: true
+            }
+          });
+        }
+        
         return NextResponse.json({ 
           error: 'Failed to fetch current week',
           details: weekError.message
         }, { status: 500 });
       }
+
+      console.log('Found current week:', currentWeek);
 
       // Update the appropriate sit count in the weeks table
       const updateData = isUser1 
