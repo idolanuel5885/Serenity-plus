@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { LotusProgressData } from '@/lib/lotusProgress';
 
 interface UseLotusProgressProps {
@@ -23,8 +23,16 @@ export function useLotusProgress({
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
 
+  // Use refs to store current values to avoid closure issues
+  const currentSessionElapsed = useRef(sessionElapsed);
+  const currentSessionDuration = useRef(sessionDuration);
+  
+  // Update refs when props change
+  currentSessionElapsed.current = sessionElapsed;
+  currentSessionDuration.current = sessionDuration;
+
   // Debug logging
-  console.log('useLotusProgress called with:', { userId, partnershipId, isMeditationActive });
+  console.log('useLotusProgress called with:', { userId, partnershipId, isMeditationActive, sessionElapsed });
 
   const fetchProgress = useCallback(async () => {
     if (!userId || !partnershipId) {
@@ -68,7 +76,11 @@ export function useLotusProgress({
       return;
     }
 
-    console.log('updateProgress called with:', { userId, partnershipId, sessionDuration, sessionElapsed });
+    // Use current values from refs to avoid closure issues
+    const currentElapsed = currentSessionElapsed.current;
+    const currentDuration = currentSessionDuration.current;
+
+    console.log('updateProgress called with:', { userId, partnershipId, sessionDuration: currentDuration, sessionElapsed: currentElapsed });
 
     try {
       const response = await fetch('/api/lotus-progress', {
@@ -79,8 +91,8 @@ export function useLotusProgress({
         body: JSON.stringify({
           userId,
           partnershipId,
-          sessionDuration,
-          sessionElapsed
+          sessionDuration: currentDuration,
+          sessionElapsed: currentElapsed
         }),
       });
 
@@ -97,7 +109,7 @@ export function useLotusProgress({
       setError(err instanceof Error ? err.message : 'Unknown error');
       setRetryCount(prev => prev + 1);
     }
-  }, [userId, partnershipId, sessionDuration, sessionElapsed, retryCount]);
+  }, [userId, partnershipId, retryCount]);
 
   // Fetch initial progress
   useEffect(() => {
