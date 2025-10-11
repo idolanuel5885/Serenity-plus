@@ -139,7 +139,7 @@ export default function TimerPage() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft]);
+  }, [isRunning]); // Removed timeLeft from dependencies
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
