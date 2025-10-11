@@ -7,6 +7,8 @@ export async function POST(request: NextRequest) {
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
     console.log('Session API called with:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
+    console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
 
     if (!userId || !partnershipId || !sessionDuration) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -17,17 +19,27 @@ export async function POST(request: NextRequest) {
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')
         .insert({
-          userId,
-          partnershipId,
+          userid: userId,
+          partnershipid: partnershipId,
           duration: sessionDuration,
-          isCompleted: false
+          iscompleted: false
         })
         .select()
         .single();
 
       if (sessionError) {
         console.error('Error creating session:', sessionError);
-        return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });
+        console.error('Session error details:', {
+          code: sessionError.code,
+          message: sessionError.message,
+          details: sessionError.details,
+          hint: sessionError.hint
+        });
+        return NextResponse.json({ 
+          error: 'Failed to create session',
+          details: sessionError.message,
+          code: sessionError.code
+        }, { status: 500 });
       }
 
       return NextResponse.json({
@@ -44,18 +56,28 @@ export async function POST(request: NextRequest) {
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')
         .update({
-          completedAt: new Date().toISOString(),
-          isCompleted: true
+          completedat: new Date().toISOString(),
+          iscompleted: true
         })
-        .eq('userId', userId)
-        .eq('partnershipId', partnershipId)
-        .eq('isCompleted', false)
+        .eq('userid', userId)
+        .eq('partnershipid', partnershipId)
+        .eq('iscompleted', false)
         .select()
         .single();
 
       if (sessionError) {
         console.error('Error completing session:', sessionError);
-        return NextResponse.json({ error: 'Failed to complete session' }, { status: 500 });
+        console.error('Session completion error details:', {
+          code: sessionError.code,
+          message: sessionError.message,
+          details: sessionError.details,
+          hint: sessionError.hint
+        });
+        return NextResponse.json({ 
+          error: 'Failed to complete session',
+          details: sessionError.message,
+          code: sessionError.code
+        }, { status: 500 });
       }
 
       return NextResponse.json({
