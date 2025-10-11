@@ -9,6 +9,15 @@ export async function POST(request: NextRequest) {
     console.log('Session API called with:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
+    
+    // Debug: Check what users and partnerships exist in the database
+    console.log('=== DEBUGGING DATABASE STATE ===');
+    const { data: allUsers, error: usersError } = await supabase.from('users').select('id, name, email').limit(5);
+    console.log('All users in database:', allUsers);
+    
+    const { data: allPartnerships, error: partnershipsError } = await supabase.from('partnerships').select('id, userid, partnerid').limit(5);
+    console.log('All partnerships in database:', allPartnerships);
+    console.log('=== END DEBUGGING ===');
 
     if (!userId || !partnershipId || !sessionDuration) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
