@@ -197,7 +197,7 @@ export default function TimerPage() {
   console.log('Timer: Partnership ID:', partnershipId);
   
   // Memoize the lotus progress hook parameters to prevent infinite re-renders
-  // Only update when meditation state changes, not every second
+  // Update when meditation state changes OR when timeLeft changes significantly (every 5 seconds)
   const lotusProgressParams = useMemo(() => {
     const sessionElapsed = user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined;
     const sessionDuration = user?.usualSitLength ? user.usualSitLength * 60 : undefined;
@@ -217,7 +217,7 @@ export default function TimerPage() {
       sessionDuration,
       sessionElapsed
     };
-  }, [user?.id, partnershipId, isRunning, user?.usualSitLength]); // Removed timeLeft from dependencies
+  }, [user?.id, partnershipId, isRunning, user?.usualSitLength, Math.floor(timeLeft / 5) * 5]); // Update every 5 seconds
 
   // Use lotus progress hook (only if we have a real partnership ID)
   const { progressData } = useLotusProgress(lotusProgressParams);
