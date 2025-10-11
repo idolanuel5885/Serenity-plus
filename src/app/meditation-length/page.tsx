@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createUser } from '../../lib/supabase-database'; // Import createUser from Supabase
+import { supabase } from '../../lib/supabase';
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(1);
@@ -111,6 +112,25 @@ export default function MeditationLengthPage() {
         supabaseUserId = await createUser(userData);
         console.log('User created in Supabase with ID:', supabaseUserId);
         console.log('User created with invite code:', userData.invitecode);
+        
+        // Debug: Verify the user actually exists in the database
+        console.log('=== VERIFYING USER CREATION ===');
+        try {
+          const { data: verifyUser, error: verifyError } = await supabase
+            .from('users')
+            .select('id, name, email')
+            .eq('id', supabaseUserId)
+            .single();
+          
+          if (verifyError) {
+            console.error('ERROR: User not found in database after creation:', verifyError);
+          } else {
+            console.log('SUCCESS: User verified in database:', verifyUser);
+          }
+        } catch (verifyErr) {
+          console.error('ERROR: Failed to verify user in database:', verifyErr);
+        }
+        console.log('=== END VERIFICATION ===');
 
         // Store Supabase user ID in localStorage for session management
         localStorage.setItem('supabaseUserId', supabaseUserId);
