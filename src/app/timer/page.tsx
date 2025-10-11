@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import LotusAnimation from '@/components/LotusAnimation';
 import { useLotusProgress } from '@/hooks/useLotusProgress';
@@ -203,14 +203,17 @@ export default function TimerPage() {
     sessionElapsed: user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined
   });
 
-  // Use lotus progress hook (only if we have a real partnership ID)
-  const { progressData } = useLotusProgress({
+  // Memoize hook parameters to prevent unnecessary re-renders
+  const hookParams = useMemo(() => ({
     userId: user?.id || '',
     partnershipId,
     isMeditationActive: isRunning,
     sessionDuration: user?.usualSitLength ? user.usualSitLength * 60 : undefined,
     sessionElapsed: user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined
-  });
+  }), [user?.id, partnershipId, isRunning, user?.usualSitLength, timeLeft]);
+
+  // Use lotus progress hook (only if we have a real partnership ID)
+  const { progressData } = useLotusProgress(hookParams);
 
 
   // Calculate progress for lotus animation (individual per user)
