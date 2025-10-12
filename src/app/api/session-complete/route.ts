@@ -8,6 +8,23 @@ export async function POST(request: NextRequest) {
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
     console.log('SESSION-COMPLETE API CALLED WITH:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
+    
+    // Add debugging to response headers
+    const response = NextResponse.json({
+      success: true,
+      data: {
+        message: 'Session completed successfully',
+        sessionDuration,
+        completed: true,
+        debug: 'API was called successfully'
+      }
+    });
+    
+    response.headers.set('X-Debug-API-Called', 'true');
+    response.headers.set('X-Debug-User-Id', userId);
+    response.headers.set('X-Debug-Partnership-Id', partnershipId);
+    
+    return response;
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
     

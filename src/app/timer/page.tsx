@@ -307,6 +307,13 @@ export default function TimerPage() {
         const result = await response.json();
         console.log('Session completed:', result.data);
         
+        // Check response headers for debugging
+        console.log('Response headers:', {
+          'X-Debug-API-Called': response.headers.get('X-Debug-API-Called'),
+          'X-Debug-User-Id': response.headers.get('X-Debug-User-Id'),
+          'X-Debug-Partnership-Id': response.headers.get('X-Debug-Partnership-Id')
+        });
+        
         // Refresh partnership data if needed
         if (completed) {
           // You could trigger a refetch of partnership data here
