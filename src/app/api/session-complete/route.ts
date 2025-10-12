@@ -157,12 +157,6 @@ export async function POST(request: NextRequest) {
         }, { status: 400 });
       }
 
-      // FIXED LOGIC: Track sits by user ID instead of user1/user2
-      // This ensures consistency regardless of partnership creation order
-      const updateData = isUser1 
-        ? { user1sits: (currentWeek.user1sits || 0) + 1 }
-        : { user2sits: (currentWeek.user2sits || 0) + 1 };
-
       // Get current week for this partnership
       console.log('Fetching current week for partnership:', partnershipId);
       const { data: currentWeek, error: weekError } = await supabase
