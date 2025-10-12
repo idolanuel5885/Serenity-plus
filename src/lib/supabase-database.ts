@@ -109,21 +109,29 @@ export async function getCurrentWeekForPartnership(partnershipId: string): Promi
     endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
     endOfWeek.setHours(23, 59, 59, 999);
 
+    console.log('Fetching current week for partnership:', partnershipId);
+    console.log('Date range:', { startOfWeek: startOfWeek.toISOString(), endOfWeek: endOfWeek.toISOString() });
+
     const { data, error } = await supabase
       .from('weeks')
       .select('*')
       .eq('partnershipid', partnershipId)
       .gte('weekstart', startOfWeek.toISOString())
       .lte('weekstart', endOfWeek.toISOString())
-      .single();
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     if (error) {
+      console.error('Error fetching current week:', error);
       if (error.code === 'PGRST116') {
         // No rows found - this is expected if no week exists yet
         return null;
       }
       throw error; // Re-throw other errors
     }
+    
+    console.log('Current week found:', data);
     return data;
   } catch (error) {
     console.error('Error fetching current week:', error);

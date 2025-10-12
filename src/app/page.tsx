@@ -228,6 +228,21 @@ export default function Home() {
 
     // Check immediately - no delay
     checkForUser();
+
+    // Add focus event listener to refresh partnerships when returning from timer
+    const handleFocus = () => {
+      console.log('Homepage focused - refreshing partnerships');
+      const storedUserId = localStorage.getItem('userId');
+      if (storedUserId) {
+        fetchPartnerships(storedUserId);
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
   }, [router]);
 
   // Add a refresh mechanism to check for new partnerships (only if no partnerships exist)

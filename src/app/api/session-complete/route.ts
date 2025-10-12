@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
+    console.log('=== SESSION-COMPLETE API CALLED ===');
     console.log('Session API called with:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
@@ -89,19 +90,22 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    if (completed) {
-      // Session completed - update session record
-      const { data: sessionData, error: sessionError } = await supabase
-        .from('sessions')
-        .update({
-          completedat: new Date().toISOString(),
-          iscompleted: true
-        })
-        .eq('userid', userId)
-        .eq('partnershipid', partnershipId)
-        .eq('iscompleted', false)
-        .select()
-        .single();
+      if (completed) {
+        console.log('=== PROCESSING SESSION COMPLETION ===');
+        console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId);
+        
+        // Session completed - update session record
+        const { data: sessionData, error: sessionError } = await supabase
+          .from('sessions')
+          .update({
+            completedat: new Date().toISOString(),
+            iscompleted: true
+          })
+          .eq('userid', userId)
+          .eq('partnershipid', partnershipId)
+          .eq('iscompleted', false)
+          .select()
+          .single();
 
       if (sessionError) {
         console.error('Error completing session:', sessionError);
@@ -285,17 +289,18 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
-      console.log('Successfully updated week sits:', updatedWeek);
+        console.log('Successfully updated week sits:', updatedWeek);
+        console.log('=== SESSION COMPLETION SUCCESS ===');
 
-      return NextResponse.json({
-        success: true,
-        data: {
-          message: 'Session completed successfully',
-          sessionDuration,
-          completed: true,
-          weekUpdated: true
-        }
-      });
+        return NextResponse.json({
+          success: true,
+          data: {
+            message: 'Session completed successfully',
+            sessionDuration,
+            completed: true,
+            weekUpdated: true
+          }
+        });
     }
 
     return NextResponse.json({
