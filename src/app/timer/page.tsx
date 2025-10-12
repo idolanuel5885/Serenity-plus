@@ -312,6 +312,10 @@ export default function TimerPage() {
           // You could trigger a refetch of partnership data here
           console.log('Progress updated in database');
         }
+      } else {
+        console.error('Session completion failed:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
       }
     } catch (error) {
       console.error('Error completing session:', error);
