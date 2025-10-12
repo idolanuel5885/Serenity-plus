@@ -275,9 +275,8 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
     console.log('createNewWeek called with:', { partnershipId, weeklyGoal });
     
     const now = new Date();
+    // Use exact creation time instead of Sunday
     const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
-    startOfWeek.setHours(0, 0, 0, 0);
     
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
@@ -285,7 +284,7 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
 
     console.log('Week dates:', { startOfWeek: startOfWeek.toISOString(), endOfWeek: endOfWeek.toISOString() });
 
-    // Get the next week number
+    // Get the next week number - always start with 1 for new partnerships
     const { data: lastWeek, error: lastWeekError } = await supabase
       .from('weeks')
       .select('weeknumber')
@@ -294,6 +293,7 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
       .limit(1)
       .maybeSingle(); // Use maybeSingle() to avoid error when no weeks exist
 
+    // Always start with week 1 for new partnerships
     const weekNumber = lastWeekError || !lastWeek ? 1 : (lastWeek.weeknumber || 0) + 1;
     console.log('Week number:', weekNumber);
 
@@ -435,6 +435,7 @@ export async function createPartnershipsForUser(
         partneremail: otherUser.email,
         partnerimage: otherUser.image,
         partnerweeklytarget: otherUser.weeklytarget,
+        weeklygoal: combinedWeeklyGoal, // Add the combined weekly goal
         usersits: 0,
         partnersits: 0,
         score: 0,

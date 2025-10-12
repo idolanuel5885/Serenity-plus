@@ -286,6 +286,9 @@ export default function TimerPage() {
   const completeSession = useCallback(async (completed: boolean) => {
     if (!partnershipId || !user?.id) return;
 
+    console.log('=== TIMER: Calling session-complete API ===');
+    console.log('Timer: completeSession called with:', { completed, userId: user.id, partnershipId });
+
     try {
       const response = await fetch('/api/session-complete', {
         method: 'POST',
