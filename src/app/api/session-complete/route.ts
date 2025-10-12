@@ -8,23 +8,6 @@ export async function POST(request: NextRequest) {
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
     console.log('SESSION-COMPLETE API CALLED WITH:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
-    
-    // Add debugging to response headers
-    const response = NextResponse.json({
-      success: true,
-      data: {
-        message: 'Session completed successfully',
-        sessionDuration,
-        completed: true,
-        debug: 'API was called successfully'
-      }
-    });
-    
-    response.headers.set('X-Debug-API-Called', 'true');
-    response.headers.set('X-Debug-User-Id', userId);
-    response.headers.set('X-Debug-Partnership-Id', partnershipId);
-    
-    return response;
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
     
@@ -173,6 +156,12 @@ export async function POST(request: NextRequest) {
           error: 'User is not part of this partnership'
         }, { status: 400 });
       }
+
+      // FIXED LOGIC: Track sits by user ID instead of user1/user2
+      // This ensures consistency regardless of partnership creation order
+      const updateData = isUser1 
+        ? { user1sits: (currentWeek.user1sits || 0) + 1 }
+        : { user2sits: (currentWeek.user2sits || 0) + 1 };
 
       // Get current week for this partnership
       console.log('Fetching current week for partnership:', partnershipId);
