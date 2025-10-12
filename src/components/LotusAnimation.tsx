@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 interface LotusAnimationProps {
   progress: number; // 0-100, represents the current progress of the lotus opening
@@ -18,7 +18,7 @@ export default function LotusAnimation({
   const [currentProgress, setCurrentProgress] = useState(0);
 
   // Calculate total progress including current session
-  const calculateTotalProgress = () => {
+  const calculateTotalProgress = useCallback(() => {
     if (isActive && duration > 0) {
       // During active meditation, add current session progress
       const sessionProgress = (elapsed / duration) * 100; // 0-100% of current session
@@ -37,13 +37,13 @@ export default function LotusAnimation({
     }
     console.log('Not active, returning base progress:', progress);
     return progress;
-  };
+  }, [progress, isActive, elapsed, duration]);
 
   // Update progress when props change
   useEffect(() => {
     const totalProgress = calculateTotalProgress();
     setCurrentProgress(totalProgress);
-  }, [progress, isActive, elapsed, duration]);
+  }, [calculateTotalProgress]);
 
   // Calculate number of petals to show (0-8 petals)
   const numPetals = Math.floor((currentProgress / 100) * 8);

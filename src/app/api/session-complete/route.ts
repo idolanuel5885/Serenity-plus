@@ -202,6 +202,14 @@ export async function POST(request: NextRequest) {
             }, { status: 500 });
           }
 
+          if (!partnershipForWeek) {
+            console.error('Partnership not found for week creation:', partnershipId);
+            return NextResponse.json({ 
+              error: 'Partnership not found for week creation',
+              details: 'Partnership does not exist'
+            }, { status: 404 });
+          }
+
           // Create new week
           const now = new Date();
           const startOfWeek = new Date(now);
