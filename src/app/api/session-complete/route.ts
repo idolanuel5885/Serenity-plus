@@ -235,13 +235,13 @@ export async function POST(request: NextRequest) {
           console.log('Created new week:', newWeek);
           
           // Now update the sit count
-          const updateData = isUser1 
+          const newWeekUpdateData = isUser1 
             ? { user1sits: 1 }
             : { user2sits: 1 };
 
           const { data: updatedWeek, error: updateWeekError } = await supabase
             .from('weeks')
-            .update(updateData)
+            .update(newWeekUpdateData)
             .eq('id', newWeek.id)
             .select()
             .single();
