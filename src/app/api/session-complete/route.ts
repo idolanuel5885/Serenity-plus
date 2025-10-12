@@ -140,6 +140,11 @@ export async function POST(request: NextRequest) {
       const isUser1 = partnershipData.userid === userId;
       const isUser2 = partnershipData.partnerid === userId;
 
+      console.log('Partnership data:', partnershipData);
+      console.log('Current userId:', userId);
+      console.log('Is user1:', isUser1);
+      console.log('Is user2:', isUser2);
+
       if (!isUser1 && !isUser2) {
         console.error('User is not part of this partnership');
         return NextResponse.json({ 

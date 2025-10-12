@@ -97,6 +97,12 @@ export default function Home() {
             }));
 
             console.log('Created new partnerships:', partnerships);
+            console.log('Partnership sit counts:', partnerships.map(p => ({
+              id: p.id,
+              userSits: p.userSits,
+              partnerSits: p.partnerSits,
+              partnerName: p.partner.name
+            })));
             setPartnerships(partnerships);
           } else {
             console.log('No other users found, showing empty partnerships');
