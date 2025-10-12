@@ -2,13 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 
 export async function POST(request: NextRequest) {
-  console.log('=== SESSION-COMPLETE API ENTRY POINT ===');
+  console.log('SESSION-COMPLETE API ENTRY');
   try {
     const body = await request.json();
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
 
-    console.log('=== SESSION-COMPLETE API CALLED ===');
-    console.log('Session API called with:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
+    console.log('SESSION-COMPLETE API CALLED WITH:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Key:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set');
     
@@ -92,7 +91,7 @@ export async function POST(request: NextRequest) {
     }
 
       if (completed) {
-        console.log('=== PROCESSING SESSION COMPLETION ===');
+        console.log('PROCESSING SESSION COMPLETION');
         console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId);
         
         // Session completed - update session record
@@ -141,14 +140,15 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
-      // Determine if the user is user1 or user2 in the partnership
-      const isUser1 = partnershipData.userid === userId;
-      const isUser2 = partnershipData.partnerid === userId;
+            // Determine if the user is user1 or user2 in the partnership
+            const isUser1 = partnershipData.userid === userId;
+            const isUser2 = partnershipData.partnerid === userId;
 
-      console.log('Partnership data:', partnershipData);
-      console.log('Current userId:', userId);
-      console.log('Is user1:', isUser1);
-      console.log('Is user2:', isUser2);
+            console.log('USER1/USER2 IDENTIFICATION:');
+            console.log('Partnership data:', partnershipData);
+            console.log('Current userId:', userId);
+            console.log('Is user1:', isUser1);
+            console.log('Is user2:', isUser2);
 
       if (!isUser1 && !isUser2) {
         console.error('User is not part of this partnership');
