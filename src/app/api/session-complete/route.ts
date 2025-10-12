@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         .from('users')
         .select('id')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (userError || !userData) {
         console.error('User not found:', userId, userError);
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         .from('partnerships')
         .select('id')
         .eq('id', partnershipId)
-        .single();
+        .maybeSingle();
 
       if (partnershipError || !partnershipData) {
         console.error('Partnership not found:', partnershipId, partnershipError);
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
           iscompleted: false
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (sessionError) {
         console.error('Error creating session:', sessionError);
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest) {
         .from('partnerships')
         .select('userid, partnerid')
         .eq('id', partnershipId)
-        .single();
+        .maybeSingle();
 
       if (partnershipError) {
         console.error('Error fetching partnership data:', partnershipError);
@@ -184,7 +184,7 @@ export async function POST(request: NextRequest) {
             .from('partnerships')
             .select('weeklygoal')
             .eq('id', partnershipId)
-            .single();
+            .maybeSingle();
 
           if (partnershipWeekError) {
             console.error('Error fetching partnership for week creation:', partnershipWeekError);
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
               user2sits: 0
             })
             .select()
-            .single();
+            .maybeSingle();
 
           if (createWeekError) {
             console.error('Error creating new week:', createWeekError);
@@ -238,7 +238,7 @@ export async function POST(request: NextRequest) {
             .update(newWeekUpdateData)
             .eq('id', newWeek.id)
             .select()
-            .single();
+            .maybeSingle();
 
           if (updateWeekError) {
             console.error('Error updating new week sits:', updateWeekError);
@@ -280,7 +280,7 @@ export async function POST(request: NextRequest) {
         .update(updateData)
         .eq('id', currentWeek.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (updateWeekError) {
         console.error('Error updating week sits:', updateWeekError);

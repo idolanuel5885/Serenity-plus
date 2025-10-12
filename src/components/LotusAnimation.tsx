@@ -16,10 +16,6 @@ export default function LotusAnimation({
   elapsed 
 }: LotusAnimationProps) {
   const [currentProgress, setCurrentProgress] = useState(0);
-  const animationRef = useRef<number | null>(null);
-
-  // Debug logging
-  console.log('LotusAnimation render:', { progress, isActive, duration, elapsed, currentProgress });
 
   // Calculate total progress including current session
   const calculateTotalProgress = () => {
@@ -43,46 +39,16 @@ export default function LotusAnimation({
     return progress;
   };
 
-  // Smooth animation using requestAnimationFrame
+  // Update progress when props change
   useEffect(() => {
-    console.log('LotusAnimation useEffect triggered:', { progress, isActive, elapsed, duration });
-    
-    const animate = () => {
-      const totalProgress = calculateTotalProgress();
-      console.log('Animation frame - setting progress:', totalProgress);
-      setCurrentProgress(totalProgress);
-      
-      // Continue animation if meditation is active
-      if (isActive) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    if (isActive) {
-      console.log('Starting animation loop');
-      animationRef.current = requestAnimationFrame(animate);
-    } else {
-      // When not active, just set the final position
-      const totalProgress = calculateTotalProgress();
-      console.log('Not active - setting final progress:', totalProgress);
-      setCurrentProgress(totalProgress);
-    }
-
-    return () => {
-      if (animationRef.current) {
-        console.log('Cleaning up animation');
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+    const totalProgress = calculateTotalProgress();
+    setCurrentProgress(totalProgress);
   }, [progress, isActive, elapsed, duration]);
 
   // Calculate number of petals to show (0-8 petals)
   const numPetals = Math.floor((currentProgress / 100) * 8);
-  
-  // Calculate rotation for smooth petal animation
-  const rotation = (currentProgress / 100) * 360;
 
-  console.log('Rendering lotus:', { currentProgress, numPetals, rotation });
+  console.log('Rendering lotus:', { currentProgress, numPetals, progress, isActive });
 
   return (
     <div className="flex justify-center items-center py-8">
@@ -97,28 +63,31 @@ export default function LotusAnimation({
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-full"></div>
         </div>
 
-        {/* Petals */}
+        {/* Simple petal arrangement - 8 petals in a circle */}
         {Array.from({ length: 8 }, (_, i) => {
           const isVisible = i < numPetals;
-          const petalRotation = i * 45;
+          const angle = (i * 45); // 45 degrees between each petal
+          const radius = 60; // Distance from center
           
-          console.log(`Petal ${i}:`, { isVisible, petalRotation, numPetals });
+          // Calculate position
+          const x = Math.cos((angle * Math.PI) / 180) * radius;
+          const y = Math.sin((angle * Math.PI) / 180) * radius;
           
           return (
             <div
               key={i}
-              className={`absolute top-1/2 left-1/2 transition-opacity duration-300 ${
+              className={`absolute top-1/2 left-1/2 transition-opacity duration-500 ${
                 isVisible ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
-                transform: `translate(-50%, -50%) rotate(${petalRotation}deg) translateY(-60px)`,
+                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) rotate(${angle}deg)`,
                 transformOrigin: '50% 50%'
               }}
             >
               <div 
                 className="w-6 h-12 bg-gradient-to-b from-pink-200 to-pink-400 rounded-full shadow-md"
                 style={{
-                  transform: `rotate(${-petalRotation}deg)`,
+                  transform: `rotate(${-angle}deg)`,
                   transformOrigin: '50% 100%'
                 }}
               />
