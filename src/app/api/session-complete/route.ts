@@ -140,6 +140,14 @@ export async function POST(request: NextRequest) {
         }, { status: 500 });
       }
 
+      if (!partnershipData) {
+        console.error('Partnership not found:', partnershipId);
+        return NextResponse.json({ 
+          error: 'Partnership not found',
+          details: 'Partnership does not exist'
+        }, { status: 404 });
+      }
+
             // Determine if the user is user1 or user2 in the partnership
             const isUser1 = partnershipData.userid === userId;
             const isUser2 = partnershipData.partnerid === userId;

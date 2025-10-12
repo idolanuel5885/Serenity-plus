@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface LotusAnimationProps {
   progress: number; // 0-100, represents the current progress of the lotus opening
