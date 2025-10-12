@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 
 export async function POST(request: NextRequest) {
+  console.log('=== SESSION-COMPLETE API ENTRY POINT ===');
   try {
     const body = await request.json();
     const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
