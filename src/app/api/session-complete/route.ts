@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
           .eq('partnershipid', partnershipId)
           .eq('iscompleted', false)
           .select()
-          .single();
+          .maybeSingle();
 
       if (sessionError) {
         console.error('Error completing session:', sessionError);
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
         .eq('partnershipid', partnershipId)
         .order('weeknumber', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (weekError) {
         console.error('Error fetching current week:', weekError);

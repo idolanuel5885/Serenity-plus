@@ -101,23 +101,22 @@ export default function LotusAnimation({
         {Array.from({ length: 8 }, (_, i) => {
           const isVisible = i < numPetals;
           const petalRotation = i * 45;
-          const petalStyle = {
-            transform: `translate(-50%, -50%) rotate(${petalRotation}deg) translateY(-60px)`,
-            transformOrigin: '50% 50%',
-            opacity: isVisible ? 1 : 0,
-            transition: 'opacity 0.3s ease-in-out'
-          };
           
-          console.log(`Petal ${i}:`, { isVisible, petalRotation, style: petalStyle });
+          console.log(`Petal ${i}:`, { isVisible, petalRotation, numPetals });
           
           return (
             <div
               key={i}
-              className="absolute top-1/2 left-1/2"
-              style={petalStyle}
+              className={`absolute top-1/2 left-1/2 transition-opacity duration-300 ${
+                isVisible ? 'opacity-100' : 'opacity-0'
+              }`}
+              style={{
+                transform: `translate(-50%, -50%) rotate(${petalRotation}deg) translateY(-60px)`,
+                transformOrigin: '50% 50%'
+              }}
             >
               <div 
-                className="w-8 h-16 bg-gradient-to-b from-pink-200 to-pink-400 rounded-full shadow-md"
+                className="w-6 h-12 bg-gradient-to-b from-pink-200 to-pink-400 rounded-full shadow-md"
                 style={{
                   transform: `rotate(${-petalRotation}deg)`,
                   transformOrigin: '50% 100%'
