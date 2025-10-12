@@ -214,6 +214,12 @@ export default function SimpleLotusAnimation({
     }
   }, [isPlaying]);
 
+  useEffect(() => {
+    if (lottieRef.current) {
+      lottieRef.current.setSpeed(speed);
+    }
+  }, [speed]);
+
   return (
     <div className="flex justify-center items-center py-8">
       <div className="w-64 h-64">
@@ -222,7 +228,6 @@ export default function SimpleLotusAnimation({
           animationData={lotusAnimationData}
           loop={true}
           autoplay={isPlaying}
-          speed={speed}
           style={{ width: '100%', height: '100%' }}
         />
       </div>
