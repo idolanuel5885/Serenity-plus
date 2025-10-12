@@ -63,8 +63,9 @@ export default function TimerPage() {
 
         // Get partnerships from database (same method as homepage)
         try {
+          console.log('Timer: Fetching partnerships for userId:', userData.id);
           const existingPartnerships = await getUserPartnerships(userData.id);
-          console.log('Existing partnerships from database:', existingPartnerships);
+          console.log('Timer: Existing partnerships from database:', existingPartnerships);
 
           if (existingPartnerships.length > 0) {
             // Convert database partnerships to UI format (same as homepage)
@@ -87,7 +88,41 @@ export default function TimerPage() {
             console.log('Found existing partnerships:', partnerships);
             setPartnerships(partnerships);
           } else {
-            console.log('No partnerships found in database');
+            console.log('Timer: No partnerships found in database, retrying in 2 seconds...');
+            // Retry after a short delay in case partnerships are still being created
+            setTimeout(async () => {
+              try {
+                console.log('Timer: Retrying partnership fetch...');
+                const retryPartnerships = await getUserPartnerships(userData.id);
+                console.log('Timer: Retry partnerships result:', retryPartnerships);
+                
+                if (retryPartnerships.length > 0) {
+                  const partnerships = retryPartnerships.map((partnership) => ({
+                    id: partnership.id,
+                    partner: {
+                      id: partnership.partnerid,
+                      name: partnership.partnername,
+                      email: partnership.partneremail,
+                      image: partnership.partnerimage || '/icons/meditation-1.svg',
+                      weeklyTarget: partnership.partnerweeklytarget,
+                    },
+                    userSits: partnership.usersits,
+                    partnerSits: partnership.partnersits,
+                    weeklyGoal: partnership.partnerweeklytarget + 5,
+                    score: partnership.score,
+                    currentWeekStart: partnership.currentweekstart,
+                  }));
+                  console.log('Timer: Found partnerships on retry:', partnerships);
+                  setPartnerships(partnerships);
+                } else {
+                  console.log('Timer: Still no partnerships found after retry');
+                  setPartnerships([]);
+                }
+              } catch (retryError) {
+                console.log('Timer: Retry failed:', retryError);
+                setPartnerships([]);
+              }
+            }, 2000);
             setPartnerships([]);
           }
         } catch (error) {
