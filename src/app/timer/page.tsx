@@ -252,7 +252,7 @@ export default function TimerPage() {
       sessionDuration,
       sessionElapsed
     };
-  }, [user?.id, partnershipId, isRunning, user?.usualSitLength, Math.floor(timeLeft / 5) * 5]); // Update every 5 seconds
+  }, [user?.id, partnershipId, isRunning, user?.usualSitLength, timeLeft]); // Update every second for smooth animation
 
   // Use lotus progress hook (only if we have a real partnership ID)
   const { progressData } = useLotusProgress(lotusProgressParams);

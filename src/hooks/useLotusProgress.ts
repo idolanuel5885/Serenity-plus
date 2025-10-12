@@ -127,10 +127,10 @@ export function useLotusProgress({
   useEffect(() => {
     if (!isMeditationActive) return;
     
-    // Only update every 5 seconds to prevent spam
+    // Update every second for smooth animation
     const interval = setInterval(() => {
       updateProgress();
-    }, 5000); // Update every 5 seconds instead of every second
+    }, 1000); // Update every second for smooth animation
 
     return () => clearInterval(interval);
   }, [isMeditationActive]);

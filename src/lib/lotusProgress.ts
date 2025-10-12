@@ -29,7 +29,9 @@ export function calculateLotusProgress(
   if (currentSessionDuration && currentSessionElapsed !== undefined) {
     // Each session contributes 1/weeklyTarget percentage
     const sessionContribution = (1 / weeklyTarget) * 100;
-    sessionProgress = Math.min((currentSessionElapsed / currentSessionDuration) * sessionContribution, sessionContribution);
+    // Calculate session progress as percentage of session completion
+    const sessionCompletionPercentage = currentSessionElapsed / currentSessionDuration;
+    sessionProgress = sessionCompletionPercentage * sessionContribution;
   }
   
   // Total progress is base progress + current session progress
