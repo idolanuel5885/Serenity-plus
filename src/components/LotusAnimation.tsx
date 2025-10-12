@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Lottie from 'lottie-react';
-import { lotusAnimationData } from '@/lib/lotusAnimationData';
 
 interface LotusAnimationProps {
   progress: number; // 0-100, represents the current progress of the lotus opening
@@ -17,7 +15,6 @@ export default function LotusAnimation({
   duration, 
   elapsed 
 }: LotusAnimationProps) {
-  const lottieRef = useRef<any>(null);
   const [currentProgress, setCurrentProgress] = useState(0);
   const animationRef = useRef<number | null>(null);
 
@@ -35,17 +32,9 @@ export default function LotusAnimation({
 
   // Smooth animation using requestAnimationFrame
   useEffect(() => {
-    if (!lottieRef.current) return;
-
     const animate = () => {
-      if (lottieRef.current) {
-        const totalProgress = calculateTotalProgress();
-        setCurrentProgress(totalProgress);
-        
-        // Calculate target frame (0-417 frames total)
-        const targetFrame = Math.floor((totalProgress / 100) * 417);
-        lottieRef.current.goToAndStop(targetFrame, false);
-      }
+      const totalProgress = calculateTotalProgress();
+      setCurrentProgress(totalProgress);
       
       // Continue animation if meditation is active
       if (isActive) {
@@ -59,8 +48,6 @@ export default function LotusAnimation({
       // When not active, just set the final position
       const totalProgress = calculateTotalProgress();
       setCurrentProgress(totalProgress);
-      const targetFrame = Math.floor((totalProgress / 100) * 417);
-      lottieRef.current.goToAndStop(targetFrame, false);
     }
 
     return () => {
@@ -70,17 +57,42 @@ export default function LotusAnimation({
     };
   }, [progress, isActive, elapsed, duration]);
 
+  // Calculate number of petals to show (0-8 petals)
+  const numPetals = Math.floor((currentProgress / 100) * 8);
+  
+  // Calculate rotation for smooth petal animation
+  const rotation = (currentProgress / 100) * 360;
+
   return (
     <div className="flex justify-center items-center py-8">
       <div className="w-64 h-64 relative">
-        <Lottie
-          lottieRef={lottieRef}
-          animationData={lotusAnimationData}
-          loop={false}
-          autoplay={false}
-          style={{ width: '100%', height: '100%' }}
-        />
-        
+        {/* Lotus center */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-gradient-to-br from-yellow-200 to-yellow-400 rounded-full border-4 border-yellow-300 shadow-lg">
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-gradient-to-br from-yellow-100 to-yellow-300 rounded-full"></div>
+        </div>
+
+        {/* Petals */}
+        {Array.from({ length: 8 }, (_, i) => (
+          <div
+            key={i}
+            className={`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ${
+              i < numPetals ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{
+              transform: `translate(-50%, -50%) rotate(${i * 45 + rotation}deg) translateY(-60px)`,
+              transformOrigin: '50% 50%'
+            }}
+          >
+            <div 
+              className="w-8 h-16 bg-gradient-to-b from-pink-200 to-pink-400 rounded-full shadow-md"
+              style={{
+                transform: `rotate(${-i * 45 - rotation}deg)`,
+                transformOrigin: '50% 100%'
+              }}
+            />
+          </div>
+        ))}
+
         {/* Progress indicator overlay */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
           {Math.round(calculateTotalProgress())}% open
