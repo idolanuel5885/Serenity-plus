@@ -66,6 +66,9 @@ export default function SimpleLotusAnimation({
           loop={true}
           autoplay={isPlaying}
           style={{ width: '100%', height: '100%' }}
+          rendererSettings={{
+            preserveAspectRatio: 'xMidYMid meet'
+          }}
           onComplete={() => {
             console.log('Lotus animation completed');
           }}
@@ -77,6 +80,16 @@ export default function SimpleLotusAnimation({
             if (lottieRef.current) {
               console.log('Total frames:', lottieRef.current.totalFrames);
               console.log('Current frame:', lottieRef.current.currentFrame);
+              
+              // Log frame changes
+              const interval = setInterval(() => {
+                if (lottieRef.current) {
+                  console.log('Current frame:', Math.floor(lottieRef.current.currentFrame));
+                }
+              }, 1000);
+              
+              // Clear interval after 10 seconds
+              setTimeout(() => clearInterval(interval), 10000);
             }
           }}
         />
