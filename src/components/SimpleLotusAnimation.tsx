@@ -41,6 +41,26 @@ export default function SimpleLotusAnimation({
     }
   }, [isPlaying]);
 
+  // Manual frame control for debugging
+  useEffect(() => {
+    if (lottieRef.current && animationData) {
+      // Try to show different frames to see the full lotus
+      const showFrame = (frame: number) => {
+        if (lottieRef.current) {
+          lottieRef.current.goToAndStop(frame, true);
+          console.log(`Showing frame ${frame}`);
+        }
+      };
+
+      // Show frame 0, 100, 200, 300, 417 in sequence
+      setTimeout(() => showFrame(0), 1000);
+      setTimeout(() => showFrame(100), 2000);
+      setTimeout(() => showFrame(200), 3000);
+      setTimeout(() => showFrame(300), 4000);
+      setTimeout(() => showFrame(417), 5000);
+    }
+  }, [animationData]);
+
   useEffect(() => {
     if (lottieRef.current) {
       lottieRef.current.setSpeed(speed);

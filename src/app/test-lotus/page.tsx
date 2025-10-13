@@ -34,6 +34,19 @@ export default function TestLotusPage() {
             </button>
           </div>
           
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => {
+                // Manual frame control
+                const frame = Math.floor(Math.random() * 417);
+                console.log(`Manual frame: ${frame}`);
+              }}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm"
+            >
+              Random Frame
+            </button>
+          </div>
+          
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
               Speed: {speed}x
