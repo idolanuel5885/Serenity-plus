@@ -17,7 +17,7 @@ export default function SimpleLotusAnimation({
 
   // Fetch the lotus animation data and unhide all layers
   useEffect(() => {
-    fetch('/lotus-animation.json')
+    fetch('/real_lotus.json')
       .then(response => response.json())
       .then(data => {
         console.log('Lotus animation data loaded:', data);
