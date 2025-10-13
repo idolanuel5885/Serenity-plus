@@ -52,6 +52,18 @@ export default function SimpleLotusAnimation({
               layer.ks.s.k = [100, 100, 100];
               console.log('Setting scale to 100 for layer:', layer.nm);
             }
+            
+            // Special handling for parent null layers
+            if (layer.ty === 3 && layer.nm === "Null 1") {
+              console.log('Setting parent null layer to visible and proper scale');
+              // Ensure the parent null layer is visible and properly scaled
+              if (layer.ks?.s?.k) {
+                layer.ks.s.k = [100, 100, 100];
+              }
+              if (layer.ks?.o?.k !== undefined) {
+                layer.ks.o.k = 100;
+              }
+            }
           });
         }
         
