@@ -1,10 +1,7 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Lottie from 'lottie-react';
-
-// Import the actual lotus animation JSON
-import lotusAnimationData from '/public/lotus-animation.json';
 
 interface SimpleLotusAnimationProps {
   isPlaying?: boolean;
@@ -16,6 +13,15 @@ export default function SimpleLotusAnimation({
   speed = 1 
 }: SimpleLotusAnimationProps) {
   const lottieRef = useRef<any>(null);
+  const [animationData, setAnimationData] = useState(null);
+
+  // Fetch the lotus animation data
+  useEffect(() => {
+    fetch('/lotus-animation.json')
+      .then(response => response.json())
+      .then(data => setAnimationData(data))
+      .catch(error => console.error('Error loading lotus animation:', error));
+  }, []);
 
   useEffect(() => {
     if (lottieRef.current) {
@@ -33,12 +39,22 @@ export default function SimpleLotusAnimation({
     }
   }, [speed]);
 
+  if (!animationData) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <div className="w-64 h-64 flex items-center justify-center">
+          <div className="text-gray-500">Loading lotus animation...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-center items-center py-8">
       <div className="w-64 h-64">
         <Lottie
           lottieRef={lottieRef}
-          animationData={lotusAnimationData}
+          animationData={animationData}
           loop={true}
           autoplay={isPlaying}
           style={{ width: '100%', height: '100%' }}
