@@ -25,10 +25,32 @@ export default function SimpleLotusAnimation({
         
         // Unhide all layers by setting hd: false
         if (data.layers) {
-          data.layers.forEach((layer: any) => {
+          data.layers.forEach((layer: any, index: number) => {
+            console.log(`Layer ${index}:`, {
+              name: layer.nm,
+              type: layer.ty,
+              hidden: layer.hd,
+              opacity: layer.ks?.o?.k,
+              scale: layer.ks?.s?.k,
+              position: layer.ks?.p?.k,
+              parent: layer.parent
+            });
+            
             if (layer.hd === true) {
               layer.hd = false;
               console.log('Unhiding layer:', layer.nm);
+            }
+            
+            // Force opacity to 100 if it's 0
+            if (layer.ks?.o?.k === 0) {
+              layer.ks.o.k = 100;
+              console.log('Setting opacity to 100 for layer:', layer.nm);
+            }
+            
+            // Force scale to 100 if it's 0
+            if (layer.ks?.s?.k && Array.isArray(layer.ks.s.k) && layer.ks.s.k[0] === 0) {
+              layer.ks.s.k = [100, 100, 100];
+              console.log('Setting scale to 100 for layer:', layer.nm);
             }
           });
         }
