@@ -15,7 +15,7 @@ export default function SimpleLotusAnimation({
   const lottieRef = useRef<any>(null);
   const [animationData, setAnimationData] = useState(null);
 
-  // Fetch the lotus animation data and unhide all layers
+  // Fetch the lotus animation data
   useEffect(() => {
     fetch('/real_lotus.json')
       .then(response => response.json())
@@ -23,51 +23,16 @@ export default function SimpleLotusAnimation({
         console.log('Lotus animation data loaded:', data);
         console.log('Animation frames:', data.op, 'FPS:', data.fr);
         
-        // Unhide all layers by setting hd: false
+        // Just unhide the layers without modifying scale/opacity
         if (data.layers) {
           data.layers.forEach((layer: any, index: number) => {
-            console.log(`Layer ${index}:`, {
-              name: layer.nm,
-              type: layer.ty,
-              hidden: layer.hd,
-              opacity: layer.ks?.o?.k,
-              scale: layer.ks?.s?.k,
-              position: layer.ks?.p?.k,
-              parent: layer.parent
-            });
-            
             if (layer.hd === true) {
               layer.hd = false;
               console.log('Unhiding layer:', layer.nm);
             }
-            
-            // Force opacity to 100 if it's 0
-            if (layer.ks?.o?.k === 0) {
-              layer.ks.o.k = 100;
-              console.log('Setting opacity to 100 for layer:', layer.nm);
-            }
-            
-            // Force scale to 100 if it's 0
-            if (layer.ks?.s?.k && Array.isArray(layer.ks.s.k) && layer.ks.s.k[0] === 0) {
-              layer.ks.s.k = [100, 100, 100];
-              console.log('Setting scale to 100 for layer:', layer.nm);
-            }
-            
-            // Special handling for parent null layers
-            if (layer.ty === 3 && layer.nm === "Null 1") {
-              console.log('Setting parent null layer to visible and proper scale');
-              // Ensure the parent null layer is visible and properly scaled
-              if (layer.ks?.s?.k) {
-                layer.ks.s.k = [100, 100, 100];
-              }
-              if (layer.ks?.o?.k !== undefined) {
-                layer.ks.o.k = 100;
-              }
-            }
           });
         }
         
-        console.log('Modified animation data:', data);
         setAnimationData(data);
       })
       .catch(error => console.error('Error loading lotus animation:', error));
