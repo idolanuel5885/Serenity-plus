@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Lottie from 'lottie-react';
 import { AnimationItem } from 'lottie-web';
 
 interface SimpleLotusAnimationProps {
@@ -66,7 +65,9 @@ export default function SimpleLotusAnimation({
         // Reset to frame 0 and play the full animation
         lottieRef.current.goToAndStop(0, true);
         setTimeout(() => {
-          lottieRef.current.play();
+          if (lottieRef.current) {
+            lottieRef.current.play();
+          }
         }, 100);
       } else {
         lottieRef.current.pause();
