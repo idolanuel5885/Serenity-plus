@@ -15,13 +15,25 @@ export default function SimpleLotusAnimation({
   const lottieRef = useRef<any>(null);
   const [animationData, setAnimationData] = useState(null);
 
-  // Fetch the lotus animation data
+  // Fetch the lotus animation data and unhide all layers
   useEffect(() => {
     fetch('/lotus-animation.json')
       .then(response => response.json())
       .then(data => {
         console.log('Lotus animation data loaded:', data);
         console.log('Animation frames:', data.op, 'FPS:', data.fr);
+        
+        // Unhide all layers by setting hd: false
+        if (data.layers) {
+          data.layers.forEach((layer: any) => {
+            if (layer.hd === true) {
+              layer.hd = false;
+              console.log('Unhiding layer:', layer.nm);
+            }
+          });
+        }
+        
+        console.log('Modified animation data:', data);
         setAnimationData(data);
       })
       .catch(error => console.error('Error loading lotus animation:', error));
