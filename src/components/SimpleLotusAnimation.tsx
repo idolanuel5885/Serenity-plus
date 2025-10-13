@@ -32,7 +32,9 @@ export default function SimpleLotusAnimation({
       if (isPlaying) {
         // Reset to frame 0 and play the full animation
         lottieRef.current.goToAndStop(0, true);
-        lottieRef.current.play();
+        setTimeout(() => {
+          lottieRef.current.play();
+        }, 100);
       } else {
         lottieRef.current.pause();
       }
@@ -70,7 +72,20 @@ export default function SimpleLotusAnimation({
           onLoopComplete={() => {
             console.log('Lotus animation loop completed');
           }}
+          onDataReady={() => {
+            console.log('Lotus animation data ready');
+            if (lottieRef.current) {
+              console.log('Total frames:', lottieRef.current.totalFrames);
+              console.log('Current frame:', lottieRef.current.currentFrame);
+            }
+          }}
         />
+        {/* Debug info */}
+        <div className="mt-4 text-center text-sm text-gray-600">
+          <p>Animation loaded: {animationData ? 'Yes' : 'No'}</p>
+          <p>Playing: {isPlaying ? 'Yes' : 'No'}</p>
+          <p>Speed: {speed}x</p>
+        </div>
       </div>
     </div>
   );
