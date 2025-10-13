@@ -17,7 +17,7 @@ export default function TestLotusPage() {
         
         {/* Animation */}
         <div className="mb-8">
-          <CSSLotusAnimation isPlaying={isPlaying} speed={speed} />
+          <SimpleLotusAnimation isPlaying={isPlaying} speed={speed} />
         </div>
         
         {/* Controls */}

@@ -41,25 +41,7 @@ export default function SimpleLotusAnimation({
     }
   }, [isPlaying]);
 
-  // Manual frame control for debugging
-  useEffect(() => {
-    if (lottieRef.current && animationData) {
-      // Try to show different frames to see the full lotus
-      const showFrame = (frame: number) => {
-        if (lottieRef.current) {
-          lottieRef.current.goToAndStop(frame, true);
-          console.log(`Showing frame ${frame}`);
-        }
-      };
-
-      // Show frame 0, 100, 200, 300, 417 in sequence
-      setTimeout(() => showFrame(0), 1000);
-      setTimeout(() => showFrame(100), 2000);
-      setTimeout(() => showFrame(200), 3000);
-      setTimeout(() => showFrame(300), 4000);
-      setTimeout(() => showFrame(417), 5000);
-    }
-  }, [animationData]);
+  // Remove the manual frame control debugging
 
   useEffect(() => {
     if (lottieRef.current) {
@@ -79,7 +61,17 @@ export default function SimpleLotusAnimation({
 
   return (
     <div className="flex justify-center items-center py-8">
-      <div className="w-64 h-64">
+      <div className="w-64 h-64 relative">
+        <style jsx>{`
+          .lotus-animation {
+            width: 100% !important;
+            height: 100% !important;
+          }
+          .lotus-animation svg {
+            width: 100% !important;
+            height: 100% !important;
+          }
+        `}</style>
         <Lottie
           lottieRef={lottieRef}
           animationData={animationData}
@@ -87,7 +79,8 @@ export default function SimpleLotusAnimation({
           autoplay={isPlaying}
           style={{ width: '100%', height: '100%' }}
           rendererSettings={{
-            preserveAspectRatio: 'xMidYMid meet'
+            preserveAspectRatio: 'xMidYMid meet',
+            className: 'lotus-animation'
           }}
           onComplete={() => {
             console.log('Lotus animation completed');
@@ -100,16 +93,6 @@ export default function SimpleLotusAnimation({
             if (lottieRef.current) {
               console.log('Total frames:', lottieRef.current.totalFrames);
               console.log('Current frame:', lottieRef.current.currentFrame);
-              
-              // Log frame changes
-              const interval = setInterval(() => {
-                if (lottieRef.current) {
-                  console.log('Current frame:', Math.floor(lottieRef.current.currentFrame));
-                }
-              }, 1000);
-              
-              // Clear interval after 10 seconds
-              setTimeout(() => clearInterval(interval), 10000);
             }
           }}
         />
