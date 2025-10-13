@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import SimpleLotusAnimation from '@/components/SimpleLotusAnimation';
+import CSSLotusAnimation from '@/components/CSSLotusAnimation';
 
 export default function TestLotusPage() {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -16,7 +17,7 @@ export default function TestLotusPage() {
         
         {/* Animation */}
         <div className="mb-8">
-          <SimpleLotusAnimation isPlaying={isPlaying} speed={speed} />
+          <CSSLotusAnimation isPlaying={isPlaying} speed={speed} />
         </div>
         
         {/* Controls */}
