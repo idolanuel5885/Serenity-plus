@@ -81,9 +81,7 @@ export default function SimpleLotusAnimation({
           rendererSettings={{
             preserveAspectRatio: 'xMidYMid meet',
             className: 'lotus-animation',
-            hideOnTransparent: false,
-            clearCanvas: false,
-            renderer: 'canvas'
+            hideOnTransparent: false
           }}
           onComplete={() => {
             console.log('Lotus animation completed');

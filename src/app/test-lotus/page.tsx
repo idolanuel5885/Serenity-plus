@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import SimpleLotusAnimation from '@/components/SimpleLotusAnimation';
-import CSSLotusAnimation from '@/components/CSSLotusAnimation';
 
 export default function TestLotusPage() {
   const [isPlaying, setIsPlaying] = useState(true);
