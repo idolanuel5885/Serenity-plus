@@ -80,7 +80,10 @@ export default function SimpleLotusAnimation({
           style={{ width: '100%', height: '100%' }}
           rendererSettings={{
             preserveAspectRatio: 'xMidYMid meet',
-            className: 'lotus-animation'
+            className: 'lotus-animation',
+            hideOnTransparent: false,
+            clearCanvas: false,
+            renderer: 'canvas'
           }}
           onComplete={() => {
             console.log('Lotus animation completed');
@@ -93,6 +96,16 @@ export default function SimpleLotusAnimation({
             if (lottieRef.current) {
               console.log('Total frames:', lottieRef.current.totalFrames);
               console.log('Current frame:', lottieRef.current.currentFrame);
+              
+              // Force all layers to be visible
+              const animation = lottieRef.current;
+              if (animation && animation.renderer && animation.renderer.layers) {
+                animation.renderer.layers.forEach((layer: any) => {
+                  if (layer) {
+                    layer.setVisible(true);
+                  }
+                });
+              }
             }
           }}
         />
