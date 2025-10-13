@@ -19,13 +19,19 @@ export default function SimpleLotusAnimation({
   useEffect(() => {
     fetch('/lotus-animation.json')
       .then(response => response.json())
-      .then(data => setAnimationData(data))
+      .then(data => {
+        console.log('Lotus animation data loaded:', data);
+        console.log('Animation frames:', data.op, 'FPS:', data.fr);
+        setAnimationData(data);
+      })
       .catch(error => console.error('Error loading lotus animation:', error));
   }, []);
 
   useEffect(() => {
     if (lottieRef.current) {
       if (isPlaying) {
+        // Reset to frame 0 and play the full animation
+        lottieRef.current.goToAndStop(0, true);
         lottieRef.current.play();
       } else {
         lottieRef.current.pause();
@@ -58,6 +64,12 @@ export default function SimpleLotusAnimation({
           loop={true}
           autoplay={isPlaying}
           style={{ width: '100%', height: '100%' }}
+          onComplete={() => {
+            console.log('Lotus animation completed');
+          }}
+          onLoopComplete={() => {
+            console.log('Lotus animation loop completed');
+          }}
         />
       </div>
     </div>
