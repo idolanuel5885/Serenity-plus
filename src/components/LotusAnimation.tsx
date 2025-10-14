@@ -17,7 +17,7 @@ export default function LotusAnimation({
   elapsed 
 }: LotusAnimationProps) {
   const lottieRef = useRef<any>(null);
-  const [animationData, setAnimationData] = useState(null);
+  const [animationData, setAnimationData] = useState<any>(null);
 
   // Fetch the lotus animation data
   useEffect(() => {
