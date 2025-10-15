@@ -73,5 +73,79 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     }
     console.log('✅ Complete partnership flow verified successfully');
   });
+
+  test('Homepage loads with complete partnership data (no loading states)', async ({ page }) => {
+    const baseUrl = 'https://serenity-plus-kohl.vercel.app';
+    const timestamp = Date.now();
+    const inviteCode = `invite-${timestamp}-${Math.random().toString(36).substr(2, 6)}`;
+
+    console.log(`🧪 Testing homepage loading behavior with invite code: ${inviteCode}`);
+
+    // Step 1: Create two users with matching invite codes
+    const user1Response = await page.request.post(`${baseUrl}/api/user`, {
+      data: { 
+        name: `HomepageTestUser1_${timestamp}`, 
+        email: `homepage1_${timestamp}@test.com`, 
+        weeklytarget: 5, 
+        usualsitlength: 30, 
+        image: '/icons/meditation-1.svg', 
+        invitecode: inviteCode 
+      }
+    });
+    expect(user1Response.ok()).toBe(true);
+    const user1Data = await user1Response.json();
+    const user1Id = user1Data.user.id;
+
+    const user2Response = await page.request.post(`${baseUrl}/api/user`, {
+      data: { 
+        name: `HomepageTestUser2_${timestamp}`, 
+        email: `homepage2_${timestamp}@test.com`, 
+        weeklytarget: 3, 
+        usualsitlength: 25, 
+        image: '/icons/meditation-1.svg', 
+        invitecode: inviteCode 
+      }
+    });
+    expect(user2Response.ok()).toBe(true);
+    const user2Data = await user2Response.json();
+    const user2Id = user2Data.user.id;
+
+    // Step 2: Create partnerships
+    const partnerships = await createPartnershipsForUser(user1Id, inviteCode);
+    expect(partnerships.length).toBeGreaterThan(0);
+
+    // Step 3: Set up localStorage for user1 and navigate to homepage
+    await page.goto(baseUrl);
+    await page.evaluate(({ userId, userName }) => {
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('userName', userName);
+      localStorage.setItem('userWeeklyTarget', '5');
+      localStorage.setItem('userUsualSitLength', '30');
+    }, { userId: user1Id, userName: `HomepageTestUser1_${timestamp}` });
+
+    // Step 4: Navigate to homepage and verify it loads with complete data
+    await page.goto(baseUrl);
+    
+    // Wait for the page to load completely (no loading spinners)
+    await page.waitForLoadState('networkidle');
+    
+    // Verify the Sit Now button is immediately visible (no loading delay)
+    const sitNowButton = page.locator('img[alt="Sit Now"]');
+    await expect(sitNowButton).toBeVisible();
+    
+    // Verify the Partners Summary section is immediately visible with data
+    const partnersSummary = page.locator('text=Partners summary');
+    await expect(partnersSummary).toBeVisible();
+    
+    // Verify partnership data is displayed (no loading spinner)
+    const partnerName = page.locator(`span:has-text("HomepageTestUser2_${timestamp}")`);
+    await expect(partnerName).toBeVisible();
+    
+    // Verify no loading spinners are present
+    const loadingSpinner = page.locator('.animate-spin');
+    await expect(loadingSpinner).toHaveCount(0);
+    
+    console.log('✅ Homepage loads with complete data - no loading states visible');
+  });
 });
 

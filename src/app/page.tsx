@@ -182,7 +182,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const checkForUser = () => {
+    const checkForUser = async () => {
       try {
         // Get user ID from localStorage (in production, use proper auth)
         const storedUserId = localStorage.getItem('userId');
@@ -197,10 +197,12 @@ export default function Home() {
         const hasCompleteUserData = storedUserId && (userName || userNickname);
 
         if (hasCompleteUserData) {
-          console.log('User found, fetching partnerships');
+          console.log('User found, preloading partnerships before showing UI');
           setUserId(storedUserId);
+          
+          // Preload partnership data before setting loading to false
+          await fetchPartnerships(storedUserId);
           setLoading(false);
-          fetchPartnerships(storedUserId);
         } else {
           console.log('No complete user data found, redirecting to welcome');
           // Clear ALL user data to ensure clean state
@@ -231,9 +233,10 @@ export default function Home() {
 
     // Add focus event listener to refresh partnerships when returning from timer
     const handleFocus = () => {
-      console.log('Homepage focused - refreshing partnerships');
+      console.log('Homepage focused - refreshing partnerships in background');
       const storedUserId = localStorage.getItem('userId');
       if (storedUserId) {
+        // Refresh partnerships in background without affecting UI state
         fetchPartnerships(storedUserId);
       }
     };
@@ -244,40 +247,6 @@ export default function Home() {
       window.removeEventListener('focus', handleFocus);
     };
   }, [router]);
-
-  // Add a refresh mechanism to check for new partnerships (only if no partnerships exist)
-  useEffect(() => {
-    if (userId && partnerships.length === 0) {
-      const refreshPartnerships = () => {
-        console.log('Refreshing partnerships...');
-        fetchPartnerships(userId);
-      };
-
-      // Only refresh if no partnerships exist, and stop after 10 attempts
-      let attempts = 0;
-      const maxAttempts = 10;
-      
-      const interval = setInterval(() => {
-        attempts++;
-        if (attempts >= maxAttempts) {
-          console.log('Max refresh attempts reached, stopping');
-          clearInterval(interval);
-          return;
-        }
-        
-        // Stop refreshing if partnerships are found
-        if (partnerships.length > 0) {
-          console.log('Partnerships found, stopping refresh');
-          clearInterval(interval);
-          return;
-        }
-        
-        refreshPartnerships();
-      }, 5000); // Increased to 5 seconds to reduce load
-
-      return () => clearInterval(interval);
-    }
-  }, [userId, partnerships.length]);
 
   // If we have a userId, show the homepage
   if (userId) {
