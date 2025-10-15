@@ -24,6 +24,7 @@ interface Partnership {
 export default function Home() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [loading, setLoading] = useState(true);
+  const [partnershipsLoaded, setPartnershipsLoaded] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userWeeklyTarget, setUserWeeklyTarget] = useState<number>(0);
   const router = useRouter();
@@ -161,7 +162,8 @@ export default function Home() {
       // Set empty partnerships on error
       setPartnerships([]);
     } finally {
-      // Data is now loaded, UI will be shown
+      // Mark partnerships as loaded
+      setPartnershipsLoaded(true);
     }
   };
 
@@ -205,13 +207,15 @@ export default function Home() {
             await Promise.race([
               fetchPartnerships(storedUserId),
               new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Partnership fetch timeout')), 10000)
+                setTimeout(() => reject(new Error('Partnership fetch timeout')), 5000)
               )
             ]);
+            console.log('Partnerships loaded successfully');
           } catch (error) {
             console.error('Partnership fetch failed or timed out:', error);
-            // Continue anyway - show UI with empty partnerships
+            // Set empty partnerships and mark as loaded
             setPartnerships([]);
+            setPartnershipsLoaded(true);
           }
           setLoading(false);
         } else {
@@ -246,8 +250,8 @@ export default function Home() {
     const handleFocus = () => {
       console.log('Homepage focused - refreshing partnerships in background');
       const storedUserId = localStorage.getItem('userId');
-      if (storedUserId) {
-        // Refresh partnerships in background without affecting UI state
+      if (storedUserId && partnershipsLoaded) {
+        // Only refresh if partnerships were already loaded to avoid flash
         fetchPartnerships(storedUserId);
       }
     };
@@ -288,7 +292,12 @@ export default function Home() {
           {/* Partners Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
-            {partnerships.length === 0 ? (
+            {!partnershipsLoaded ? (
+              <div className="text-center py-4">
+                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
+                <p className="text-sm text-gray-600">Loading partnerships...</p>
+              </div>
+            ) : partnerships.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-gray-600 mb-3">No partners yet</p>
                 <Link
