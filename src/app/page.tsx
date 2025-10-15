@@ -263,8 +263,8 @@ export default function Home() {
     };
   }, [router]);
 
-  // If we have a userId, show the homepage
-  if (userId) {
+  // If we have a userId AND partnerships are loaded, show the complete homepage
+  if (userId && partnershipsLoaded) {
     return (
       <div className="min-h-screen bg-white">
         {/* Header */}
@@ -289,11 +289,10 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Partners Summary - Only render when partnerships are loaded */}
-          {partnershipsLoaded && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
-              {partnerships.length === 0 ? (
+          {/* Partners Summary */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
+            {partnerships.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-gray-600 mb-3">No partners yet</p>
                 <Link
@@ -322,8 +321,7 @@ export default function Home() {
                 ))}
               </div>
             )}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     );
