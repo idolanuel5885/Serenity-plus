@@ -24,13 +24,11 @@ interface Partnership {
 export default function Home() {
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
   const [loading, setLoading] = useState(true);
-  const [partnershipsLoading, setPartnershipsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userWeeklyTarget, setUserWeeklyTarget] = useState<number>(0);
   const router = useRouter();
 
   const fetchPartnerships = async (userId: string) => {
-    setPartnershipsLoading(true);
     try {
       console.log('Fetching partnerships for userId:', userId);
 
@@ -163,7 +161,7 @@ export default function Home() {
       // Set empty partnerships on error
       setPartnerships([]);
     } finally {
-      setPartnershipsLoading(false);
+      // Data is now loaded, UI will be shown
     }
   };
 
@@ -199,12 +197,23 @@ export default function Home() {
         const hasCompleteUserData = storedUserId && (userName || userNickname);
 
         if (hasCompleteUserData) {
-          console.log('User found, setting up user and starting partnership fetch');
+          console.log('User found, preloading all data before showing UI');
           setUserId(storedUserId);
-          setLoading(false);
           
-          // Start fetching partnerships in background (don't await)
-          fetchPartnerships(storedUserId);
+          // Preload ALL data before showing UI with timeout
+          try {
+            await Promise.race([
+              fetchPartnerships(storedUserId),
+              new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Partnership fetch timeout')), 10000)
+              )
+            ]);
+          } catch (error) {
+            console.error('Partnership fetch failed or timed out:', error);
+            // Continue anyway - show UI with empty partnerships
+            setPartnerships([]);
+          }
+          setLoading(false);
         } else {
           console.log('No complete user data found, redirecting to welcome');
           // Clear ALL user data to ensure clean state
@@ -279,12 +288,7 @@ export default function Home() {
           {/* Partners Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
-            {partnershipsLoading ? (
-              <div className="text-center py-4">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Loading partnerships...</p>
-              </div>
-            ) : partnerships.length === 0 ? (
+            {partnerships.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-gray-600 mb-3">No partners yet</p>
                 <Link
