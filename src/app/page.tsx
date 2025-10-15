@@ -289,15 +289,11 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Partners Summary */}
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
-            {!partnershipsLoaded ? (
-              <div className="text-center py-4">
-                <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Loading partnerships...</p>
-              </div>
-            ) : partnerships.length === 0 ? (
+          {/* Partners Summary - Only render when partnerships are loaded */}
+          {partnershipsLoaded && (
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
+              {partnerships.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-gray-600 mb-3">No partners yet</p>
                 <Link
@@ -326,7 +322,8 @@ export default function Home() {
                 ))}
               </div>
             )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     );
