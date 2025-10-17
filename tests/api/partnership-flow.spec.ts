@@ -61,7 +61,9 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     console.log('✅ Partnership verified in database');
 
     // Step 5: Test lotus progress (verifies weeks were created automatically)
-    const lotusResponse = await request.get(`${baseUrl}/api/lotus-progress?userId=${actualUser1Id}&partnershipId=${partnerships[0].id}`);
+       if (partnerships.length > 0 && partnerships[0]) {
+     const firstPartnership = partnerships[0];
+     const lotusResponse = await request.get(`${baseUrl}/api/lotus-progress?userId=${actualUser1Id}&partnershipId=${firstPartnership.id}`);
     
     if (lotusResponse.ok()) {
       const lotusData = await lotusResponse.json();
