@@ -110,7 +110,7 @@ export default function Home() {
             setPartnerships([]);
           }
         }
-      } catch (error) {
+      } catch {
         console.log('Supabase not configured, falling back to localStorage');
 
         // Fallback to localStorage approach
@@ -261,7 +261,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [router]);
+  }, [router, fetchPartnerships, partnershipsLoaded]);
 
   // If we have a userId AND partnerships are loaded, show the complete homepage
   if (userId && partnershipsLoaded) {
