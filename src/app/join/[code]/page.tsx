@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
 export default function JoinPage({ params }: { params: Promise<{ code: string }> }) {
@@ -50,7 +51,7 @@ export default function JoinPage({ params }: { params: Promise<{ code: string }>
     <div className="min-h-screen bg-white">
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
@@ -67,9 +68,11 @@ export default function JoinPage({ params }: { params: Promise<{ code: string }>
           <h2 className="text-xl font-semibold">{inviterName}</h2>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
-              <img
+              <Image
                 src="/icons/meditation-1.svg"
                 alt="Partner's meditation icon"
+                width={32}
+                height={32}
                 className="w-8 h-8"
               />
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { createUser } from '../../lib/supabase-database'; // Import createUser from Supabase
 import { supabase } from '../../lib/supabase';
 
@@ -191,7 +192,7 @@ export default function MeditationLengthPage() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>

@@ -1,4 +1,4 @@
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   console.log('Service Worker installing.');
   // Force the waiting service worker to become active
   self.skipWaiting();

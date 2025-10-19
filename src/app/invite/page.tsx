@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
@@ -119,7 +119,7 @@ export default function InvitePage() {
   return (
     <div className="min-h-screen flex flex-col bg-white text-gray-900">
       <header className="flex items-center justify-between p-6 border-b border-gray-200">
-        <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+        <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
         <span className="text-sm font-medium">Serenity+</span>
       </header>
 
@@ -131,7 +131,7 @@ export default function InvitePage() {
 
         {qrCodeDataUrl ? (
           <div className="mb-8 p-4 border border-gray-300 rounded-lg">
-            <img src={qrCodeDataUrl} alt="QR Code" className="w-48 h-48 mx-auto" />
+            <Image src={qrCodeDataUrl} alt="QR Code" width={192} height={192} className="w-48 h-48 mx-auto" />
           </div>
         ) : (
           <div className="mb-8 p-4 border border-gray-300 rounded-lg w-48 h-48 flex items-center justify-center">
@@ -171,7 +171,7 @@ export default function InvitePage() {
       </main>
 
       <footer className="mt-auto p-6 border-t border-gray-200 flex items-center justify-center">
-        <img src="/logo.svg" alt="Serenity+" className="w-6 h-6 mr-2" />
+        <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6 mr-2" />
         <span className="text-sm text-gray-600">Serenity+</span>
       </footer>
     </div>
