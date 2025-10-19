@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if partnership already exists
-    const { data: existingPartnership, error: checkError } = await supabase
+    const { data: existingPartnership } = await supabase
       .from('partnerships')
       .select('id')
       .eq('userId', userId)

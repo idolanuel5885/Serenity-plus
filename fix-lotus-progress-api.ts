@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const partnershipId = searchParams.get('partnershipId');
-    const isMeditationActive = searchParams.get('isMeditationActive') === 'true';
+    // const isMeditationActive = searchParams.get('isMeditationActive') === 'true';
     const sessionDuration = searchParams.get('sessionDuration') ? parseInt(searchParams.get('sessionDuration')!) : undefined;
     const sessionElapsed = searchParams.get('sessionElapsed') ? parseInt(searchParams.get('sessionElapsed')!) : undefined;
 

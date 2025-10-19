@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('Testing Supabase connection...');
 
     // Test 1: Check if we can connect to Supabase
-    const { data: testData, error: testError } = await supabase
+    const { error: testError } = await supabase
       .from('users')
       .select('count')
       .limit(1);
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       invitecode: 'test-invite-123',
     };
 
-    const { data: insertData, error: insertError } = await supabase
+    const { error: insertError } = await supabase
       .from('users')
       .insert([testUser])
       .select();
