@@ -149,8 +149,8 @@ jobs:
       
       - name: Run Partnership Flow Tests
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
         run: npx playwright test tests/api/partnership-flow.spec.ts --reporter=line
       
       - name: Upload partnership test results
@@ -180,15 +180,27 @@ jobs:
           
           - name: Run onboarding workflow tests
             run: npx playwright test tests/e2e/onboarding-workflow.spec.ts
+            env:
+              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           
           - name: Run notification redirect tests
             run: npx playwright test tests/e2e/notification-redirect.spec.ts
+            env:
+              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           
           - name: Run partnership system tests
             run: npx playwright test tests/e2e/partnership-system.spec.ts
+            env:
+              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           
           - name: Run UI improvements tests
             run: npx playwright test tests/e2e/ui-improvements.spec.ts
+            env:
+              NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+              NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
           
           - name: Upload onboarding test results
             uses: actions/upload-artifact@v4
