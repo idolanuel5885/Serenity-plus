@@ -2,6 +2,23 @@ import { test, expect } from '@playwright/test';
 import { createPartnershipsForUser, getUserPartnerships } from '../../src/lib/supabase-database';
 
 test.describe('Partnership Flow - Direct Function Testing', () => {
+  test('Database connectivity check', async ({ request }) => {
+    const baseUrl = 'https://serenity-plus-kohl.vercel.app';
+    
+    // Test database connectivity
+    const testResponse = await request.get(`${baseUrl}/api/test-supabase`);
+    const testData = await testResponse.json();
+    
+    if (!testData.success) {
+      console.error('❌ Database connectivity test failed:', testData.error);
+      console.error('❌ This usually means the staging database is not set up properly');
+      console.error('❌ Please run the database setup script: scripts/setup-staging-db.sh');
+      throw new Error(`Database connectivity failed: ${testData.error}`);
+    }
+    
+    console.log('✅ Database connectivity test passed');
+  });
+
   test('Complete partnership flow: users → partnerships → weeks', async ({ request }) => {
     const baseUrl = 'https://serenity-plus-kohl.vercel.app';
     const timestamp = Date.now();
