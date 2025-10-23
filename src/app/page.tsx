@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserPartnerships, createPartnershipsForUser, getUser } from '../lib/supabase-database';
@@ -270,7 +271,7 @@ export default function Home() {
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b">
           <div className="flex items-center gap-2">
-            <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+            <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
             <span className="font-bold text-lg">Serenity+</span>
           </div>
         </div>
@@ -280,9 +281,11 @@ export default function Home() {
           <div className="flex justify-center items-center">
             <Link href="/timer">
               <div className="w-32 h-32 cursor-pointer hover:opacity-90 transition-opacity">
-                <img
+                <Image
                   src="/sit-now-button.jpg"
                   alt="Sit Now"
+                  width={128}
+                  height={128}
                   className="w-full h-full rounded-full"
                 />
               </div>
