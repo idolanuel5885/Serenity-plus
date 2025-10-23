@@ -155,7 +155,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         partnersits,
         userid,
         partnerid,
-        user2:partnerid(name, email, image, weeklytarget)
+        user2:users!partnerid(name, email, image, weeklytarget)
       `)
       .eq('userid', userId)
       .order('createdat', { ascending: false });
@@ -177,7 +177,7 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
         partnersits,
         userid,
         partnerid,
-        user1:userid(name, email, image, weeklytarget)
+        user1:users!userid(name, email, image, weeklytarget)
       `)
       .eq('partnerid', userId)
       .order('createdat', { ascending: false });
