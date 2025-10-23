@@ -45,17 +45,14 @@ Object.defineProperty(window, 'localStorage', {
 global.fetch = jest.fn();
 
 // Mock window.location
-Object.defineProperty(window, 'location', {
-  value: {
-    origin: 'http://localhost:3000',
-    href: 'http://localhost:3000',
-    pathname: '/',
-    search: '',
-    hash: '',
-    assign: jest.fn(),
-    replace: jest.fn(),
-    reload: jest.fn(),
-  },
-  writable: true,
-  configurable: true,
-});
+delete window.location;
+window.location = {
+  origin: 'http://localhost:3000',
+  href: 'http://localhost:3000',
+  pathname: '/',
+  search: '',
+  hash: '',
+  assign: jest.fn(),
+  replace: jest.fn(),
+  reload: jest.fn(),
+};
