@@ -26,19 +26,19 @@ CREATE TABLE IF NOT EXISTS partnerships (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updatedat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  user1id UUID NOT NULL REFERENCES users(id),
-  user2id UUID NOT NULL REFERENCES users(id),
+  userid UUID NOT NULL REFERENCES users(id),
+  partnerid UUID NOT NULL REFERENCES users(id),
   isactive BOOLEAN DEFAULT TRUE,
   score INTEGER DEFAULT 0,
   weeklygoal INTEGER NOT NULL DEFAULT 5,
   currentweeknumber INTEGER DEFAULT 1,
   currentweekstart TIMESTAMP WITH TIME ZONE NOT NULL,
-  user1sits INTEGER DEFAULT 0,
-  user2sits INTEGER DEFAULT 0,
+  usersits INTEGER DEFAULT 0,
+  partnersits INTEGER DEFAULT 0,
   currentstreak INTEGER DEFAULT 0,
   longeststreak INTEGER DEFAULT 0,
   totalweeks INTEGER DEFAULT 0,
-  UNIQUE(user1id, user2id)
+  UNIQUE(userid, partnerid)
 );
 
 -- Create weeks table
@@ -93,8 +93,8 @@ CREATE TABLE IF NOT EXISTS notifications (
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_invitecode ON users(invitecode);
-CREATE INDEX IF NOT EXISTS idx_partnerships_user1id ON partnerships(user1id);
-CREATE INDEX IF NOT EXISTS idx_partnerships_user2id ON partnerships(user2id);
+CREATE INDEX IF NOT EXISTS idx_partnerships_userid ON partnerships(userid);
+CREATE INDEX IF NOT EXISTS idx_partnerships_partnerid ON partnerships(partnerid);
 CREATE INDEX IF NOT EXISTS idx_weeks_partnershipid ON weeks(partnershipid);
 CREATE INDEX IF NOT EXISTS idx_weeks_weeknumber ON weeks(partnershipid, weeknumber);
 CREATE INDEX IF NOT EXISTS idx_weeks_weekstart ON weeks(weekstart);
@@ -125,17 +125,17 @@ CREATE POLICY "Users can update their own data" ON users
 -- Create RLS policies for partnerships table
 CREATE POLICY "Users can view their partnerships" ON partnerships
   FOR SELECT USING (
-    user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+    userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
   );
 
 CREATE POLICY "Users can insert partnerships" ON partnerships
   FOR INSERT WITH CHECK (
-    user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+    userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
   );
 
 CREATE POLICY "Users can update their partnerships" ON partnerships
   FOR UPDATE USING (
-    user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+    userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
   );
 
 -- Create RLS policies for weeks table
@@ -143,7 +143,7 @@ CREATE POLICY "Users can view weeks for their partnerships" ON weeks
   FOR SELECT USING (
     partnershipid IN (
       SELECT id FROM partnerships 
-      WHERE user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+      WHERE userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
     )
   );
 
@@ -151,7 +151,7 @@ CREATE POLICY "Users can insert weeks for their partnerships" ON weeks
   FOR INSERT WITH CHECK (
     partnershipid IN (
       SELECT id FROM partnerships 
-      WHERE user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+      WHERE userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
     )
   );
 
@@ -159,7 +159,7 @@ CREATE POLICY "Users can update weeks for their partnerships" ON weeks
   FOR UPDATE USING (
     partnershipid IN (
       SELECT id FROM partnerships 
-      WHERE user1id::text = auth.uid()::text OR user2id::text = auth.uid()::text
+      WHERE userid::text = auth.uid()::text OR partnerid::text = auth.uid()::text
     )
   );
 
