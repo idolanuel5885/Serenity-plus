@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { subscribeToNotifications } from '../../lib/notifications';
 
 export default function NotificationsPage() {
@@ -38,14 +39,14 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="px-6 py-8 flex-1 flex flex-col items-center justify-center text-center space-y-6">
-        <img src="/logo.svg" alt="Serenity+" className="w-24 h-24 mx-auto" />
+        <Image src="/logo.svg" alt="Serenity+" width={96} height={96} className="w-24 h-24 mx-auto" />
 
         <div className="space-y-4 flex-1 flex flex-col justify-center">
           <h1 className="text-3xl font-bold text-gray-900 leading-tight">Enable Notifications</h1>

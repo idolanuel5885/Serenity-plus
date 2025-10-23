@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function WelcomePage() {
   const [showLearnMore, setShowLearnMore] = useState(false);
@@ -63,7 +64,7 @@ export default function WelcomePage() {
     <div className="min-h-screen bg-white flex flex-col">
       <div className="px-6 py-4 border-b">
         <div className="flex items-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
@@ -82,9 +83,11 @@ export default function WelcomePage() {
             <div className="mt-6 flex items-center gap-3">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 {inviteData.inviterImage ? (
-                  <img
+                  <Image
                     src={inviteData.inviterImage}
                     alt={`${inviteData.inviterName}'s avatar`}
+                    width={48}
+                    height={48}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -140,7 +143,7 @@ export default function WelcomePage() {
 
       <div className="px-6 py-4 border-t mt-auto">
         <div className="flex items-center justify-center gap-2">
-          <img src="/logo.svg" alt="Serenity+" className="w-6 h-6" />
+          <Image src="/logo.svg" alt="Serenity+" width={24} height={24} className="w-6 h-6" />
           <span className="font-bold text-lg">Serenity+</span>
         </div>
       </div>
