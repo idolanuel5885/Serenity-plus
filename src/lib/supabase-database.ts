@@ -403,14 +403,14 @@ export async function createPartnershipsForUser(
     for (const otherUser of otherUsers || []) {
       // Check if partnership already exists between these users
       // Use separate queries instead of complex or() clause to avoid 400 errors
-      const { data: existingPartnership1, error: checkError1 } = await supabase
+      const { data: existingPartnership1, error: _checkError1 } = await supabase
         .from('partnerships')
         .select('*')
         .eq('userid', userId)
         .eq('partnerid', otherUser.id)
         .maybeSingle();
 
-      const { data: existingPartnership2, error: checkError2 } = await supabase
+      const { data: existingPartnership2, error: _checkError2 } = await supabase
         .from('partnerships')
         .select('*')
         .eq('userid', otherUser.id)

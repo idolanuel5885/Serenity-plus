@@ -18,5 +18,5 @@ export function getSupabase() {
 }
 
 // Export the client for backward compatibility (but it can be null)
-// @ts-ignore - Temporarily ignore null checks for backward compatibility
+// @ts-expect-error - Temporarily ignore null checks for backward compatibility
 export const supabase = supabaseClient;

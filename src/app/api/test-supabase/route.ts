@@ -6,7 +6,6 @@ export async function GET() {
     console.log('Testing Supabase connection...');
 
     // Test 1: Check if we can connect to Supabase
-    const supabase = getSupabase();
     const { error: testError } = await supabase
       .from('users')
       .select('count')
