@@ -22,13 +22,12 @@ export async function GET() {
 
     // Test 2: Try to insert a test user
     const testUser = {
-      id: `test-${Date.now()}`,
       name: 'Test User',
-      email: 'test@example.com',
+      email: `test-${Date.now()}@example.com`,
       weeklytarget: 5,
       usualsitlength: 30,
       image: '/icons/meditation-1.svg',
-      invitecode: 'test-invite-123',
+      invitecode: `test-invite-${Date.now()}`,
     };
 
     const { error: insertError } = await supabase
@@ -49,7 +48,7 @@ export async function GET() {
     const { data: readData, error: readError } = await supabase
       .from('users')
       .select('*')
-      .eq('id', testUser.id);
+      .eq('email', testUser.email);
 
     if (readError) {
       console.error('Supabase read error:', readError);
@@ -61,7 +60,7 @@ export async function GET() {
     }
 
     // Clean up test data
-    await supabase.from('users').delete().eq('id', testUser.id);
+    await supabase.from('users').delete().eq('email', testUser.email);
 
     return NextResponse.json({
       success: true,
