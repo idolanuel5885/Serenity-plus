@@ -6,6 +6,21 @@ import { ensureCurrentWeekExists } from '../../../lib/supabase-database';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   try {
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Build mode detected - returning empty progress data');
+      return NextResponse.json({
+        success: true,
+        data: {
+          currentProgress: 0,
+          totalSits: 0,
+          completedSits: 0,
+          weeklyGoal: 5,
+          isActive: false
+        }
+      });
+    }
+
     console.log('Lotus progress API called with:', { 
       userId: searchParams.get('userId'), 
       partnershipId: searchParams.get('partnershipId') 
@@ -87,6 +102,21 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   let body: any = null;
   try {
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.log('Build mode detected - returning empty progress data');
+      return NextResponse.json({
+        success: true,
+        data: {
+          currentProgress: 0,
+          totalSits: 0,
+          completedSits: 0,
+          weeklyGoal: 5,
+          isActive: false
+        }
+      });
+    }
+
     body = await request.json();
     const { userId, partnershipId, sessionDuration, sessionElapsed } = body;
 
