@@ -7,6 +7,11 @@ import { calculateLotusProgress } from '@/lib/lotusProgress';
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase client is available
+    if (!supabase) {
+      return NextResponse.json({ error: 'Supabase client not configured' }, { status: 500 });
+    }
+
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const partnershipId = searchParams.get('partnershipId');
