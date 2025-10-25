@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '../../../lib/supabase';
+import { getSupabase } from '../../../lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
     const userData = await request.json();
 
     // Create user in Supabase
+    const supabase = getSupabase();
     const { data, error } = await supabase.from('users').insert([userData]).select().single();
 
     if (error) throw error;
