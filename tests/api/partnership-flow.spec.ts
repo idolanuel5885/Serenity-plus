@@ -65,13 +65,26 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const actualUser2Id = user2Data.user.id;
     console.log('✅ User2 created successfully with ID:', actualUser2Id);
 
-    // Step 3: Call createPartnershipsForUser directly (like the app does)
-    console.log('🔄 Calling createPartnershipsForUser...');
+    // Step 3: Create partnerships via API (instead of direct function call)
+    console.log('🔄 Creating partnerships via API...');
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const partnerships = await createPartnershipsForUser(actualUser1Id, inviteCode);
+    // Create partnerships via API call
+    const partnershipResponse = await request.post(`${baseUrl}/api/partnership`, {
+      data: {
+        userId: actualUser1Id,
+        inviteCode: inviteCode
+      }
+    });
+    
+    expect(partnershipResponse.ok()).toBe(true);
+    const partnershipData = await partnershipResponse.json();
+    console.log('✅ Partnership created via API:', partnershipData);
+    
+    // Verify partnerships exist by calling getUserPartnerships
+    const partnerships = await getUserPartnerships(actualUser1Id);
     
     expect(partnerships.length).toBeGreaterThan(0);
     console.log(`✅ Created ${partnerships.length} partnership(s)`);
@@ -134,13 +147,26 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const user2Data = await user2Response.json();
     const user2Id = user2Data.user.id;
 
-    // Step 2: Create partnerships
-    console.log('🔄 Creating partnerships...');
+    // Step 2: Create partnerships via API
+    console.log('🔄 Creating partnerships via API...');
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const partnerships = await createPartnershipsForUser(user1Id, inviteCode);
+    // Create partnerships via API call
+    const partnershipResponse = await page.request.post(`${baseUrl}/api/partnership`, {
+      data: {
+        userId: user1Id,
+        inviteCode: inviteCode
+      }
+    });
+    
+    expect(partnershipResponse.ok()).toBe(true);
+    const partnershipData = await partnershipResponse.json();
+    console.log('✅ Partnership created via API:', partnershipData);
+    
+    // Verify partnerships exist by calling getUserPartnerships
+    const partnerships = await getUserPartnerships(user1Id);
     expect(partnerships.length).toBeGreaterThan(0);
 
     // Step 3: Set up localStorage for user1 and navigate to homepage
