@@ -5,6 +5,15 @@ export async function GET() {
   try {
     console.log('Testing Supabase connection...');
 
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      return NextResponse.json({
+        success: false,
+        error: 'Supabase client not configured',
+        details: 'Environment variables not set',
+      });
+    }
+
     // Test 1: Check if we can connect to Supabase
     const { error: testError } = await supabase
       .from('users')

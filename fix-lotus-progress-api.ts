@@ -7,8 +7,8 @@ import { calculateLotusProgress } from '@/lib/lotusProgress';
 
 export async function GET(request: NextRequest) {
   try {
-    // Check if Supabase client is available
-    if (!supabase) {
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       return NextResponse.json({ error: 'Supabase client not configured' }, { status: 500 });
     }
 

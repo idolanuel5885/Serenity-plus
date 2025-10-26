@@ -4,19 +4,18 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-// Only create client if environment variables are available
+// Create a dummy client for build time, real client for runtime
 const supabaseClient = supabaseUrl && supabaseAnonKey 
   ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+  : createClient('https://dummy.supabase.co', 'dummy-key'); // Dummy client for build time
 
 // Helper function to get Supabase client with error handling
 export function getSupabase() {
-  if (!supabaseClient) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error('Supabase client not configured. Environment variables missing.');
   }
   return supabaseClient;
 }
 
-// Export the client for backward compatibility (but it can be null)
-// @ts-expect-error - Temporarily ignore null checks for backward compatibility
+// Export the client (always non-null, but may be dummy during build)
 export const supabase = supabaseClient;

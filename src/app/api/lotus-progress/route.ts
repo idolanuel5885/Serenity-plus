@@ -6,8 +6,8 @@ import { ensureCurrentWeekExists } from '../../../lib/supabase-database';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   try {
-    // Check if we're in build mode (no Supabase client)
-    if (!supabase) {
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       console.log('Build mode detected - returning empty progress data');
       return NextResponse.json({
         success: true,
@@ -102,8 +102,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   let body: any = null;
   try {
-    // Check if we're in build mode (no Supabase client)
-    if (!supabase) {
+    // Check if we're in build mode (no environment variables)
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       console.log('Build mode detected - returning empty progress data');
       return NextResponse.json({
         success: true,
