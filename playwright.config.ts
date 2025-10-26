@@ -6,6 +6,7 @@ export default defineConfig({
     baseURL: 'https://serenity-plus-kohl.vercel.app',
   },
   projects: [
-    { name: 'api', testMatch: '**/api/**/*.spec.ts' }
+    { name: 'api', testMatch: '**/api/**/*.spec.ts' },
+    { name: 'e2e', testMatch: '**/e2e/**/*.spec.ts' }
   ]
 });
