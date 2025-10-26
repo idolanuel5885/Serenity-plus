@@ -72,7 +72,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Create partnerships via API call
-    const partnershipResponse = await request.post(`${baseUrl}/api/partnership`, {
+    const partnershipResponse = await request.post(`${baseUrl}/api/create-partnerships`, {
       data: {
         userId: actualUser1Id,
         inviteCode: inviteCode
@@ -154,7 +154,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     // Create partnerships via API call
-    const partnershipResponse = await page.request.post(`${baseUrl}/api/partnership`, {
+    const partnershipResponse = await page.request.post(`${baseUrl}/api/create-partnerships`, {
       data: {
         userId: user1Id,
         inviteCode: inviteCode
