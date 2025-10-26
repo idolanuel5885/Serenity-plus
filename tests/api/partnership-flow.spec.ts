@@ -212,12 +212,15 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
 
     // Step 3: Set up localStorage for user1 and navigate to homepage
     await page.goto(baseUrl);
-    await page.evaluate(({ userId, userName }) => {
+    await page.evaluate(({ userId, userName, inviteCode }) => {
       localStorage.setItem('userId', userId);
       localStorage.setItem('userName', userName);
       localStorage.setItem('userWeeklyTarget', '5');
       localStorage.setItem('userUsualSitLength', '30');
-    }, { userId: user1Id, userName: `HomepageTestUser1_${timestamp}` });
+      // Set the invite code so homepage can find the partnerships
+      localStorage.setItem('pendingInviteCode', inviteCode);
+      console.log('Set up localStorage with invite code:', inviteCode);
+    }, { userId: user1Id, userName: `HomepageTestUser1_${timestamp}`, inviteCode: inviteCode });
 
     // Step 4: Navigate to homepage and verify it loads with complete data
     await page.goto(baseUrl);
