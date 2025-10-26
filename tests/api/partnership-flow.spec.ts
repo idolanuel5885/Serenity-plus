@@ -67,6 +67,10 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
 
     // Step 3: Call createPartnershipsForUser directly (like the app does)
     console.log('🔄 Calling createPartnershipsForUser...');
+    
+    // Add a small delay to ensure data is available
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const partnerships = await createPartnershipsForUser(actualUser1Id, inviteCode);
     
     expect(partnerships.length).toBeGreaterThan(0);
@@ -131,6 +135,11 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const user2Id = user2Data.user.id;
 
     // Step 2: Create partnerships
+    console.log('🔄 Creating partnerships...');
+    
+    // Add a small delay to ensure data is available
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const partnerships = await createPartnershipsForUser(user1Id, inviteCode);
     expect(partnerships.length).toBeGreaterThan(0);
 
