@@ -3,7 +3,7 @@ import { createPartnershipsForUser, getUserPartnerships } from '../../src/lib/su
 
 test.describe('Partnership Flow - Direct Function Testing', () => {
   test('Database connectivity check', async ({ request }) => {
-    const baseUrl = 'https://serenity-plus-kohl.vercel.app';
+    const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
     
     // Test database connectivity
     const testResponse = await request.get(`${baseUrl}/api/test-supabase`);
@@ -20,7 +20,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
   });
 
   test('Complete partnership flow: users → partnerships → weeks', async ({ request }) => {
-    const baseUrl = 'https://serenity-plus-kohl.vercel.app';
+    const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
     const timestamp = Date.now();
     const user1Id = `49d77b58-d86f-4ab3-b38f-${timestamp.toString().slice(-12).padStart(12, '0')}`;
     const user2Id = `c912a06f-9bab-42f4-b847-${(timestamp + 1).toString().slice(-12).padStart(12, '0')}`;
@@ -95,7 +95,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
   });
 
   test('Homepage loads with complete partnership data (no loading states)', async ({ page }) => {
-    const baseUrl = 'https://serenity-plus-kohl.vercel.app';
+    const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
     const timestamp = Date.now();
     const inviteCode = `invite-${timestamp}-${Math.random().toString(36).substr(2, 6)}`;
 
