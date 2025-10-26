@@ -66,7 +66,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     console.log('✅ User2 created successfully with ID:', actualUser2Id);
 
     // Step 3: Create partnerships via API (instead of direct function call)
-    console.log('🔄 Creating partnerships via API...');
+    console.log('🔄 Creating partnerships via API (updated approach)...');
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -147,8 +147,8 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const user2Data = await user2Response.json();
     const user2Id = user2Data.user.id;
 
-    // Step 2: Create partnerships via API
-    console.log('🔄 Creating partnerships via API...');
+    // Step 2: Create partnerships via API (updated approach)
+    console.log('🔄 Creating partnerships via API (updated approach)...');
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
