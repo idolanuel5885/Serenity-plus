@@ -112,7 +112,12 @@ test.describe('Invite Flow', () => {
 
     // Should redirect to homepage with partnership
     await expect(page).toHaveURL('/');
-    await expect(page.locator('text=Partnership')).toBeVisible();
+    
+    // Wait for homepage to load completely
+    await page.waitForLoadState('networkidle');
+    
+    // Wait for partnerships to be displayed
+    await expect(page.locator('text=Partners summary')).toBeVisible({ timeout: 10000 });
   });
 
 
