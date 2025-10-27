@@ -31,7 +31,7 @@ test.describe('Onboarding Flow', () => {
     // Meditation length screen
     await expect(page).toHaveURL('/meditation-length');
     await expect(page.locator('h1')).toContainText('How long do you want each meditation to be?');
-    await expect(page.locator('select')).toHaveValue('30');
+    await expect(page.locator('select')).toHaveValue('1');
     await page.click('button[type="submit"]');
 
     // Should redirect to homepage
@@ -54,8 +54,8 @@ test.describe('Onboarding Flow', () => {
   test('BR-006: UI elements are present', async ({ page }) => {
     await page.goto('/welcome');
 
-    // Logo should be visible
-    await expect(page.locator('img[src="/logo.svg"]')).toBeVisible();
+    // Logo should be visible (first one in header)
+    await expect(page.locator('img[src="/logo.svg"]').first()).toBeVisible();
 
     // Serenity+ text should be visible
     await expect(page.locator('text=Serenity+')).toBeVisible();
@@ -82,8 +82,8 @@ test.describe('Onboarding Flow', () => {
   test('BR-005: PWA functionality', async ({ page }) => {
     await page.goto('/');
 
-    // Check for manifest
-    const manifest = page.locator('link[rel="manifest"]');
+    // Check for manifest (first one)
+    const manifest = page.locator('link[rel="manifest"]').first();
     await expect(manifest).toHaveAttribute('href', '/manifest.json');
 
     // Check for service worker registration

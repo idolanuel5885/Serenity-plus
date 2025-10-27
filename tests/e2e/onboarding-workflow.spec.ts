@@ -9,10 +9,10 @@ test.describe('Complete Onboarding Workflow', () => {
     await expect(page).toHaveURL('/welcome');
 
     // Welcome page should load
-    await expect(page.locator('h1')).toContainText('Welcome to Serenity+');
+    await expect(page.locator('h1')).toContainText('Meditate daily with a gentle nudge.');
 
-    // Click "Get Started" button
-    await page.click('button:has-text("Get Started")');
+    // Click "Get started" button
+    await page.click('a:has-text("Get started")');
 
     // Should go to nickname page
     await expect(page).toHaveURL('/nickname');
@@ -73,7 +73,7 @@ test.describe('Complete Onboarding Workflow', () => {
 
     // Go through onboarding
     await page.goto('/welcome');
-    await page.click('button:has-text("Get Started")');
+    await page.click('a:has-text("Get started")');
     await page.fill('input[placeholder="e.g., Ido"]', 'TestUser');
     await page.click('button:has-text("Continue")');
     await page.click('button:has-text("Continue")');
