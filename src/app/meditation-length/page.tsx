@@ -197,7 +197,7 @@ export default function MeditationLengthPage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
+      <div className="px-6 py-8 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             How long do you want each meditation to be?
@@ -227,7 +227,7 @@ export default function MeditationLengthPage() {
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 pb-safe">
           <button
             onClick={handleSubmit}
             className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"

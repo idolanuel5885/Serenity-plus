@@ -69,7 +69,7 @@ export default function NicknamePage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6">
+        <form onSubmit={handleSubmit} className="mt-6 pb-safe">
           <button
             type="submit"
             disabled={!nickname.trim()}

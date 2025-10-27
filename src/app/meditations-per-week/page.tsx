@@ -41,7 +41,7 @@ export default function MeditationsPerWeekPage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
+      <div className="px-6 py-8 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             How many times a week do you want to meditate?
@@ -72,7 +72,7 @@ export default function MeditationsPerWeekPage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6">
+        <form onSubmit={handleSubmit} className="mt-6 pb-safe">
           <button
             type="submit"
             className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"

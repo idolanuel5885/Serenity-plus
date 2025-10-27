@@ -34,6 +34,12 @@ export default function Home() {
     try {
       console.log('Fetching partnerships for userId:', userId);
 
+      // Prevent duplicate calls if already loading
+      if (loading) {
+        console.log('Already loading partnerships, skipping duplicate call');
+        return;
+      }
+
       // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
         // Get user's weekly target
@@ -66,7 +72,12 @@ export default function Home() {
           }));
 
           console.log('Found existing partnerships:', partnerships);
-          setPartnerships(partnerships);
+          // Prevent duplicate partnerships by checking if they already exist
+          setPartnerships(prevPartnerships => {
+            const existingIds = prevPartnerships.map(p => p.id);
+            const newPartnerships = partnerships.filter(p => !existingIds.includes(p.id));
+            return [...prevPartnerships, ...newPartnerships];
+          });
         } else {
           // No existing partnerships, try to create new ones
           console.log('No existing partnerships, creating new ones...');
@@ -105,7 +116,12 @@ export default function Home() {
               partnerSits: p.partnerSits,
               partnerName: p.partner.name
             })));
-            setPartnerships(partnerships);
+            // Prevent duplicate partnerships by checking if they already exist
+            setPartnerships(prevPartnerships => {
+              const existingIds = prevPartnerships.map(p => p.id);
+              const newPartnerships = partnerships.filter(p => !existingIds.includes(p.id));
+              return [...prevPartnerships, ...newPartnerships];
+            });
           } else {
             console.log('No other users found, showing empty partnerships');
             setPartnerships([]);
