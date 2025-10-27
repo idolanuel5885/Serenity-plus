@@ -25,7 +25,7 @@ test.describe('Complete Onboarding Workflow', () => {
     // Should go to meditations per week page
     await expect(page).toHaveURL('/meditations-per-week');
     await expect(page.locator('h1')).toContainText(
-      'How many times per week do you want to meditate?',
+      'How many times a week do you want to meditate?',
     );
 
     // Select meditation count (default should be 5)
@@ -38,14 +38,7 @@ test.describe('Complete Onboarding Workflow', () => {
     // Select meditation length (default should be 30 minutes)
     await page.click('button:has-text("Complete Setup")');
 
-    // Should go to notifications page
-    await expect(page).toHaveURL('/notifications');
-    await expect(page.locator('h1')).toContainText('Enable Notifications');
-
-    // Click enable notifications
-    await page.click('button:has-text("Enable Notifications and Continue")');
-
-    // Should redirect to homepage (not welcome page!)
+    // Should redirect to homepage (notifications skipped)
     await expect(page).toHaveURL('/');
 
     // Homepage should show user dashboard
@@ -59,30 +52,6 @@ test.describe('Complete Onboarding Workflow', () => {
     expect(userName).toBe('TestUser');
   });
 
-  test('should handle notification permission denial gracefully', async ({ page }) => {
-    // Mock notification permission denial
-    await page.addInitScript(() => {
-      Object.defineProperty(window, 'Notification', {
-        value: {
-          permission: 'denied',
-          requestPermission: () => Promise.resolve('denied'),
-        },
-        writable: true,
-      });
-    });
-
-    // Go through onboarding
-    await page.goto('/welcome');
-    await page.click('a:has-text("Get started")');
-    await page.fill('input[placeholder="e.g., Ido"]', 'TestUser');
-    await page.click('button:has-text("Continue")');
-    await page.click('button:has-text("Continue")');
-    await page.click('button:has-text("Complete Setup")');
-
-    // Should still redirect to homepage even if notifications denied
-    await page.click('button:has-text("Enable Notifications and Continue")');
-    await expect(page).toHaveURL('/');
-  });
 
   test('should handle missing userId gracefully', async ({ page }) => {
     // Clear localStorage

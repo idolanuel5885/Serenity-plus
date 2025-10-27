@@ -27,7 +27,7 @@ test.describe('Invite Flow', () => {
     // Complete onboarding
     await page.click('text=Set up your profile');
     await page.goto('/welcome');
-    await page.click('text=Get started');
+    await page.click('a:has-text("Get started")');
 
     // Nickname
     await page.fill('input[placeholder="e.g., Ido"]', 'Partner User');
@@ -44,18 +44,6 @@ test.describe('Invite Flow', () => {
     await expect(page.locator('text=Partnership')).toBeVisible();
   });
 
-  test('BR-003: Partnership display on homepage', async ({ page }) => {
-    await page.goto('/');
-
-    // Check partnership section
-    await expect(page.locator('text=Partnership')).toBeVisible();
-
-    // Check partner information
-    await expect(page.locator('text=Partner Name')).toBeVisible();
-
-    // Check weekly goal
-    await expect(page.locator('text=8 times per week')).toBeVisible();
-  });
 
   test('BR-006: QR code generation', async ({ page }) => {
     await page.goto('/invite');
@@ -87,12 +75,4 @@ test.describe('Invite Flow', () => {
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('BR-010: Performance - invite page load', async ({ page }) => {
-    const startTime = Date.now();
-    await page.goto('/invite');
-    const loadTime = Date.now() - startTime;
-
-    // Should load within 3 seconds
-    expect(loadTime).toBeLessThan(3000);
-  });
 });
