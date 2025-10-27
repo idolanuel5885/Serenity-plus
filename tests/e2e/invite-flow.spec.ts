@@ -81,11 +81,17 @@ test.describe('Invite Flow', () => {
     await page.fill('input[placeholder="e.g., Ido"]', 'Partner User');
     await page.click('button:has-text("Continue")');
 
-    // Meditations per week - use submit button since it's in a form
-    await page.click('button[type="submit"]');
+    // Meditations per week - click the Continue button
+    await page.click('button:has-text("Continue")');
     
-    // Wait for navigation to meditation-length page
-    await expect(page).toHaveURL('/meditation-length');
+    // Wait for form submission and navigation to meditation-length page
+    await page.waitForLoadState('networkidle');
+    
+    // Debug: log current URL
+    const currentUrl = page.url();
+    console.log('Current URL after meditations-per-week:', currentUrl);
+    
+    await expect(page).toHaveURL('/meditation-length', { timeout: 10000 });
 
     // Meditation length - use the correct button selector
     await page.click('button:has-text("Complete Setup")');
