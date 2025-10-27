@@ -6,7 +6,7 @@ test.describe('Invite Flow', () => {
 
     // Check invite link is generated
     const inviteInput = page.locator('input[readonly]');
-    await expect(inviteInput).toHaveValue(/http:\/\/.*\/join\/ABC123/);
+    await expect(inviteInput).toHaveValue(/https:\/\/.*\/welcome\?invite=/);
 
     // Check QR code is generated
     const qrCode = page.locator('img[alt="QR Code"]');
@@ -19,13 +19,13 @@ test.describe('Invite Flow', () => {
 
   test('BR-002: Accept invite and create partnership', async ({ page }) => {
     // Set up invite data
-    await page.goto('/join/ABC123');
+    await page.goto('/welcome?invite=ABC123');
 
     // Should show invite acceptance page
-    await expect(page.locator('h1')).toContainText('wants to meditate together');
+    await expect(page.locator('h1')).toContainText("Let's set you up to start meditating with");
 
     // Complete onboarding
-    await page.click('text=Accept Invitation');
+    await page.click('text=Set up your profile');
     await page.goto('/welcome');
     await page.click('text=Get started');
 
