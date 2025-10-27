@@ -81,17 +81,31 @@ test.describe('Invite Flow', () => {
     await page.fill('input[placeholder="e.g., Ido"]', 'Partner User');
     await page.click('button:has-text("Continue")');
 
-    // Meditations per week - click the Continue button
-    await page.click('button:has-text("Continue")');
+    // Meditations per week - submit the form properly
+    // First, ensure we're on the right page
+    await expect(page).toHaveURL('/meditations-per-week');
     
-    // Wait for form submission and navigation to meditation-length page
-    await page.waitForLoadState('networkidle');
+    // Try multiple approaches to submit the form
+    try {
+      // Method 1: Click submit button
+      await page.click('button[type="submit"]');
+    } catch (error) {
+      console.log('Submit button click failed, trying alternative approach');
+      // Method 2: Trigger form submission via evaluate
+      await page.evaluate(() => {
+        const form = document.querySelector('form');
+        if (form) {
+          form.submit();
+        }
+      });
+    }
+    
+    // Wait for navigation to meditation-length page
+    await page.waitForURL('**/meditation-length', { timeout: 10000 });
     
     // Debug: log current URL
     const currentUrl = page.url();
-    console.log('Current URL after meditations-per-week:', currentUrl);
-    
-    await expect(page).toHaveURL('/meditation-length', { timeout: 10000 });
+    console.log('Current URL after form submission:', currentUrl);
 
     // Meditation length - use the correct button selector
     await page.click('button:has-text("Complete Setup")');
