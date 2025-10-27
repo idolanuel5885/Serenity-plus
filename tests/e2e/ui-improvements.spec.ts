@@ -102,8 +102,8 @@ test.describe('UI Improvements', () => {
     const mainContent = page.locator('.flex-1.flex.flex-col').first();
     await expect(mainContent).toBeVisible();
 
-    // Check that the form has mt-auto for bottom positioning
-    const form = page.locator('form.mt-auto');
+    // Check that the form has proper bottom positioning (mt-6 instead of mt-auto)
+    const form = page.locator('form.mt-6');
     await expect(form).toBeVisible();
   });
 });
