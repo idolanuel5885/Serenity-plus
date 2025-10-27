@@ -40,15 +40,9 @@ test.describe('Onboarding Flow', () => {
   });
 
   test('BR-001: Onboarding with invite code', async ({ page }) => {
-    // Set up invite data in localStorage
-    await page.goto('/');
-    await page.evaluate(() => {
-      localStorage.setItem('pendingInviteCode', 'ABC123');
-    });
-
-    // Should show different welcome message
-    await page.goto('/welcome');
-    // Wait for the page to load and check localStorage
+    // Should show different welcome message when invite code is in URL
+    await page.goto('/welcome?invite=ABC123');
+    // Wait for the page to load and check URL parameters
     await page.waitForTimeout(1000);
     await expect(page.locator('h1')).toContainText("Let's set you up to start meditating with");
   });
