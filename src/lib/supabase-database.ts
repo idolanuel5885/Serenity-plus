@@ -431,10 +431,6 @@ export async function createPartnershipsForUser(
       const partnershipData = {
         userid: userId,
         partnerid: otherUser.id,
-        partnername: otherUser.name,
-        partneremail: otherUser.email,
-        partnerimage: otherUser.image,
-        partnerweeklytarget: otherUser.weeklytarget,
         weeklygoal: combinedWeeklyGoal, // Add the combined weekly goal
         usersits: 0,
         partnersits: 0,
