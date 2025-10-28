@@ -48,3 +48,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 # Testing staging deployment with env vars - Oct 27 2025
 # Testing clean state after removing deploy hooks - Oct 27 2025
 # Testing 404 fix - Oct 27 2025
+# Force redeploy with Next.js settings - Oct 27 2025
