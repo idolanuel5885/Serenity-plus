@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import LotusAnimation from '@/components/LotusAnimation';
 import { useLotusProgress } from '@/hooks/useLotusProgress';
-import { getUserPartnerships } from '@/lib/supabase-database';
+import { getUserPartnerships, getPartnerDetails } from '@/lib/supabase-database';
 
 interface User {
   id: string;
@@ -69,20 +69,23 @@ export default function TimerPage() {
 
           if (existingPartnerships.length > 0) {
             // Convert database partnerships to UI format (same as homepage)
-            const partnerships = existingPartnerships.map((partnership) => ({
-              id: partnership.id,
-              partner: {
-                id: partnership.partnerid,
-                name: partnership.partnername,
-                email: partnership.partneremail,
-                image: partnership.partnerimage || '/icons/meditation-1.svg',
-                weeklyTarget: partnership.partnerweeklytarget,
-              },
-              userSits: partnership.usersits,
-              partnerSits: partnership.partnersits,
-              weeklyGoal: partnership.partnerweeklytarget + 5, // Calculate from both users' targets (hardcoded for now)
-              score: partnership.score,
-              currentWeekStart: partnership.currentweekstart,
+            const partnerships = await Promise.all(existingPartnerships.map(async (partnership) => {
+              const partnerDetails = await getPartnerDetails(partnership.partnerid);
+              return {
+                id: partnership.id,
+                partner: {
+                  id: partnership.partnerid,
+                  name: partnerDetails?.name || 'Unknown Partner',
+                  email: partnerDetails?.email || '',
+                  image: partnerDetails?.image || '/icons/meditation-1.svg',
+                  weeklyTarget: partnerDetails?.weeklytarget || 0,
+                },
+                userSits: partnership.usersits,
+                partnerSits: partnership.partnersits,
+                weeklyGoal: (partnerDetails?.weeklytarget || 0) + 5, // Calculate from both users' targets (hardcoded for now)
+                score: partnership.score,
+                currentWeekStart: partnership.currentweekstart,
+              };
             }));
 
             console.log('Found existing partnerships:', partnerships);
@@ -97,20 +100,23 @@ export default function TimerPage() {
                 console.log('Timer: Retry partnerships result:', retryPartnerships);
                 
                 if (retryPartnerships.length > 0) {
-                  const partnerships = retryPartnerships.map((partnership) => ({
-                    id: partnership.id,
-                    partner: {
-                      id: partnership.partnerid,
-                      name: partnership.partnername,
-                      email: partnership.partneremail,
-                      image: partnership.partnerimage || '/icons/meditation-1.svg',
-                      weeklyTarget: partnership.partnerweeklytarget,
-                    },
-                    userSits: partnership.usersits,
-                    partnerSits: partnership.partnersits,
-                    weeklyGoal: partnership.partnerweeklytarget + 5,
-                    score: partnership.score,
-                    currentWeekStart: partnership.currentweekstart,
+                  const partnerships = await Promise.all(retryPartnerships.map(async (partnership) => {
+                    const partnerDetails = await getPartnerDetails(partnership.partnerid);
+                    return {
+                      id: partnership.id,
+                      partner: {
+                        id: partnership.partnerid,
+                        name: partnerDetails?.name || 'Unknown Partner',
+                        email: partnerDetails?.email || '',
+                        image: partnerDetails?.image || '/icons/meditation-1.svg',
+                        weeklyTarget: partnerDetails?.weeklytarget || 0,
+                      },
+                      userSits: partnership.usersits,
+                      partnerSits: partnership.partnersits,
+                      weeklyGoal: (partnerDetails?.weeklytarget || 0) + 5,
+                      score: partnership.score,
+                      currentWeekStart: partnership.currentweekstart,
+                    };
                   }));
                   console.log('Timer: Found partnerships on retry:', partnerships);
                   setPartnerships(partnerships);

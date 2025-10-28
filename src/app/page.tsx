@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserPartnerships, createPartnershipsForUser, getUser } from '../lib/supabase-database';
+import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails } from '../lib/supabase-database';
 
 interface Partnership {
   id: string;
@@ -54,21 +54,24 @@ export default function Home() {
 
         if (existingPartnerships.length > 0) {
           // Convert database partnerships to UI format
-          const partnerships = existingPartnerships.map((partnership) => ({
-            id: partnership.id,
-            partner: {
-              id: partnership.partnerid,
-              name: partnership.partnername,
-              email: partnership.partneremail,
-              image: partnership.partnerimage || '/icons/meditation-1.svg',
-              weeklyTarget: partnership.partnerweeklytarget,
-            },
-            userSits: partnership.usersits,
-            partnerSits: partnership.partnersits,
-            userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
-            weeklyGoal: userWeeklyTarget + partnership.partnerweeklytarget, // Calculate from both users' targets
-            score: partnership.score,
-            currentWeekStart: partnership.currentweekstart,
+          const partnerships = await Promise.all(existingPartnerships.map(async (partnership) => {
+            const partnerDetails = await getPartnerDetails(partnership.partnerid);
+            return {
+              id: partnership.id,
+              partner: {
+                id: partnership.partnerid,
+                name: partnerDetails?.name || 'Unknown Partner',
+                email: partnerDetails?.email || '',
+                image: partnerDetails?.image || '/icons/meditation-1.svg',
+                weeklyTarget: partnerDetails?.weeklytarget || 0,
+              },
+              userSits: partnership.usersits,
+              partnerSits: partnership.partnersits,
+              userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
+              weeklyGoal: userWeeklyTarget + (partnerDetails?.weeklytarget || 0), // Calculate from both users' targets
+              score: partnership.score,
+              currentWeekStart: partnership.currentweekstart,
+            };
           }));
 
           console.log('Found existing partnerships:', partnerships);
@@ -92,21 +95,24 @@ export default function Home() {
           const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined);
 
           if (newPartnerships.length > 0) {
-            const partnerships = newPartnerships.map((partnership) => ({
-              id: partnership.id,
-              partner: {
-                id: partnership.partnerid,
-                name: partnership.partnername,
-                email: partnership.partneremail,
-                image: partnership.partnerimage || '/icons/meditation-1.svg',
-                weeklyTarget: partnership.partnerweeklytarget,
-              },
-              userSits: partnership.usersits,
-              partnerSits: partnership.partnersits,
-              userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
-              weeklyGoal: userWeeklyTarget + partnership.partnerweeklytarget, // Calculate from both users' targets
-              score: partnership.score,
-              currentWeekStart: partnership.currentweekstart,
+            const partnerships = await Promise.all(newPartnerships.map(async (partnership) => {
+              const partnerDetails = await getPartnerDetails(partnership.partnerid);
+              return {
+                id: partnership.id,
+                partner: {
+                  id: partnership.partnerid,
+                  name: partnerDetails?.name || 'Unknown Partner',
+                  email: partnerDetails?.email || '',
+                  image: partnerDetails?.image || '/icons/meditation-1.svg',
+                  weeklyTarget: partnerDetails?.weeklytarget || 0,
+                },
+                userSits: partnership.usersits,
+                partnerSits: partnership.partnersits,
+                userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
+                weeklyGoal: userWeeklyTarget + (partnerDetails?.weeklytarget || 0), // Calculate from both users' targets
+                score: partnership.score,
+                currentWeekStart: partnership.currentweekstart,
+              };
             }));
 
             console.log('Created new partnerships:', partnerships);

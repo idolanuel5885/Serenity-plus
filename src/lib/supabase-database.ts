@@ -15,10 +15,7 @@ export interface Partnership {
   id: string;
   userid: string;
   partnerid: string;
-  partnername: string;
-  partneremail: string;
-  partnerimage: string;
-  partnerweeklytarget: number;
+  weeklygoal: number;
   usersits: number;
   partnersits: number;
   score: number;
@@ -197,10 +194,6 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
           id: partnership.id,
           userid: userId,
           partnerid: isUser1 ? partnership.partnerid : partnership.userid,
-          partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
-          partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
-          partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
-          partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
           usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : (isUser1 ? partnership.usersits : partnership.partnersits),
           partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : (isUser1 ? partnership.partnersits : partnership.usersits),
           weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
@@ -215,10 +208,6 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
           id: partnership.id,
           userid: userId,
           partnerid: isUser1 ? partnership.partnerid : partnership.userid,
-          partnername: isUser1 ? partnership.user2.name : partnership.user1.name,
-          partneremail: isUser1 ? partnership.user2.email : partnership.user1.email,
-          partnerimage: isUser1 ? partnership.user2.image : partnership.user1.image,
-          partnerweeklytarget: isUser1 ? partnership.user2.weeklytarget : partnership.user1.weeklytarget,
           usersits: isUser1 ? partnership.usersits : partnership.partnersits,
           partnersits: isUser1 ? partnership.partnersits : partnership.usersits,
           weeklygoal: partnership.weeklygoal,
@@ -460,5 +449,26 @@ export async function createPartnershipsForUser(
   } catch (error) {
     console.error('Error creating partnerships:', error);
     return [];
+  }
+}
+
+// Get partner details for a partnership
+export async function getPartnerDetails(partnerId: string) {
+  try {
+    const { data: partner, error } = await supabase
+      .from('users')
+      .select('id, name, email, image, weeklytarget')
+      .eq('id', partnerId)
+      .single();
+
+    if (error) {
+      console.error('Error fetching partner details:', error);
+      return null;
+    }
+
+    return partner;
+  } catch (error) {
+    console.error('Error fetching partner details:', error);
+    return null;
   }
 }

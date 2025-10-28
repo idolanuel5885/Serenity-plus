@@ -52,7 +52,7 @@ export function calculateLotusProgress(
  */
 export function getSessionStartProgress(partnership: Partnership): number {
   const totalSits = partnership.usersits + partnership.partnersits;
-  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
+  const weeklyTarget = partnership.weeklygoal; // Use the weeklygoal from partnership
   
   return Math.min((totalSits / weeklyTarget) * 100, 100);
 }
@@ -61,7 +61,7 @@ export function getSessionStartProgress(partnership: Partnership): number {
  * Calculate progress increment for each completed meditation
  */
 export function getProgressIncrement(partnership: Partnership): number {
-  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
+  const weeklyTarget = partnership.weeklygoal; // Use the weeklygoal from partnership
   return (1 / weeklyTarget) * 100; // Each sit adds this percentage
 }
 
@@ -69,7 +69,7 @@ export function getProgressIncrement(partnership: Partnership): number {
  * Check if both partners have completed their weekly goal
  */
 export function isWeeklyGoalComplete(partnership: Partnership): boolean {
-  const weeklyTarget = partnership.partnerweeklytarget + 5; // Assuming user's target is 5, should be dynamic
+  const weeklyTarget = partnership.weeklygoal; // Use the weeklygoal from partnership
   const user1Target = Math.ceil(weeklyTarget / 2); // Split goal between partners
   const user2Target = weeklyTarget - user1Target;
   
