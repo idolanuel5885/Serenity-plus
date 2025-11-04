@@ -84,13 +84,14 @@ export default function MeditationLengthPage() {
 
       // Create user in Supabase database
       let supabaseUserId = null;
-      // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
+      // Get the pending invite code (User1's invite code) - but don't use it for account creation
       const pendingInviteCodeLocal = localStorage.getItem('pendingInviteCode');
+      // Each user should ALWAYS generate their own unique invite code for their account
+      // The pendingInviteCode (from the invite link) is only used later for partnership creation
       const userInviteCodeLocal = localStorage.getItem('userInviteCode');
       const finalUserInviteCode =
-        pendingInviteCodeLocal ||
-        userInviteCodeLocal ||
-        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        userInviteCodeLocal ||  // Use existing one if user already has one
+        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Always generate new one for new accounts
       
       try {
         console.log('=== USER CREATION: Invite code debugging ===', {
