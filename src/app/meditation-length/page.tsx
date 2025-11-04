@@ -84,17 +84,18 @@ export default function MeditationLengthPage() {
 
       // Create user in Supabase database
       let supabaseUserId = null;
+      // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
+      const pendingInviteCodeLocal = localStorage.getItem('pendingInviteCode');
+      const userInviteCodeLocal = localStorage.getItem('userInviteCode');
+      const finalUserInviteCode =
+        pendingInviteCodeLocal ||
+        userInviteCodeLocal ||
+        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       try {
-        // Get the user's invite code - use pendingInviteCode if available, otherwise create new one
-        const pendingInviteCode = localStorage.getItem('pendingInviteCode');
-        const userInviteCode = localStorage.getItem('userInviteCode');
-        const finalUserInviteCode =
-          pendingInviteCode ||
-          userInviteCode ||
-          `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         console.log('=== USER CREATION: Invite code debugging ===', {
-          pendingInviteCode,
-          userInviteCode: localStorage.getItem('userInviteCode'),
+          pendingInviteCode: pendingInviteCodeLocal,
+          userInviteCode: userInviteCodeLocal,
           finalUserInviteCode: finalUserInviteCode,
           allLocalStorage: Object.keys(localStorage),
         });
@@ -145,25 +146,75 @@ export default function MeditationLengthPage() {
 
         // Clear pending invite after successful user creation
         // Note: Invite API calls removed as they are not used by the app
-        if (pendingInviteCode) {
+        if (pendingInviteCodeLocal) {
           localStorage.removeItem('pendingInviteCode');
           console.log('Cleared pendingInviteCode after user creation');
         }
-      } catch (supabaseError) {
-        console.log('Supabase error, using localStorage fallback:', supabaseError);
+      } catch (supabaseError: any) {
+        console.log('Supabase error, attempting to find existing user:', supabaseError);
         console.error('Supabase error details:', supabaseError);
-        // Create a fallback user ID
-        supabaseUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // If user already exists (409 Conflict), try to find them by invite code
+        if (supabaseError.code === '23505' || supabaseError.status === 409 || supabaseError.message?.includes('duplicate')) {
+          console.log('User already exists, attempting to find by invite code:', finalUserInviteCode);
+          try {
+            const { data: existingUser, error: findError } = await supabase
+              .from('users')
+              .select('id')
+              .eq('invitecode', finalUserInviteCode)
+              .single();
+            
+            if (existingUser && !findError) {
+              console.log('Found existing user by invite code:', existingUser.id);
+              supabaseUserId = existingUser.id;
+              localStorage.setItem('userId', supabaseUserId);
+              localStorage.setItem('supabaseUserId', supabaseUserId);
+            } else {
+              // Try to find by email as fallback
+              const userEmail = `user-${Date.now()}@example.com`;
+              const { data: existingUserByEmail, error: findEmailError } = await supabase
+                .from('users')
+                .select('id')
+                .eq('email', userEmail)
+                .single();
+              
+              if (existingUserByEmail && !findEmailError) {
+                console.log('Found existing user by email:', existingUserByEmail.id);
+                supabaseUserId = existingUserByEmail.id;
+                localStorage.setItem('userId', supabaseUserId);
+                localStorage.setItem('supabaseUserId', supabaseUserId);
+              } else {
+                // Generate a proper UUID for fallback (won't work with Supabase but at least won't cause syntax errors)
+                supabaseUserId = crypto.randomUUID();
+                console.log('Generated fallback UUID:', supabaseUserId);
+                localStorage.setItem('userId', supabaseUserId);
+              }
+            }
+          } catch (findError) {
+            console.error('Error finding existing user:', findError);
+            // Generate a proper UUID for fallback
+            supabaseUserId = crypto.randomUUID();
+            console.log('Generated fallback UUID:', supabaseUserId);
+            localStorage.setItem('userId', supabaseUserId);
+          }
+        } else {
+          // For other errors, generate a proper UUID
+          supabaseUserId = crypto.randomUUID();
+          console.log('Generated fallback UUID for other error:', supabaseUserId);
+          localStorage.setItem('userId', supabaseUserId);
+        }
+      }
+
+      // Ensure supabaseUserId is set (should be set by now, but just in case)
+      if (!supabaseUserId) {
+        console.error('ERROR: supabaseUserId is null! This should not happen.');
+        supabaseUserId = crypto.randomUUID();
         localStorage.setItem('userId', supabaseUserId);
-        // Store the invite code in localStorage for partnership creation
       }
 
       // Always store in localStorage for compatibility
       const allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-      const finalUserInviteCode =
-        pendingInviteCode ||
-        localStorage.getItem('userInviteCode') ||
-        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Use the finalUserInviteCode that was already determined above
       const newUser = {
         id: supabaseUserId,
         name: nickname,
