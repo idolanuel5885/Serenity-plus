@@ -85,13 +85,19 @@ export default function MeditationLengthPage() {
       // Create user in Supabase database
       let supabaseUserId = null;
       // Get the pending invite code (User1's invite code) - but don't use it for account creation
+      // This will be preserved and used later for partnership creation
       const pendingInviteCodeLocal = localStorage.getItem('pendingInviteCode');
-      // Each user should ALWAYS generate their own unique invite code for their account
-      // The pendingInviteCode (from the invite link) is only used later for partnership creation
+      
+      // Check if user already exists (has supabaseUserId) - if yes, use their existing invite code
+      // If no supabaseUserId exists, they're going through onboarding - always generate a new invite code
+      const existingSupabaseUserId = localStorage.getItem('supabaseUserId');
       const userInviteCodeLocal = localStorage.getItem('userInviteCode');
-      const finalUserInviteCode =
-        userInviteCodeLocal ||  // Use existing one if user already has one
-        `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // Always generate new one for new accounts
+      
+      // During onboarding (no supabaseUserId), always generate a new invite code
+      // For existing users (has supabaseUserId), use their existing invite code
+      const finalUserInviteCode = existingSupabaseUserId && userInviteCodeLocal
+        ? userInviteCodeLocal  // Existing user - use their invite code
+        : `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // New user - always generate new one
       
       try {
         console.log('=== USER CREATION: Invite code debugging ===', {
@@ -137,19 +143,16 @@ export default function MeditationLengthPage() {
 
         // Store Supabase user ID in localStorage for session management
         localStorage.setItem('supabaseUserId', supabaseUserId);
-        // Store the invite code in localStorage for partnership creation
+        // Store the user's own invite code in localStorage
         localStorage.setItem('userInviteCode', finalUserInviteCode);
         console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
-        // Store the invite code in localStorage for partnership creation
-        localStorage.setItem('userInviteCode', finalUserInviteCode);
-        console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
-
-        // Clear pending invite after successful user creation
-        // Note: Invite API calls removed as they are not used by the app
+        
+        // DO NOT remove pendingInviteCode here - it's needed for partnership creation later
+        // The pendingInviteCode (User1's invite code) will be used on the homepage
+        // to find User1 and create the partnership
         if (pendingInviteCodeLocal) {
-          localStorage.removeItem('pendingInviteCode');
-          console.log('Cleared pendingInviteCode after user creation');
+          console.log('Preserved pendingInviteCode for partnership creation:', pendingInviteCodeLocal);
         }
       } catch (supabaseError: any) {
         console.log('Supabase error, attempting to find existing user:', supabaseError);
