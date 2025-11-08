@@ -95,7 +95,12 @@ export async function POST(request: NextRequest) {
         console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId);
         
         // Session completed - update session record
-        const { error: sessionError } = await supabase
+        // Try to update with iscompleted column first, fallback to just completedat if column doesn't exist
+        let sessionError = null;
+        let sessionUpdateAttempted = false;
+        
+        // First attempt: try with iscompleted column
+        const { error: sessionErrorWithIsCompleted } = await supabase
           .from('sessions')
           .update({
             completedat: new Date().toISOString(),
@@ -107,20 +112,44 @@ export async function POST(request: NextRequest) {
           .select()
           .maybeSingle();
 
-      if (sessionError) {
-        console.error('Error completing session:', sessionError);
-        console.error('Session completion error details:', {
-          code: sessionError.code,
-          message: sessionError.message,
-          details: sessionError.details,
-          hint: sessionError.hint
-        });
-        return NextResponse.json({ 
-          error: 'Failed to complete session',
-          details: sessionError.message,
-          code: sessionError.code
-        }, { status: 500 });
-      }
+        if (sessionErrorWithIsCompleted) {
+          console.warn('Session update with iscompleted failed, trying without iscompleted filter:', sessionErrorWithIsCompleted);
+          
+          // Second attempt: try without iscompleted filter (in case column doesn't exist)
+          const { error: sessionErrorWithoutIsCompleted } = await supabase
+            .from('sessions')
+            .update({
+              completedat: new Date().toISOString()
+            })
+            .eq('userid', userId)
+            .eq('partnershipid', partnershipId)
+            .is('completedat', null)
+            .select()
+            .maybeSingle();
+
+          if (sessionErrorWithoutIsCompleted) {
+            console.error('Session update failed even without iscompleted:', sessionErrorWithoutIsCompleted);
+            sessionError = sessionErrorWithoutIsCompleted;
+          } else {
+            console.log('Session updated successfully without iscompleted column');
+            sessionUpdateAttempted = true;
+          }
+        } else {
+          console.log('Session updated successfully with iscompleted column');
+          sessionUpdateAttempted = true;
+        }
+
+        // Log error but don't block weeks update - we still want to update the weeks table
+        if (sessionError && !sessionUpdateAttempted) {
+          console.error('Error completing session (non-blocking):', sessionError);
+          console.error('Session completion error details:', {
+            code: sessionError.code,
+            message: sessionError.message,
+            details: sessionError.details,
+            hint: sessionError.hint
+          });
+          // Continue anyway - we'll still update the weeks table
+        }
 
       // Update the weeks table to increment sit count
       console.log('Updating weeks table for completed session...');
@@ -315,7 +344,12 @@ export async function POST(request: NextRequest) {
             message: 'Session completed successfully',
             sessionDuration,
             completed: true,
-            weekUpdated: true
+            sessionUpdated: sessionUpdateAttempted,
+            weekUpdated: true,
+            sessionUpdateError: sessionError ? {
+              code: sessionError.code,
+              message: sessionError.message
+            } : null
           }
         });
     }
