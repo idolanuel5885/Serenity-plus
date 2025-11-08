@@ -69,7 +69,14 @@ export default function NicknamePage() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 pb-safe">
+        <form 
+          onSubmit={handleSubmit} 
+          className="mt-6"
+          style={{ 
+            paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)',
+            marginBottom: '1rem'
+          }}
+        >
           <button
             type="submit"
             disabled={!nickname.trim()}

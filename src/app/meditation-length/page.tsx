@@ -282,7 +282,13 @@ export default function MeditationLengthPage() {
           </div>
         </div>
 
-        <div className="mt-6 pb-safe">
+        <div 
+          className="mt-6"
+          style={{ 
+            paddingBottom: 'calc(env(safe-area-inset-bottom) + 1.5rem)',
+            marginBottom: '1rem'
+          }}
+        >
           <button
             onClick={handleSubmit}
             className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"

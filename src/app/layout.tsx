@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: 'Meditate daily with a gentle nudge. Pair with one buddy. Tiny steps, big change.',
   manifest: '/manifest.json',
   themeColor: '#f97316',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
+  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
