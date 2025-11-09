@@ -31,10 +31,20 @@ interface Partnership {
 export default function TimerPage() {
   const [user, setUser] = useState<User | null>(null);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
-  const [timeLeft, setTimeLeft] = useState(15 * 60); // Default 15 minutes, will be updated when user data loads
+  // Initialize timeLeft from localStorage immediately if available (client-side only)
+  const [timeLeft, setTimeLeft] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const usualSitLength = parseInt(localStorage.getItem('userUsualSitLength') || '15');
+      return usualSitLength * 60;
+    }
+    return 15 * 60; // Default 15 minutes
+  });
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    // Only show loading on server-side render
+    return typeof window === 'undefined';
+  });
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch user data and partnerships on component mount
