@@ -11,6 +11,14 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
           return;
         }
     
+    // Test if deployment exists first
+    const healthCheck = await request.get(baseUrl);
+    if (healthCheck.status() === 404) {
+      console.error('❌ Deployment not found at:', baseUrl);
+      console.error('❌ Please deploy the app to Vercel or set E2E_BASE_URL to a working deployment');
+      throw new Error(`Deployment not found: ${baseUrl}`);
+    }
+    
     // Test database connectivity
     const testResponse = await request.get(`${baseUrl}/api/test-supabase`);
     const testData = await testResponse.json();
