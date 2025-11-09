@@ -121,7 +121,7 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app' }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Upload test results
         uses: actions/upload-artifact@v4
@@ -152,7 +152,7 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
-          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app' }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
         run: npx playwright test tests/api/partnership-flow.spec.ts --reporter=line
       
       - name: Upload partnership test results
