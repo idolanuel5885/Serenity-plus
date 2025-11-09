@@ -60,8 +60,11 @@ export default function TimerPage() {
         setUser(userData);
         setTimeLeft(usualSitLength * 60); // Convert minutes to seconds
         console.log('Timer set to:', usualSitLength, 'minutes');
+        
+        // Set loading to false immediately - timer doesn't need database data to display
+        setLoading(false);
 
-        // Get partnerships from database (same method as homepage)
+        // Get partnerships from database (same method as homepage) - do this in background
         try {
           console.log('Timer: Fetching partnerships for userId:', userData.id);
           const existingPartnerships = await getUserPartnerships(userData.id);
@@ -149,7 +152,6 @@ export default function TimerPage() {
         // Fallback to default
         setUser({ id: 'unknown', name: 'You', usualSitLength: 15 });
         setTimeLeft(15 * 60);
-      } finally {
         setLoading(false);
       }
     };

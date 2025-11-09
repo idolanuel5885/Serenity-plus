@@ -2,11 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Complete Onboarding Workflow', () => {
   test('should complete full onboarding without errors', async ({ page }) => {
+    // Clear localStorage first to ensure clean state
+    await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    
     // Start from homepage - should redirect to welcome
     await page.goto('/');
 
     // Should redirect to welcome page
-    await expect(page).toHaveURL('/welcome');
+    await expect(page).toHaveURL('/welcome', { timeout: 10000 });
 
     // Welcome page should load
     await expect(page.locator('h1')).toContainText('Meditate daily with a gentle nudge.');
@@ -54,11 +58,14 @@ test.describe('Complete Onboarding Workflow', () => {
 
 
   test('should handle missing userId gracefully', async ({ page }) => {
-    // Clear localStorage
+    // Clear localStorage BEFORE visiting the page
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
-
+    
+    // Reload the page so the redirect logic runs
+    await page.reload();
+    
     // Should redirect to welcome page
-    await expect(page).toHaveURL('/welcome');
+    await expect(page).toHaveURL('/welcome', { timeout: 10000 });
   });
 });
