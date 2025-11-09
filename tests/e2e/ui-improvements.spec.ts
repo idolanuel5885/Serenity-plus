@@ -33,8 +33,13 @@ test.describe('UI Improvements', () => {
     // Navigate to timer page
     await page.goto('/timer');
 
-    // Wait for page to load and timer to render (wait for the timer display element)
+    // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
+    
+    // Wait for loading spinner to disappear (this ensures useEffect has run)
+    await page.waitForSelector('.animate-spin', { state: 'hidden', timeout: 10000 }).catch(() => {
+      // If no loading spinner, that's fine - timer might have loaded immediately
+    });
     
     // Wait for timer display to show 5:00 (this waits for useEffect to run and update state)
     await page.waitForSelector('text=5:00', { timeout: 10000 });
