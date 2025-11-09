@@ -22,7 +22,7 @@ test.describe('UI Improvements', () => {
   });
 
   test('should use user-selected meditation length in timer', async ({ page }) => {
-    // Set up user with specific meditation length
+    // Set up user with specific meditation length BEFORE navigating
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.setItem('userId', 'test-user-123');
@@ -33,7 +33,10 @@ test.describe('UI Improvements', () => {
     // Navigate to timer page
     await page.goto('/timer');
 
-    // Wait for timer display to appear (not just network idle)
+    // Wait for page to load and timer to render (wait for the timer display element)
+    await page.waitForLoadState('domcontentloaded');
+    
+    // Wait for timer display to show 5:00 (this waits for useEffect to run and update state)
     await page.waitForSelector('text=5:00', { timeout: 10000 });
 
     // Timer should show 5 minutes (300 seconds)

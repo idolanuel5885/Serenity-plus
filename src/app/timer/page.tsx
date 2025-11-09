@@ -31,29 +31,19 @@ interface Partnership {
 export default function TimerPage() {
   const [user, setUser] = useState<User | null>(null);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
-  // Initialize timeLeft from localStorage immediately if available (client-side only)
-  const [timeLeft, setTimeLeft] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const usualSitLength = parseInt(localStorage.getItem('userUsualSitLength') || '15');
-      return usualSitLength * 60;
-    }
-    return 15 * 60; // Default 15 minutes
-  });
+  // Initialize timeLeft - will be updated immediately in useEffect on client
+  const [timeLeft, setTimeLeft] = useState(15 * 60); // Default 15 minutes
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [loading, setLoading] = useState(() => {
-    // Only show loading on server-side render
-    return typeof window === 'undefined';
-  });
+  const [loading, setLoading] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch user data and partnerships on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Get user data from localStorage FIRST (synchronously, before any async operations)
         const userId = localStorage.getItem('userId');
-        
-        // Get user data from localStorage FIRST (for static export)
         const userName = localStorage.getItem('userName') || 'You';
         const usualSitLength = parseInt(localStorage.getItem('userUsualSitLength') || '15');
 
@@ -63,6 +53,7 @@ export default function TimerPage() {
           usualSitLength: usualSitLength,
         };
 
+        // Update state synchronously - this happens immediately
         setUser(userData);
         setTimeLeft(usualSitLength * 60); // Convert minutes to seconds
         console.log('Timer set to:', usualSitLength, 'minutes');
