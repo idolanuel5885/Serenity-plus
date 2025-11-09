@@ -255,14 +255,24 @@ export default function Home() {
           localStorage.removeItem('partnershipInviteCode');
           // Set loading to false and redirect to welcome page for onboarding
           setLoading(false);
-          router.push('/welcome');
+          // Use window.location for test compatibility
+          if (typeof window !== 'undefined') {
+            window.location.href = '/welcome';
+          } else {
+            router.push('/welcome');
+          }
           return; // Exit early to prevent further execution
         }
       } catch (error) {
         console.error('Error in homepage useEffect:', error);
         // Fallback: redirect to welcome page
         setLoading(false);
-        router.push('/welcome');
+        // Use window.location for test compatibility
+        if (typeof window !== 'undefined') {
+          window.location.href = '/welcome';
+        } else {
+          router.push('/welcome');
+        }
       }
     };
 

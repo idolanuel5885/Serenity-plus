@@ -42,17 +42,13 @@ export default function TimerPage() {
     const fetchData = async () => {
       try {
         const userId = localStorage.getItem('userId');
-        if (!userId) {
-          setLoading(false);
-          return;
-        }
-
-        // Get user data from localStorage (for static export)
+        
+        // Get user data from localStorage FIRST (for static export)
         const userName = localStorage.getItem('userName') || 'You';
         const usualSitLength = parseInt(localStorage.getItem('userUsualSitLength') || '15');
 
         const userData = {
-          id: userId,
+          id: userId || 'unknown',
           name: userName,
           usualSitLength: usualSitLength,
         };
@@ -63,6 +59,12 @@ export default function TimerPage() {
         
         // Set loading to false immediately - timer doesn't need database data to display
         setLoading(false);
+
+        // If no userId, skip database calls
+        if (!userId) {
+          console.log('No userId found, skipping database calls');
+          return;
+        }
 
         // Get partnerships from database (same method as homepage) - do this in background
         try {

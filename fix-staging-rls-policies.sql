@@ -42,3 +42,4 @@ CREATE POLICY "Allow anonymous access to notifications for testing" ON notificat
   USING (true) 
   WITH CHECK (true);
 
+

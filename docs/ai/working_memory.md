@@ -16,8 +16,53 @@
 - **Database**: Supabase PostgreSQL
 - **ORM**: Direct Supabase client (no Prisma in production)
 - **Connection**: `src/lib/supabase.ts` with environment variables
-- **Tables**: `users`, `partnerships`, `weeks`, `invitations` (unused)
+- **Production Project**: serenity-plus (https://jvogrzlxqmvovszfxhmk.supabase.co)
+- **Staging Project**: Different Supabase project (staging environment)
+- **Tables**: `users`, `partnerships`, `weeks`, `sessions` (production confirmed)
 - **Key Fields**: `users.invitecode`, `partnerships.userid/partnerid`, `weeks.partnershipid`
+
+## Database Schema: Production vs Staging
+
+### Production Schema (serenity-plus - Source of Truth)
+**USERS Table:**
+- Columns: `id`, `name`, `email`, `weeklytarget`, `usualsitlength`, `image`, `invitecode`, `createdat`
+- `invitecode`: TEXT (NOT UNIQUE - duplicates exist in production)
+- Missing: `updatedat`, `primarywindow`, `timezone`, `whypractice`, `supportneeds`
+
+**PARTNERSHIPS Table:**
+- Columns: `id`, `userid`, `partnerid`, `partnername`, `partneremail`, `partnerimage`, `partnerweeklytarget`, `usersits`, `partnersits`, `weeklygoal`, `score`, `currentweekstart`, `createdat`
+- Has partner fields: `partnername`, `partneremail`, `partnerimage`, `partnerweeklytarget`
+- Missing: `updatedat`, `isactive`, `currentweeknumber`, `currentstreak`, `longeststreak`, `totalweeks`
+- Constraint: UNIQUE(userid, partnerid)
+
+**WEEKS Table:**
+- Same structure as staging: `id`, `partnershipid`, `weeknumber`, `weekstart`, `weekend`, `user1sits`, `user2sits`, `weeklygoal`, `goalmet`, `createdat`
+
+**SESSIONS Table:**
+- Same structure as staging: `id`, `createdat`, `duration`, `iscompleted`, `completedat`, `startedat`, `userid`, `partnershipid`
+
+**Tables NOT in Production:**
+- `invitations` - Does NOT exist
+- `notifications` - Does NOT exist
+
+### Staging Schema (setup-staging-database.sql)
+**USERS Table:**
+- Has extra fields: `updatedat`, `primarywindow`, `timezone`, `whypractice`, `supportneeds`
+- `invitecode`: TEXT (no UNIQUE constraint)
+
+**PARTNERSHIPS Table:**
+- Missing partner fields: `partnername`, `partneremail`, `partnerimage`, `partnerweeklytarget`
+- Has extra fields: `updatedat`, `isactive`, `currentweeknumber`, `currentstreak`, `longeststreak`, `totalweeks`
+
+**Additional Tables in Staging:**
+- `invitations` - Exists in staging
+- `notifications` - Exists in staging
+
+### Key Schema Differences
+1. **Partnerships table**: Production has `partnername`, `partneremail`, `partnerimage`, `partnerweeklytarget` fields that staging lacks
+2. **Users table**: Staging has extra fields (`updatedat`, `primarywindow`, `timezone`, `whypractice`, `supportneeds`) that production doesn't have
+3. **invitecode constraint**: Production does NOT have UNIQUE constraint (duplicates found)
+4. **Additional tables**: Staging has `invitations` and `notifications` tables that production doesn't have
 
 ## Run/Dev/Test Commands
 ```bash

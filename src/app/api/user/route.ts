@@ -9,18 +9,37 @@ export async function POST(request: NextRequest) {
     }
 
     const userData = await request.json();
+    console.log('Creating user with data:', JSON.stringify(userData, null, 2));
 
     // Create user in Supabase
     const { data, error } = await supabase.from('users').insert([userData]).select().single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error creating user:', error);
+      console.error('Error code:', error.code);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
+      // Return the actual error for debugging
+      return NextResponse.json({ 
+        error: 'Failed to create user', 
+        details: error.message,
+        code: error.code,
+        hint: error.hint
+      }, { status: 500 });
+    }
 
     console.log('User created in Supabase:', data);
 
     return NextResponse.json({ success: true, user: data });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating user:', error);
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
+    console.error('Error stack:', error.stack);
+    return NextResponse.json({ 
+      error: 'Failed to create user', 
+      details: error?.message || 'Unknown error',
+      stack: error?.stack
+    }, { status: 500 });
   }
 }
 
