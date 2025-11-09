@@ -7,7 +7,10 @@ test.describe('Complete Onboarding Workflow', () => {
     await page.evaluate(() => localStorage.clear());
     
     // Start from homepage - should redirect to welcome
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    // Wait for redirect to welcome page (window.location.href redirect)
+    await page.waitForURL('**/welcome', { timeout: 10000 });
 
     // Should redirect to welcome page
     await expect(page).toHaveURL('/welcome', { timeout: 10000 });
@@ -62,8 +65,11 @@ test.describe('Complete Onboarding Workflow', () => {
     await page.goto('/');
     await page.evaluate(() => localStorage.clear());
     
-    // Reload the page so the redirect logic runs
-    await page.reload();
+    // Navigate to homepage - should redirect to welcome
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    // Wait for redirect to welcome page (window.location.href redirect)
+    await page.waitForURL('**/welcome', { timeout: 10000 });
     
     // Should redirect to welcome page
     await expect(page).toHaveURL('/welcome', { timeout: 10000 });

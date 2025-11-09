@@ -54,7 +54,14 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     if (!user1Response.ok()) {
       const responseText = await user1Response.text();
       console.log('❌ User1 creation failed. Status:', user1Response.status());
-      console.log('❌ Response:', responseText.substring(0, 200));
+      console.log('❌ Full Response:', responseText);
+      try {
+        const errorData = JSON.parse(responseText);
+        console.log('❌ Error details:', JSON.stringify(errorData, null, 2));
+      } catch (e) {
+        console.log('❌ Could not parse error response as JSON');
+      }
+      throw new Error(`User1 creation failed: ${user1Response.status()} - ${responseText.substring(0, 500)}`);
     }
     expect(user1Response.ok()).toBe(true);
     const user1Data = await user1Response.json();
@@ -156,6 +163,18 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         invitecode: inviteCode 
       }
     });
+    if (!user1Response.ok()) {
+      const responseText = await user1Response.text();
+      console.log('❌ User1 creation failed. Status:', user1Response.status());
+      console.log('❌ Full Response:', responseText);
+      try {
+        const errorData = JSON.parse(responseText);
+        console.log('❌ Error details:', JSON.stringify(errorData, null, 2));
+      } catch (e) {
+        console.log('❌ Could not parse error response as JSON');
+      }
+      throw new Error(`User1 creation failed: ${user1Response.status()} - ${responseText.substring(0, 500)}`);
+    }
     expect(user1Response.ok()).toBe(true);
     const user1Data = await user1Response.json();
     const user1Id = user1Data.user.id;

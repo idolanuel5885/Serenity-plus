@@ -33,8 +33,8 @@ test.describe('UI Improvements', () => {
     // Navigate to timer page
     await page.goto('/timer');
 
-    // Wait for timer to load
-    await page.waitForLoadState('networkidle');
+    // Wait for timer display to appear (not just network idle)
+    await page.waitForSelector('text=5:00', { timeout: 10000 });
 
     // Timer should show 5 minutes (300 seconds)
     await expect(page.locator('text=5:00')).toBeVisible();
