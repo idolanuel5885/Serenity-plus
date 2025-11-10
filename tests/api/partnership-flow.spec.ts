@@ -86,7 +86,9 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const actualUser1Id = user1Data.user.id;
     console.log('✅ User1 created successfully with ID:', actualUser1Id);
 
-    // Step 2: Create User2 with same invite code
+    // Step 2: Create User2 with their own unique invite code
+    // User2 generates their own invite code during onboarding (not User1's invite code)
+    const user2InviteCode = `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const user2Response = await request.post(`${baseUrl}/api/user`, {
       data: { 
         name: `User2_${timestamp}`, 
@@ -94,7 +96,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         weeklytarget: 3, 
         usualsitlength: 25, 
         image: '/icons/meditation-1.svg', 
-        invitecode: inviteCode 
+        invitecode: user2InviteCode 
       }
     });
     console.log('🔍 User2 creation response status:', user2Response.status());
@@ -227,6 +229,8 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const user1Data = await user1Response.json();
     const user1Id = user1Data.user.id;
 
+    // User2 generates their own unique invite code during onboarding (not User1's invite code)
+    const user2InviteCode = `invite-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const user2Response = await page.request.post(`${baseUrl}/api/user`, {
       data: { 
         name: `HomepageTestUser2_${timestamp}`, 
@@ -234,7 +238,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         weeklytarget: 3, 
         usualsitlength: 25, 
         image: '/icons/meditation-1.svg', 
-        invitecode: inviteCode 
+        invitecode: user2InviteCode 
       }
     });
     console.log('🔍 User2 creation response status:', user2Response.status());
