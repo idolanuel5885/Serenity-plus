@@ -97,6 +97,26 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         invitecode: inviteCode 
       }
     });
+    console.log('🔍 User2 creation response status:', user2Response.status());
+    console.log('🔍 User2 creation response ok:', user2Response.ok());
+    
+    if (!user2Response.ok()) {
+      const responseText = await user2Response.text();
+      console.error('❌ User2 creation failed. Status:', user2Response.status());
+      console.error('❌ Full Response:', responseText);
+      try {
+        const errorData = JSON.parse(responseText);
+        console.error('❌ Error details:', JSON.stringify(errorData, null, 2));
+        console.error('❌ Error code:', errorData.code);
+        console.error('❌ Error message:', errorData.details || errorData.error);
+        console.error('❌ Error hint:', errorData.hint);
+      } catch (e) {
+        console.error('❌ Could not parse error response as JSON');
+        console.error('❌ Raw response:', responseText);
+      }
+      throw new Error(`User2 creation failed: ${user2Response.status()} - ${responseText.substring(0, 500)}`);
+    }
+    
     expect(user2Response.ok()).toBe(true);
     const user2Data = await user2Response.json();
     const actualUser2Id = user2Data.user.id;
@@ -217,6 +237,26 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         invitecode: inviteCode 
       }
     });
+    console.log('🔍 User2 creation response status:', user2Response.status());
+    console.log('🔍 User2 creation response ok:', user2Response.ok());
+    
+    if (!user2Response.ok()) {
+      const responseText = await user2Response.text();
+      console.error('❌ User2 creation failed. Status:', user2Response.status());
+      console.error('❌ Full Response:', responseText);
+      try {
+        const errorData = JSON.parse(responseText);
+        console.error('❌ Error details:', JSON.stringify(errorData, null, 2));
+        console.error('❌ Error code:', errorData.code);
+        console.error('❌ Error message:', errorData.details || errorData.error);
+        console.error('❌ Error hint:', errorData.hint);
+      } catch (e) {
+        console.error('❌ Could not parse error response as JSON');
+        console.error('❌ Raw response:', responseText);
+      }
+      throw new Error(`User2 creation failed: ${user2Response.status()} - ${responseText.substring(0, 500)}`);
+    }
+    
     expect(user2Response.ok()).toBe(true);
     const user2Data = await user2Response.json();
     const user2Id = user2Data.user.id;
