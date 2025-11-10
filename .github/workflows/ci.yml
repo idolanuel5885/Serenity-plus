@@ -116,6 +116,19 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       
+      - name: Verify staging deployment accessibility
+        run: |
+          echo "🔍 Checking E2E_BASE_URL: $E2E_BASE_URL"
+          if [ -z "$E2E_BASE_URL" ]; then
+            echo "⚠️ E2E_BASE_URL is not set, will use default production URL"
+          else
+            echo "✅ E2E_BASE_URL is set to: $E2E_BASE_URL"
+            echo "🔍 Testing connectivity..."
+            curl -I --max-time 10 "$E2E_BASE_URL" || echo "⚠️ Could not reach staging deployment"
+          fi
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
+      
       - name: Run E2E tests
         run: npx playwright test --config=playwright.config.ts
         env:
@@ -147,6 +160,19 @@ jobs:
       
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+      
+      - name: Verify staging deployment accessibility
+        run: |
+          echo "🔍 Checking E2E_BASE_URL: $E2E_BASE_URL"
+          if [ -z "$E2E_BASE_URL" ]; then
+            echo "⚠️ E2E_BASE_URL is not set, will use default production URL"
+          else
+            echo "✅ E2E_BASE_URL is set to: $E2E_BASE_URL"
+            echo "🔍 Testing connectivity..."
+            curl -I --max-time 10 "$E2E_BASE_URL" || echo "⚠️ Could not reach staging deployment"
+          fi
+        env:
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Run Partnership Flow Tests
         env:
@@ -185,24 +211,28 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Run notification redirect tests
         run: npx playwright test tests/e2e/notification-redirect.spec.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Run partnership system tests
         run: npx playwright test tests/e2e/partnership-system.spec.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Run UI improvements tests
         run: npx playwright test tests/e2e/ui-improvements.spec.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          E2E_BASE_URL: ${{ secrets.E2E_BASE_URL }}
       
       - name: Upload onboarding test results
         uses: actions/upload-artifact@v4
