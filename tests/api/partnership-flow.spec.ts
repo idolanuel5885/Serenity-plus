@@ -125,16 +125,18 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     console.log('✅ User2 created successfully with ID:', actualUser2Id);
 
     // Step 3: Create partnerships via API (instead of direct function call)
+    // User2 calls this with User1's invite code to find User1 and create partnership
     console.log('🔄 Creating partnerships via API (updated approach)...');
+    console.log('🔍 User2 will use User1\'s invite code to find User1:', inviteCode);
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Create partnerships via API call
+    // Create partnerships via API call - User2 uses User1's invite code to find User1
     const partnershipResponse = await request.post(`${baseUrl}/api/create-partnerships`, {
       data: {
-        userId: actualUser1Id,
-        inviteCode: inviteCode
+        userId: actualUser2Id,
+        inviteCode: inviteCode  // User1's invite code, used by User2 to find User1
       }
     });
     
@@ -266,16 +268,18 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     const user2Id = user2Data.user.id;
 
     // Step 2: Create partnerships via API (updated approach)
+    // User2 calls this with User1's invite code to find User1 and create partnership
     console.log('🔄 Creating partnerships via API (updated approach)...');
+    console.log('🔍 User2 will use User1\'s invite code to find User1:', inviteCode);
     
     // Add a small delay to ensure data is available
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Create partnerships via API call
+    // Create partnerships via API call - User2 uses User1's invite code to find User1
     const partnershipResponse = await page.request.post(`${baseUrl}/api/create-partnerships`, {
       data: {
-        userId: user1Id,
-        inviteCode: inviteCode
+        userId: user2Id,
+        inviteCode: inviteCode  // User1's invite code, used by User2 to find User1
       }
     });
     
