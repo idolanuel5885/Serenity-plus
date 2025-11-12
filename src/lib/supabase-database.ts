@@ -119,11 +119,39 @@ export async function createPartnership(
 export async function ensureCurrentWeekExists(partnershipId: string, weeklyGoal: number): Promise<Week | null> {
   try {
     // First check if current week exists
-    let currentWeek = await getCurrentWeekForPartnership(partnershipId);
+    let currentWeek = await getCurrentWeek(partnershipId);
     
     if (!currentWeek) {
-      // Create new week if it doesn't exist
-      currentWeek = await createNewWeek(partnershipId, weeklyGoal);
+      // Check if automatic week creation is enabled for this partnership
+      const { data: partnership, error: partnershipError } = await supabase
+        .from('partnerships')
+        .select('autocreateweeks, weekcreationpauseduntil')
+        .eq('id', partnershipId)
+        .maybeSingle();
+
+      if (partnershipError) {
+        console.error('Error checking partnership auto-creation settings:', partnershipError);
+        // If we can't check, default to creating on-demand (backward compatible)
+        currentWeek = await createNewWeek(partnershipId, weeklyGoal);
+        return currentWeek;
+      }
+
+      const isAutoCreationEnabled = partnership?.autocreateweeks ?? true; // Default to true if null
+      const isPaused = partnership?.weekcreationpauseduntil 
+        ? new Date(partnership.weekcreationpauseduntil) > new Date()
+        : false;
+
+      if (isAutoCreationEnabled && !isPaused) {
+        // Automatic week creation is enabled - don't create here, let the cron job handle it
+        console.log('Automatic week creation is enabled for partnership, not creating week on-demand');
+        console.log('Current week will be created automatically by scheduled job');
+        // Return null - the cron job will create the week at the right time
+        return null;
+      } else {
+        // Automatic week creation is disabled or paused - create on-demand (backward compatible)
+        console.log('Automatic week creation is disabled or paused, creating week on-demand');
+        currentWeek = await createNewWeek(partnershipId, weeklyGoal);
+      }
     }
     
     return currentWeek;
