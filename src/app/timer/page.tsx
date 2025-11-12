@@ -317,7 +317,7 @@ export default function TimerPage() {
     if (!partnershipId || !user?.id) return;
 
     console.log('=== TIMER: Calling session-complete API ===');
-    console.log('Timer: completeSession called with:', { completed, userId: user.id, partnershipId });
+    console.log('Timer: completeSession called with:', { completed, userId: user.id, partnershipId, sessionId: currentSessionId });
 
     try {
       const response = await fetch('/api/session-complete', {
@@ -329,7 +329,8 @@ export default function TimerPage() {
           userId: user.id,
           partnershipId,
           sessionDuration: user.usualSitLength * 60,
-          completed
+          completed,
+          sessionId: currentSessionId // Include the stored session ID
         }),
       });
 
