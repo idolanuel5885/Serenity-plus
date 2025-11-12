@@ -47,11 +47,28 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
+    const inviteCode = searchParams.get('inviteCode');
 
     if (userId) {
       const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
       if (error) throw error;
+      return NextResponse.json({ success: true, user: data });
+    }
+
+    if (inviteCode) {
+      // Get the first user with this invite code (since invite codes may not be unique in production)
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, name, email, image, invitecode')
+        .eq('invitecode', inviteCode)
+        .limit(1)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
       return NextResponse.json({ success: true, user: data });
     }
 

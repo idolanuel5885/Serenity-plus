@@ -19,19 +19,47 @@ export default function WelcomePage() {
         const urlParams = new URLSearchParams(window.location.search);
         const inviteCode = urlParams.get('invite');
 
+        let pendingInviteCode = inviteCode;
+
         if (inviteCode) {
           // Store the invite code for later use
           localStorage.setItem('pendingInviteCode', inviteCode);
           console.log('Welcome page: Stored pendingInviteCode from URL:', inviteCode);
-          setInviteData({
-            inviterName: 'Your Partner',
-            inviterImage: '/icons/meditation-1.svg',
-          });
         } else {
           // Check localStorage for existing invite
-          const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+          pendingInviteCode = localStorage.getItem('pendingInviteCode');
           console.log('Welcome page: Found existing pendingInviteCode:', pendingInviteCode);
-          if (pendingInviteCode) {
+        }
+
+        if (pendingInviteCode) {
+          // Fetch inviter's information from the database
+          try {
+            const response = await fetch(`/api/user?inviteCode=${encodeURIComponent(pendingInviteCode)}`);
+            if (response.ok) {
+              const data = await response.json();
+              if (data.user) {
+                setInviteData({
+                  inviterName: data.user.name || 'Your Partner',
+                  inviterImage: data.user.image || '/icons/meditation-1.svg',
+                });
+              } else {
+                // Fallback if user not found
+                setInviteData({
+                  inviterName: 'Your Partner',
+                  inviterImage: '/icons/meditation-1.svg',
+                });
+              }
+            } else {
+              // Fallback if API call fails
+              console.error('Failed to fetch inviter data:', response.status);
+              setInviteData({
+                inviterName: 'Your Partner',
+                inviterImage: '/icons/meditation-1.svg',
+              });
+            }
+          } catch (fetchError) {
+            console.error('Error fetching inviter data:', fetchError);
+            // Fallback if fetch fails
             setInviteData({
               inviterName: 'Your Partner',
               inviterImage: '/icons/meditation-1.svg',
@@ -99,8 +127,11 @@ export default function WelcomePage() {
                 )}
               </div>
               <div className="text-sm text-gray-600">
-                <div>+</div>
-                <div>You</div>
+                <div className="font-medium">{inviteData.inviterName}</div>
+                <div className="flex items-center gap-2">
+                  <span>+</span>
+                  <span>You</span>
+                </div>
               </div>
             </div>
           </>
