@@ -357,8 +357,11 @@ export default function TimerPage() {
       }
     } catch (error) {
       console.error('Error completing session:', error);
+    } finally {
+      // Clear session ID after completion attempt
+      setCurrentSessionId(null);
     }
-  }, [partnershipId, user?.id, user?.usualSitLength]);
+  }, [partnershipId, user?.id, user?.usualSitLength, currentSessionId]);
 
   // Handle meditation completion
   useEffect(() => {
