@@ -73,13 +73,17 @@ model WeekHistory {
 model Session {
   id            String       @id @default(cuid())
   createdAt     DateTime     @default(now())
-  duration      Int
+  sitlength     Int          // Session length in seconds
   isCompleted   Boolean      @default(false)
-  completedAt   DateTime?
+  completedAt   DateTime?    // Nullable - set when session completes
+  startedAt     DateTime?
   userId        String
   partnershipId String?
+  weekId        String?      // Link session to week (references weeks table)
   partnership   Partnership? @relation(fields: [partnershipId], references: [id])
   user          User         @relation(fields: [userId], references: [id])
+  // Note: week relation not defined as Week model doesn't exist in Prisma schema
+  // weekId is just a foreign key reference to weeks table in production
 
   @@map("sessions")
 }
