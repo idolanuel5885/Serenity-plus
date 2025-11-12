@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../lib/supabase';
+import { ensureCurrentWeekExists } from '../../../lib/supabase-database';
 
 export async function POST(request: NextRequest) {
   console.log('SESSION-COMPLETE API ENTRY');
@@ -56,8 +57,6 @@ export async function POST(request: NextRequest) {
 
       // Session started - create session record
       // First, get or create the current week for this partnership
-      const { getCurrentWeekForPartnership, ensureCurrentWeekExists } = await import('../../../lib/supabase-database');
-      
       // Get partnership to calculate weekly goal
       const { data: partnershipForWeek, error: partnershipWeekError } = await supabase
         .from('partnerships')
