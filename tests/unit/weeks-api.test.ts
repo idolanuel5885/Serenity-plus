@@ -61,13 +61,17 @@ describe('Weeks API', () => {
     it('should set week dates correctly (weekstart and weekend)', async () => {
       const now = new Date();
       const weekstart = new Date(now);
+      weekstart.setHours(0, 0, 0, 0); // Start of day
       const weekend = new Date(weekstart);
       weekend.setDate(weekstart.getDate() + 7);
-      weekend.setHours(23, 59, 59, 999);
+      weekend.setHours(23, 59, 59, 999); // End of day, 7 days later
 
-      // Weekend should be 7 days after weekstart
+      // Weekend should be approximately 7 days after weekstart
+      // (slightly more due to the end-of-day time: 23:59:59.999 vs 00:00:00)
       const daysDifference = (weekend.getTime() - weekstart.getTime()) / (1000 * 60 * 60 * 24);
-      expect(daysDifference).toBeCloseTo(7, 0);
+      // Should be close to 7 days (allowing for the ~1 day difference from time of day)
+      expect(daysDifference).toBeGreaterThanOrEqual(7);
+      expect(daysDifference).toBeLessThan(8);
     });
 
     it('should initialize week with zero sits for both users', async () => {
