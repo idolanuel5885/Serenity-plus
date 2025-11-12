@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
       const { data: partnershipData, error: partnershipError } = await supabase
         .from('partnerships')
-        .select('id')
+        .select('id, userid, partnerid')
         .eq('id', partnershipId)
         .maybeSingle();
 
@@ -57,32 +57,17 @@ export async function POST(request: NextRequest) {
 
       // Session started - create session record
       // First, get or create the current week for this partnership
-      // Get partnership to calculate weekly goal
-      const { data: partnershipForWeek, error: partnershipWeekError } = await supabase
-        .from('partnerships')
-        .select('userid, partnerid')
-        .eq('id', partnershipId)
-        .maybeSingle();
-
-      if (partnershipWeekError || !partnershipForWeek) {
-        console.error('Error fetching partnership for week:', partnershipWeekError);
-        return NextResponse.json({ 
-          error: 'Failed to fetch partnership data',
-          details: partnershipWeekError?.message || 'Partnership not found'
-        }, { status: 400 });
-      }
-
       // Get weekly goal from users' targets
       const { data: user1Data } = await supabase
         .from('users')
         .select('weeklytarget')
-        .eq('id', partnershipForWeek.userid)
+        .eq('id', partnershipData.userid)
         .maybeSingle();
       
       const { data: user2Data } = await supabase
         .from('users')
         .select('weeklytarget')
-        .eq('id', partnershipForWeek.partnerid)
+        .eq('id', partnershipData.partnerid)
         .maybeSingle();
 
       const user1Target = user1Data?.weeklytarget || 5;
