@@ -12,7 +12,7 @@ The `sessions` table **IS being used** by the code, but there are several issues
 - Creates a new session record with:
   - `userid`: The current user's ID
   - `partnershipid`: The partnership ID
-  - `duration`: Session duration in seconds
+  - `sitlength`: Session length in seconds
   - `iscompleted`: `false`
   - `createdat`: Auto-set to NOW()
 
