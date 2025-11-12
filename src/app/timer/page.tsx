@@ -396,7 +396,7 @@ export default function TimerPage() {
             </p>
           )}
 
-          {partnershipsLoading ? (
+          {partnershipsLoading || (!partnershipsLoading && partnerships.length === 0 && partnership === undefined) ? (
             <div className="w-64 h-64 mx-auto flex items-center justify-center">
               <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
