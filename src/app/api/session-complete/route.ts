@@ -288,7 +288,6 @@ export async function POST(request: NextRequest) {
 
       // Update the weeks table to increment sit count
       console.log('📊 UPDATING weeks table to increment sit count...');
-      console.log('About to increment sit count for:', { userId, partnershipId, isUser1: partnershipData.userid === userId });
       
       // First, get the partnership to determine if user is user1 or user2
       const { data: partnershipData, error: partnershipError } = await supabase
@@ -296,6 +295,8 @@ export async function POST(request: NextRequest) {
         .select('userid, partnerid')
         .eq('id', partnershipId)
         .maybeSingle();
+      
+      console.log('About to increment sit count for:', { userId, partnershipId, isUser1: partnershipData?.userid === userId });
 
       if (partnershipError) {
         console.error('Error fetching partnership data:', partnershipError);
