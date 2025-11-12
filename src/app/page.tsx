@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails } from '../lib/supabase-database';
 
@@ -30,15 +30,19 @@ export default function Home() {
   const [userWeeklyTarget, setUserWeeklyTarget] = useState<number>(0);
   const router = useRouter();
 
-  const fetchPartnerships = async (userId: string) => {
+  const [isFetchingPartnerships, setIsFetchingPartnerships] = useState(false);
+
+  const fetchPartnerships = useCallback(async (userId: string) => {
     try {
       console.log('Fetching partnerships for userId:', userId);
 
       // Prevent duplicate calls if already loading
-      if (loading) {
-        console.log('Already loading partnerships, skipping duplicate call');
+      if (isFetchingPartnerships) {
+        console.log('Already fetching partnerships, skipping duplicate call');
         return;
       }
+
+      setIsFetchingPartnerships(true);
 
       // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
@@ -185,10 +189,11 @@ export default function Home() {
       // Set empty partnerships on error
       setPartnerships([]);
     } finally {
-      // Mark partnerships as loaded
+      setIsFetchingPartnerships(false);
       setPartnershipsLoaded(true);
+      setLoading(false);
     }
-  };
+  }, [isFetchingPartnerships, userWeeklyTarget]);
 
   const calculateWeekEndsIn = (weekStart: string) => {
     const start = new Date(weekStart);
@@ -285,7 +290,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [router, fetchPartnerships, partnershipsLoaded]);
+  }, [router, fetchPartnerships]);
 
   // If we have a userId AND partnerships are loaded, show the complete homepage
   if (userId && partnershipsLoaded) {

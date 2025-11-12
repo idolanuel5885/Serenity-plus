@@ -78,7 +78,37 @@ export async function createPartnership(
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      // Handle 409 conflict (partnership already exists) as success
+      if (error.code === '23505' || error.message?.includes('duplicate') || error.message?.includes('unique')) {
+        console.log('Partnership already exists, fetching existing partnership');
+        // Fetch the existing partnership
+        const { data: existing, error: fetchError } = await supabase
+          .from('partnerships')
+          .select('id')
+          .eq('userid', partnershipData.userid)
+          .eq('partnerid', partnershipData.partnerid)
+          .single();
+        
+        if (fetchError || !existing) {
+          // Also check reverse direction
+          const { data: existingReverse } = await supabase
+            .from('partnerships')
+            .select('id')
+            .eq('userid', partnershipData.partnerid)
+            .eq('partnerid', partnershipData.userid)
+            .single();
+          
+          if (existingReverse) {
+            return existingReverse.id;
+          }
+          throw error; // If we can't find it, throw original error
+        }
+        
+        return existing.id;
+      }
+      throw error;
+    }
     return data.id;
   } catch (error) {
     console.error('Error creating partnership:', error);
@@ -448,29 +478,78 @@ export async function createPartnershipsForUser(
         score: 0,
       };
 
-      const partnershipId = await createPartnership(partnershipData);
-      
-      // Create Week 1 immediately for this new partnership
-      console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', combinedWeeklyGoal);
-      const week1 = await createNewWeek(partnershipId, combinedWeeklyGoal);
-      if (week1) {
-        console.log('Created Week 1 for new partnership:', week1);
-      } else {
-        console.error('Failed to create Week 1 for partnership:', partnershipId);
+      try {
+        const partnershipId = await createPartnership(partnershipData);
+        
+        // Check if week already exists before creating
+        const existingWeek = await getCurrentWeekForPartnership(partnershipId);
+        let week1 = existingWeek;
+        
+        if (!week1) {
+          // Create Week 1 immediately for this new partnership
+          console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', combinedWeeklyGoal);
+          week1 = await createNewWeek(partnershipId, combinedWeeklyGoal);
+          if (week1) {
+            console.log('Created Week 1 for new partnership:', week1);
+          } else {
+            console.error('Failed to create Week 1 for partnership:', partnershipId);
+          }
+        } else {
+          console.log('Week already exists for partnership:', partnershipId);
+        }
+        
+        partnerships.push({
+          id: partnershipId,
+          userid: userId,
+          partnerid: otherUser.id,
+          score: 0,
+          createdat: new Date().toISOString(),
+          // Week-specific data from the created week (or defaults if week creation failed)
+          weeklygoal: week1?.weeklygoal || combinedWeeklyGoal,
+          usersits: week1?.user1sits || 0,
+          partnersits: week1?.user2sits || 0,
+          currentweekstart: week1?.weekstart || new Date().toISOString(),
+        });
+      } catch (partnershipError: any) {
+        // If partnership creation fails, check if it's because it already exists
+        if (partnershipError?.code === '23505' || partnershipError?.message?.includes('duplicate') || partnershipError?.message?.includes('unique')) {
+          console.log('Partnership already exists between users, fetching existing partnership');
+          // Fetch existing partnership and continue
+          const { data: existingPartnership } = await supabase
+            .from('partnerships')
+            .select('id')
+            .eq('userid', userId)
+            .eq('partnerid', otherUser.id)
+            .maybeSingle();
+          
+          const existingId = existingPartnership?.id || (await supabase
+            .from('partnerships')
+            .select('id')
+            .eq('userid', otherUser.id)
+            .eq('partnerid', userId)
+            .maybeSingle()).data?.id;
+          
+          if (existingId) {
+            // Get week data for existing partnership
+            const existingWeek = await getCurrentWeekForPartnership(existingId);
+            partnerships.push({
+              id: existingId,
+              userid: userId,
+              partnerid: otherUser.id,
+              score: 0,
+              createdat: new Date().toISOString(),
+              weeklygoal: existingWeek?.weeklygoal || combinedWeeklyGoal,
+              usersits: existingWeek?.user1sits || 0,
+              partnersits: existingWeek?.user2sits || 0,
+              currentweekstart: existingWeek?.weekstart || new Date().toISOString(),
+            });
+          }
+        } else {
+          // Re-throw if it's a different error
+          console.error('Error creating partnership:', partnershipError);
+          throw partnershipError;
+        }
       }
-      
-      partnerships.push({
-        id: partnershipId,
-        userid: userId,
-        partnerid: otherUser.id,
-        score: 0,
-        createdat: new Date().toISOString(),
-        // Week-specific data from the created week (or defaults if week creation failed)
-        weeklygoal: week1?.weeklygoal || combinedWeeklyGoal,
-        usersits: week1?.user1sits || 0,
-        partnersits: week1?.user2sits || 0,
-        currentweekstart: week1?.weekstart || new Date().toISOString(),
-      });
     }
 
     return partnerships;
