@@ -125,22 +125,31 @@ export async function POST(request: NextRequest) {
     }
 
       if (completed) {
-        console.log('PROCESSING SESSION COMPLETION');
-        console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId, 'sessionId:', sessionId);
+        console.log('=== SESSION COMPLETION API CALL ===');
+        console.log('Request details:', { userId, partnershipId, sessionId, sessionDuration, completed });
+        console.log('Timestamp:', new Date().toISOString());
         
         // Check if session was already completed BEFORE updating to prevent duplicate sit count increments
         let sessionAlreadyCompleted = false;
         if (sessionId) {
-          const { data: existingSession } = await supabase
+          console.log('Checking if session already completed, sessionId:', sessionId);
+          const { data: existingSession, error: checkError } = await supabase
             .from('sessions')
-            .select('iscompleted, completedat')
+            .select('id, iscompleted, completedat, userid, partnershipid')
             .eq('id', sessionId)
             .maybeSingle();
           
+          console.log('Existing session check result:', { existingSession, checkError });
+          
           if (existingSession?.iscompleted || existingSession?.completedat) {
             sessionAlreadyCompleted = true;
-            console.log('Session already completed, skipping sit count increment to prevent duplicate');
+            console.log('⚠️ SESSION ALREADY COMPLETED - Skipping sit count increment to prevent duplicate');
+            console.log('Session data:', existingSession);
+          } else {
+            console.log('✅ Session not yet completed, proceeding with update');
           }
+        } else {
+          console.log('⚠️ No sessionId provided - cannot check for duplicates');
         }
         
         // Session completed - update session record
@@ -262,7 +271,7 @@ export async function POST(request: NextRequest) {
 
       // Only update weeks table if session wasn't already completed
       if (sessionAlreadyCompleted) {
-        console.log('Skipping weeks table update - session was already completed');
+        console.log('⏭️ SKIPPING weeks table update - session was already completed');
         return NextResponse.json({
           success: true,
           data: {
@@ -278,7 +287,8 @@ export async function POST(request: NextRequest) {
       }
 
       // Update the weeks table to increment sit count
-      console.log('Updating weeks table for completed session...');
+      console.log('📊 UPDATING weeks table to increment sit count...');
+      console.log('About to increment sit count for:', { userId, partnershipId, isUser1: partnershipData.userid === userId });
       
       // First, get the partnership to determine if user is user1 or user2
       const { data: partnershipData, error: partnershipError } = await supabase

@@ -314,20 +314,38 @@ export default function TimerPage() {
 
   // Track if session completion is in progress to prevent duplicate calls
   const isCompletingRef = useRef(false);
+  const completionCallIdRef = useRef<string | null>(null);
 
   // Handle meditation completion - update database
   const completeSession = useCallback(async (completed: boolean) => {
-    if (!partnershipId || !user?.id) return;
+    if (!partnershipId || !user?.id) {
+      console.log('⏭️ Timer: completeSession skipped - missing partnershipId or userId');
+      return;
+    }
+    
+    // Generate a unique call ID for this completion attempt
+    const callId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Prevent duplicate calls
     if (isCompletingRef.current) {
-      console.log('Timer: completeSession already in progress, skipping duplicate call');
+      console.log('⚠️ Timer: completeSession already in progress, skipping duplicate call');
+      console.log('Previous call ID:', completionCallIdRef.current);
+      console.log('Current call ID:', callId);
       return;
     }
 
     isCompletingRef.current = true;
+    completionCallIdRef.current = callId;
+    
     console.log('=== TIMER: Calling session-complete API ===');
-    console.log('Timer: completeSession called with:', { completed, userId: user.id, partnershipId, sessionId: currentSessionId });
+    console.log('Call ID:', callId);
+    console.log('Timer: completeSession called with:', { 
+      completed, 
+      userId: user.id, 
+      partnershipId, 
+      sessionId: currentSessionId,
+      timestamp: new Date().toISOString()
+    });
 
     try {
       const response = await fetch('/api/session-complete', {
@@ -346,14 +364,18 @@ export default function TimerPage() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('Session completed:', result.data);
+        console.log('✅ Timer: Session completion API response:', result.data);
+        console.log('Call ID:', callId);
         
-        // Check response headers for debugging
-        console.log('Response headers:', {
-          'X-Debug-API-Called': response.headers.get('X-Debug-API-Called'),
-          'X-Debug-User-Id': response.headers.get('X-Debug-User-Id'),
-          'X-Debug-Partnership-Id': response.headers.get('X-Debug-Partnership-Id')
-        });
+        if (result.data?.duplicate) {
+          console.log('⚠️ Timer: API detected duplicate - session was already completed');
+        }
+        
+        if (result.data?.weekUpdated === false) {
+          console.log('⚠️ Timer: Week was NOT updated (likely duplicate)');
+        } else if (result.data?.weekUpdated === true) {
+          console.log('✅ Timer: Week was successfully updated');
+        }
         
         // Refresh partnership data if needed
         if (completed) {
@@ -361,24 +383,32 @@ export default function TimerPage() {
           console.log('Progress updated in database');
         }
       } else {
-        console.error('Session completion failed:', response.status, response.statusText);
+        console.error('❌ Timer: Session completion failed:', response.status, response.statusText);
         const errorText = await response.text();
         console.error('Error response:', errorText);
+        console.log('Call ID:', callId);
       }
     } catch (error) {
-      console.error('Error completing session:', error);
+      console.error('❌ Timer: Error completing session:', error);
+      console.log('Call ID:', callId);
     } finally {
       // Clear session ID after completion attempt
       setCurrentSessionId(null);
       // Reset the completion flag
       isCompletingRef.current = false;
+      completionCallIdRef.current = null;
+      console.log('🔄 Timer: Reset completion flag, call ID cleared');
     }
   }, [partnershipId, user?.id, user?.usualSitLength, currentSessionId]);
 
   // Handle meditation completion
   useEffect(() => {
+    console.log('🔄 Timer: useEffect triggered', { isCompleted, hasCompleteSession: !!completeSession });
     if (isCompleted) {
+      console.log('🔄 Timer: useEffect - isCompleted is true, calling completeSession(true)');
       completeSession(true);
+    } else {
+      console.log('Timer: useEffect - isCompleted is false, not calling completeSession');
     }
   }, [isCompleted, completeSession]);
 
