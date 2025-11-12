@@ -127,13 +127,16 @@ export default function TimerPage() {
                   }));
                   console.log('Timer: Found partnerships on retry:', partnerships);
                   setPartnerships(partnerships);
+                  setPartnershipsLoading(false);
                 } else {
                   console.log('Timer: Still no partnerships found after retry');
                   setPartnerships([]);
+                  setPartnershipsLoading(false);
                 }
               } catch (retryError) {
                 console.log('Timer: Retry failed:', retryError);
                 setPartnerships([]);
+                setPartnershipsLoading(false);
               }
             }, 2000);
             setPartnerships([]);
@@ -146,9 +149,11 @@ export default function TimerPage() {
           const partnerships = JSON.parse(partnershipsData);
             console.log('Loaded partnerships from localStorage fallback:', partnerships);
           setPartnerships(partnerships);
+          setPartnershipsLoading(false);
           } else {
             console.log('No partnerships found in localStorage either');
             setPartnerships([]);
+            setPartnershipsLoading(false);
           }
         }
       } catch (error) {
