@@ -142,11 +142,16 @@ export async function ensureCurrentWeekExists(partnershipId: string, weeklyGoal:
         : false;
 
       if (isAutoCreationEnabled && !isPaused) {
-        // Automatic week creation is enabled - don't create here, let the cron job handle it
-        console.log('Automatic week creation is enabled for partnership, not creating week on-demand');
-        console.log('Current week will be created automatically by scheduled job');
-        // Return null - the cron job will create the week at the right time
-        return null;
+        // Automatic week creation is enabled, but no week exists yet
+        // This could happen if:
+        // 1. Cron job hasn't run yet (should create it)
+        // 2. User is starting a session before cron job creates the week
+        // 3. Previous week just ended and cron job hasn't run yet
+        // 
+        // We'll create it on-demand as a fallback, but log it for monitoring
+        console.warn('⚠️ Automatic week creation is enabled but no week exists - creating on-demand as fallback');
+        console.warn('This should normally be handled by the scheduled job. Check cron job status if this happens frequently.');
+        currentWeek = await createNewWeek(partnershipId, weeklyGoal);
       } else {
         // Automatic week creation is disabled or paused - create on-demand (backward compatible)
         console.log('Automatic week creation is disabled or paused, creating week on-demand');
