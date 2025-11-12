@@ -279,8 +279,8 @@ export default function Home() {
     const handleFocus = () => {
       console.log('Homepage focused - refreshing partnerships in background');
       const storedUserId = localStorage.getItem('userId');
-      if (storedUserId && partnershipsLoaded) {
-        // Only refresh if partnerships were already loaded to avoid flash
+      if (storedUserId && partnershipsLoaded && !isFetchingPartnerships) {
+        // Only refresh if partnerships were already loaded and not currently fetching
         fetchPartnerships(storedUserId);
       }
     };
@@ -290,7 +290,7 @@ export default function Home() {
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [router, fetchPartnerships]);
+  }, [router, fetchPartnerships, partnershipsLoaded, isFetchingPartnerships]);
 
   // If we have a userId AND partnerships are loaded, show the complete homepage
   if (userId && partnershipsLoaded) {
