@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS sessions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   userid UUID NOT NULL,
   partnershipid UUID,
+  weekid UUID REFERENCES weeks(id), -- Link session to week
   sitlength INTEGER NOT NULL,
   iscompleted BOOLEAN DEFAULT false,
   startedat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  completedat TIMESTAMP WITH TIME ZONE,
+  completedat TIMESTAMP WITH TIME ZONE, -- Nullable
   createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

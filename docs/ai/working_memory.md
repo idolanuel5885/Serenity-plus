@@ -54,7 +54,9 @@
 - Columns: `id`, `partnershipid`, `weeknumber`, `weekstart`, `weekend`, `user1sits`, `user2sits`, `weeklygoal`, `goalmet`, `createdat`
 
 **SESSIONS Table:**
-- Columns: `id`, `createdat`, `sitlength`, `iscompleted`, `completedat`, `startedat`, `userid`, `partnershipid`
+- Columns: `id`, `createdat`, `sitlength`, `iscompleted`, `completedat`, `startedat`, `userid`, `partnershipid`, `weekid`
+- `weekid`: Links session to the week it belongs to
+- `completedat`: Nullable - set when session completes
 
 **Tables NOT in Production:**
 - `invitations` - Does NOT exist

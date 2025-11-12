@@ -76,10 +76,11 @@ BEGIN
           createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
           sitlength INTEGER NOT NULL, -- Session length in seconds
           iscompleted BOOLEAN DEFAULT FALSE,
-          completedat TIMESTAMP WITH TIME ZONE,
+          completedat TIMESTAMP WITH TIME ZONE, -- Nullable - set when session completes
           startedat TIMESTAMP WITH TIME ZONE,
           userid UUID NOT NULL REFERENCES users(id),
-          partnershipid UUID REFERENCES partnerships(id)
+          partnershipid UUID REFERENCES partnerships(id),
+          weekid UUID REFERENCES weeks(id) -- Link session to week
         );
         
         -- Create indexes for better performance
