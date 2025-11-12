@@ -14,11 +14,11 @@ model User {
   id            String         @id @default(cuid())
   name          String         // NOT NULL in production
   email         String         @unique // UNIQUE, NOT NULL in production
-  weeklytarget  Int            @default(5) // NOT NULL, DEFAULT 5
-  usualsitlength Int           @default(30) // NOT NULL, DEFAULT 30
-  image         String?        @default("/icons/meditation-1.svg") // Has default in production
-  invitecode    String         // NOT NULL in production, NOT UNIQUE (duplicates allowed)
-  createdat     DateTime       @default(now())
+  weeklytarget  Int            @default(5) @map("weeklytarget") // NOT NULL, DEFAULT 5
+  usualsitlength Int           @default(30) @map("usualsitlength") // NOT NULL, DEFAULT 30
+  image         String?        @default("/icons/meditation-1.svg") @map("image") // Has default in production
+  invitecode    String         @map("invitecode") // NOT NULL in production, NOT UNIQUE (duplicates allowed)
+  createdat     DateTime       @default(now()) @map("createdat")
   // Relations
   partnershipsAsUser1 Partnership[] @relation("User1Partnerships")
   partnershipsAsUser2 Partnership[] @relation("User2Partnerships")
