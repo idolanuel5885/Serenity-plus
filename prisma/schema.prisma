@@ -7,111 +7,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Production schema (Supabase PostgreSQL) - Source of Truth
+// This Prisma schema matches the production/staging Supabase database
+
 model User {
-  id                  String         @id @default(cuid())
-  email               String         @unique
-  name                String?
-  image               String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  weeklyTarget        Int
-  primaryWindow       String
-  timezone            String
-  usualSitLength      Int
-  whyPractice         String?
-  supportNeeds        String?
-  receivedInvites     Invitation[]   @relation("Invitee")
-  invitations         Invitation[]   @relation("Inviter")
-  notifications       Notification[]
-  partnershipsAsUser2 Partnership[]  @relation("User2Partnerships")
-  partnershipsAsUser1 Partnership[]  @relation("User1Partnerships")
+  id            String         @id @default(cuid())
+  name          String         // NOT NULL in production
+  email         String         @unique // UNIQUE, NOT NULL in production
+  weeklytarget  Int            @default(5) // NOT NULL, DEFAULT 5
+  usualsitlength Int           @default(30) // NOT NULL, DEFAULT 30
+  image         String?        @default("/icons/meditation-1.svg") // Has default in production
+  invitecode    String         // NOT NULL in production, NOT UNIQUE (duplicates allowed)
+  createdat     DateTime       @default(now())
+  // Relations
+  partnershipsAsUser1 Partnership[] @relation("User1Partnerships")
+  partnershipsAsUser2 Partnership[] @relation("User2Partnerships")
   sessions            Session[]
 
   @@map("users")
 }
 
 model Partnership {
-  id                String        @id @default(cuid())
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
-  user1Id           String
-  user2Id           String
-  isActive          Boolean       @default(true)
-  score             Int           @default(0)
-  weeklyGoal        Int
-  currentWeekNumber Int           @default(1)
-  currentWeekStart  DateTime
-  user1Sits         Int           @default(0)
-  user2Sits         Int           @default(0)
-  currentStreak     Int           @default(0)
-  longestStreak     Int           @default(0)
-  totalWeeks        Int           @default(0)
-  user2             User          @relation("User2Partnerships", fields: [user2Id], references: [id])
-  user1             User          @relation("User1Partnerships", fields: [user1Id], references: [id])
-  sessions          Session[]
-  weekHistory       WeekHistory[]
+  id        String   @id @default(cuid())
+  userid    String   // NOT NULL, references users(id)
+  partnerid String   // NOT NULL, references users(id)
+  score     Int      @default(0) // DEFAULT 0
+  createdat DateTime @default(now())
+  // Relations
+  user1     User     @relation("User1Partnerships", fields: [userid], references: [id])
+  user2     User     @relation("User2Partnerships", fields: [partnerid], references: [id])
+  sessions  Session[]
+  weeks     Week[]
 
-  @@unique([user1Id, user2Id])
+  @@unique([userid, partnerid])
   @@map("partnerships")
 }
 
-model WeekHistory {
+model Week {
   id            String      @id @default(cuid())
-  createdAt     DateTime    @default(now())
-  weekNumber    Int
-  weekStart     DateTime
-  weekEnd       DateTime
-  user1Sits     Int
-  user2Sits     Int
-  goalMet       Boolean
-  partnershipId String
-  partnership   Partnership @relation(fields: [partnershipId], references: [id])
+  partnershipid String      // NOT NULL, references partnerships(id)
+  weeknumber    Int         // NOT NULL
+  weekstart     DateTime    // NOT NULL
+  weekend       DateTime    // NOT NULL
+  user1sits     Int         @default(0) // DEFAULT 0
+  user2sits     Int         @default(0) // DEFAULT 0
+  weeklygoal    Int         // NOT NULL
+  goalmet       Boolean     @default(false) // DEFAULT FALSE
+  createdat     DateTime    @default(now())
+  // Relations
+  partnership  Partnership @relation(fields: [partnershipid], references: [id])
+  sessions     Session[]
 
-  @@map("week_history")
+  @@map("weeks")
 }
 
 model Session {
   id            String       @id @default(cuid())
-  createdAt     DateTime     @default(now())
-  sitlength     Int          // Session length in seconds
-  isCompleted   Boolean      @default(false)
-  completedAt   DateTime?    // Nullable - set when session completes
-  startedAt     DateTime?
-  userId        String
-  partnershipId String?
-  weekId        String?      // Link session to week (references weeks table)
-  partnership   Partnership? @relation(fields: [partnershipId], references: [id])
-  user          User         @relation(fields: [userId], references: [id])
-  // Note: week relation not defined as Week model doesn't exist in Prisma schema
-  // weekId is just a foreign key reference to weeks table in production
+  createdat     DateTime     @default(now())
+  sitlength     Int          // NOT NULL - Session length in seconds
+  iscompleted   Boolean      @default(false) // DEFAULT FALSE
+  completedat   DateTime?    // Nullable - set when session completes
+  startedat     DateTime?    // Nullable
+  userid        String       // NOT NULL, references users(id)
+  partnershipid String?       // Nullable, references partnerships(id)
+  weekid        String?      // Nullable, references weeks(id) - Link session to week
+  // Relations
+  partnership   Partnership? @relation(fields: [partnershipid], references: [id])
+  user          User         @relation(fields: [userid], references: [id])
+  week          Week?        @relation(fields: [weekid], references: [id])
 
   @@map("sessions")
 }
 
-model Invitation {
-  id         String    @id @default(cuid())
-  createdAt  DateTime  @default(now())
-  expiresAt  DateTime
-  isUsed     Boolean   @default(false)
-  usedAt     DateTime?
-  inviterId  String
-  inviteeId  String?
-  inviteCode String    @unique
-  invitee    User?     @relation("Invitee", fields: [inviteeId], references: [id])
-  inviter    User      @relation("Inviter", fields: [inviterId], references: [id])
+// Note: invitations and notifications tables do NOT exist in production/staging
+// They are kept here for local development only (commented out)
+// Uncomment if needed for local SQLite development
 
-  @@map("invitations")
-}
+// model Invitation {
+//   id         String    @id @default(cuid())
+//   createdAt  DateTime  @default(now())
+//   expiresAt  DateTime
+//   isUsed     Boolean   @default(false)
+//   usedAt     DateTime?
+//   inviterId  String
+//   inviteeId  String?
+//   inviteCode String    @unique
+//   invitee    User?     @relation("Invitee", fields: [inviteeId], references: [id])
+//   inviter    User      @relation("Inviter", fields: [inviterId], references: [id])
+//
+//   @@map("invitations")
+// }
 
-model Notification {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  isRead    Boolean  @default(false)
-  type      String
-  message   String
-  data      String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@map("notifications")
-}
+// model Notification {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   isRead    Boolean  @default(false)
+//   type      String
+//   message   String
+//   data      String?
+//   userId    String
+//   user      User     @relation(fields: [userId], references: [id])
+//
+//   @@map("notifications")
+// }
