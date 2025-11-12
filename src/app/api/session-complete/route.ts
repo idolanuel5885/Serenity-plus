@@ -128,6 +128,21 @@ export async function POST(request: NextRequest) {
         console.log('PROCESSING SESSION COMPLETION');
         console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId, 'sessionId:', sessionId);
         
+        // Check if session was already completed BEFORE updating to prevent duplicate sit count increments
+        let sessionAlreadyCompleted = false;
+        if (sessionId) {
+          const { data: existingSession } = await supabase
+            .from('sessions')
+            .select('iscompleted, completedat')
+            .eq('id', sessionId)
+            .maybeSingle();
+          
+          if (existingSession?.iscompleted || existingSession?.completedat) {
+            sessionAlreadyCompleted = true;
+            console.log('Session already completed, skipping sit count increment to prevent duplicate');
+          }
+        }
+        
         // Session completed - update session record
         let sessionError = null;
         let sessionUpdateAttempted = false;
@@ -244,6 +259,23 @@ export async function POST(request: NextRequest) {
         } else if (sessionUpdateAttempted && updatedSession) {
           console.log('✅ Session successfully updated:', updatedSession);
         }
+
+      // Only update weeks table if session wasn't already completed
+      if (sessionAlreadyCompleted) {
+        console.log('Skipping weeks table update - session was already completed');
+        return NextResponse.json({
+          success: true,
+          data: {
+            message: 'Session was already completed',
+            sessionDuration,
+            completed: true,
+            sessionUpdated: sessionUpdateAttempted,
+            sessionId: updatedSession?.id || sessionId,
+            weekUpdated: false, // No update needed - already completed
+            duplicate: true
+          }
+        });
+      }
 
       // Update the weeks table to increment sit count
       console.log('Updating weeks table for completed session...');

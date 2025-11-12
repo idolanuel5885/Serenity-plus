@@ -312,10 +312,20 @@ export default function TimerPage() {
     return baseProgress;
   };
 
+  // Track if session completion is in progress to prevent duplicate calls
+  const isCompletingRef = useRef(false);
+
   // Handle meditation completion - update database
   const completeSession = useCallback(async (completed: boolean) => {
     if (!partnershipId || !user?.id) return;
+    
+    // Prevent duplicate calls
+    if (isCompletingRef.current) {
+      console.log('Timer: completeSession already in progress, skipping duplicate call');
+      return;
+    }
 
+    isCompletingRef.current = true;
     console.log('=== TIMER: Calling session-complete API ===');
     console.log('Timer: completeSession called with:', { completed, userId: user.id, partnershipId, sessionId: currentSessionId });
 
@@ -360,6 +370,8 @@ export default function TimerPage() {
     } finally {
       // Clear session ID after completion attempt
       setCurrentSessionId(null);
+      // Reset the completion flag
+      isCompletingRef.current = false;
     }
   }, [partnershipId, user?.id, user?.usualSitLength, currentSessionId]);
 
