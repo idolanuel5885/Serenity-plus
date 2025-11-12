@@ -401,14 +401,23 @@ export default function TimerPage() {
     }
   }, [partnershipId, user?.id, user?.usualSitLength, currentSessionId]);
 
+  // Track if we've already processed this completion to prevent duplicate calls
+  const hasProcessedCompletionRef = useRef(false);
+
   // Handle meditation completion
   useEffect(() => {
-    console.log('🔄 Timer: useEffect triggered', { isCompleted, hasCompleteSession: !!completeSession });
-    if (isCompleted) {
+    console.log('🔄 Timer: useEffect triggered', { isCompleted, hasCompleteSession: !!completeSession, hasProcessed: hasProcessedCompletionRef.current });
+    
+    if (isCompleted && !hasProcessedCompletionRef.current) {
       console.log('🔄 Timer: useEffect - isCompleted is true, calling completeSession(true)');
+      hasProcessedCompletionRef.current = true; // Mark as processed BEFORE calling
       completeSession(true);
+    } else if (isCompleted && hasProcessedCompletionRef.current) {
+      console.log('⚠️ Timer: useEffect - isCompleted is true but already processed, skipping');
     } else {
       console.log('Timer: useEffect - isCompleted is false, not calling completeSession');
+      // Reset the flag when timer is not completed (e.g., after reset)
+      hasProcessedCompletionRef.current = false;
     }
   }, [isCompleted, completeSession]);
 
