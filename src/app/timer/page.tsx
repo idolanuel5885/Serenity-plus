@@ -250,6 +250,7 @@ export default function TimerPage() {
     setTimeLeft(user?.usualSitLength ? user.usualSitLength * 60 : 15 * 60);
     setIsCompleted(false);
     setCurrentSessionId(null); // Clear session ID on reset
+    hasProcessedCompletionRef.current = false; // Reset completion processing flag
   };
 
   // Get partnership data for lotus progress
