@@ -55,9 +55,56 @@ export async function POST(request: NextRequest) {
       }
 
       // Session started - create session record
+      // First, get or create the current week for this partnership
+      const { getCurrentWeekForPartnership, ensureCurrentWeekExists } = await import('../../../lib/supabase-database');
+      
+      // Get partnership to calculate weekly goal
+      const { data: partnershipForWeek, error: partnershipWeekError } = await supabase
+        .from('partnerships')
+        .select('userid, partnerid')
+        .eq('id', partnershipId)
+        .maybeSingle();
+
+      if (partnershipWeekError || !partnershipForWeek) {
+        console.error('Error fetching partnership for week:', partnershipWeekError);
+        return NextResponse.json({ 
+          error: 'Failed to fetch partnership data',
+          details: partnershipWeekError?.message || 'Partnership not found'
+        }, { status: 400 });
+      }
+
+      // Get weekly goal from users' targets
+      const { data: user1Data } = await supabase
+        .from('users')
+        .select('weeklytarget')
+        .eq('id', partnershipForWeek.userid)
+        .maybeSingle();
+      
+      const { data: user2Data } = await supabase
+        .from('users')
+        .select('weeklytarget')
+        .eq('id', partnershipForWeek.partnerid)
+        .maybeSingle();
+
+      const user1Target = user1Data?.weeklytarget || 5;
+      const user2Target = user2Data?.weeklytarget || 5;
+      const combinedWeeklyGoal = user1Target + user2Target;
+
+      // Ensure current week exists and get it
+      const currentWeek = await ensureCurrentWeekExists(partnershipId, combinedWeeklyGoal);
+      
+      if (!currentWeek) {
+        console.error('Failed to get or create current week');
+        return NextResponse.json({ 
+          error: 'Failed to get or create current week',
+          details: 'Could not retrieve week for session'
+        }, { status: 500 });
+      }
+
       const sessionInsert: any = {
         userid: userId,
         partnershipid: partnershipId,
+        weekid: currentWeek.id, // Link session to the current week
         sitlength: sessionDuration, // Session duration in seconds
         iscompleted: false
         // completedat is not set - will be NULL until session completes
