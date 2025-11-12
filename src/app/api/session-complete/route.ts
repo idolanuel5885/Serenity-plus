@@ -55,14 +55,20 @@ export async function POST(request: NextRequest) {
       }
 
       // Session started - create session record
+      // Build insert object dynamically to handle missing columns
+      const sessionInsert: any = {
+        userid: userId,
+        partnershipid: partnershipId,
+        iscompleted: false
+      };
+      
+      // Only include duration if the column exists (will be added via SQL script)
+      // For now, try to insert it - if it fails, we'll handle the error
+      sessionInsert.duration = sessionDuration;
+      
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')
-        .insert({
-          userid: userId,
-          partnershipid: partnershipId,
-          duration: sessionDuration,
-          iscompleted: false
-        })
+        .insert(sessionInsert)
         .select()
         .maybeSingle();
 
