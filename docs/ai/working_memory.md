@@ -123,7 +123,7 @@ src/
 └── lib/                    # Core business logic
     ├── supabase.ts         # Supabase client initialization
     ├── supabase-database.ts # All database operations
-    ├── weekUtils.ts         # Week transition logic
+    # weekUtils.ts removed - was dead code using old Prisma schema
     └── lotusProgress.ts     # Progress calculation
 ```
 

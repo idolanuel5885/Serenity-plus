@@ -44,7 +44,7 @@
 
 - `src/app/api/partnership/route.ts` - Partnership API
 - `src/app/page.tsx` - Partnership display
-- `src/lib/weekUtils.ts` - Week calculation utilities
+- `src/lib/weekUtils.ts` - REMOVED (was dead code using old Prisma schema)
 
 ### BR-004: Meditation Tracking
 
@@ -57,7 +57,7 @@
 
 - `src/app/timer/page.tsx` - Meditation timer
 - `src/app/api/partnership/route.ts` - Progress tracking
-- `src/lib/weekUtils.ts` - Week calculations
+- `src/lib/weekUtils.ts` - REMOVED (was dead code using old Prisma schema)
 
 ### BR-005: PWA Functionality
 
