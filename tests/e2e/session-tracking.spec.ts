@@ -103,11 +103,18 @@ test.describe('Session Tracking E2E', () => {
 
     // Navigate to timer page
     await page.goto(`${baseUrl}/timer`);
-    await page.waitForSelector('img[alt="Sit Now"]', { timeout: 15000 });
+    
+    // Wait for loading spinner to disappear (partnershipsLoading to be false)
+    await page.waitForSelector('.animate-spin', { state: 'hidden', timeout: 15000 }).catch(() => {
+      // If spinner doesn't appear, that's fine - page might load quickly
+    });
+    
+    // Wait for the timer page to be ready - look for the Start button
+    await page.waitForSelector('button:has-text("Start")', { timeout: 15000 });
 
     // Step 5: Start session
     console.log('▶️ Starting session...');
-    const startButton = page.locator('img[alt="Sit Now"]');
+    const startButton = page.locator('button:has-text("Start")');
     await expect(startButton).toBeVisible();
     await startButton.click();
 

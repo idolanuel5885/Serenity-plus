@@ -95,11 +95,22 @@ test.describe('Complete Onboarding Workflow', () => {
 
     // Navigate to timer page
     await page.goto(`${baseUrl}/timer`);
-    await page.waitForSelector('img[alt="Sit Now"]', { timeout: 15000 });
+    
+    // Wait for loading spinner to disappear (partnershipsLoading to be false)
+    await page.waitForSelector('.animate-spin', { state: 'hidden', timeout: 15000 }).catch(() => {
+      // If spinner doesn't appear, that's fine - page might load quickly
+    });
+    
+    // Wait for the timer page to be ready - look for the Start button or timer display
+    await page.waitForSelector('button:has-text("Start"), .text-6xl', { timeout: 15000 });
 
-    // Verify timer page loads
-    const sitNowButton = page.locator('img[alt="Sit Now"]');
-    await expect(sitNowButton).toBeVisible();
+    // Verify timer page loads - check for Start button or timer display
+    const startButton = page.locator('button:has-text("Start")');
+    const timerDisplay = page.locator('.text-6xl');
+    const hasStartButton = await startButton.isVisible().catch(() => false);
+    const hasTimerDisplay = await timerDisplay.isVisible().catch(() => false);
+    
+    expect(hasStartButton || hasTimerDisplay).toBe(true);
 
     // Note: Full session start/complete would require waiting for timer countdown
     // For now, we verify the timer page is accessible after onboarding
