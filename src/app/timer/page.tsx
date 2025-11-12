@@ -31,6 +31,7 @@ interface Partnership {
 export default function TimerPage() {
   const [user, setUser] = useState<User | null>(null);
   const [partnerships, setPartnerships] = useState<Partnership[]>([]);
+  const [partnershipsLoading, setPartnershipsLoading] = useState(true);
   // Initialize timeLeft - will be updated immediately in useEffect on client
   const [timeLeft, setTimeLeft] = useState(15 * 60); // Default 15 minutes
   const [isRunning, setIsRunning] = useState(false);
@@ -387,7 +388,11 @@ export default function TimerPage() {
             </p>
           )}
 
-          {partnership ? (
+          {partnershipsLoading ? (
+            <div className="w-64 h-64 mx-auto flex items-center justify-center">
+              <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
+            </div>
+          ) : partnership ? (
             <LotusAnimation
               progress={getLotusProgress()}
               isActive={isRunning}
