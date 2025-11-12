@@ -1,0 +1,44 @@
+### Manual API Tests for Week Creation System
+### Use with REST Client extension in VS Code, or import into Postman
+
+@baseUrl = http://localhost:3000
+@partnershipId = YOUR_PARTNERSHIP_ID_HERE
+
+### Test 1: Get Week Settings
+GET {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+
+### Test 2: Disable Auto-Creation
+POST {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+Content-Type: application/json
+
+{
+  "autocreateweeks": false
+}
+
+### Test 3: Re-enable Auto-Creation
+POST {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+Content-Type: application/json
+
+{
+  "autocreateweeks": true
+}
+
+### Test 4: Pause Until Specific Date
+POST {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+Content-Type: application/json
+
+{
+  "weekcreationpauseduntil": "2025-12-31T23:59:59Z"
+}
+
+### Test 5: Clear Pause
+POST {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+Content-Type: application/json
+
+{
+  "weekcreationpauseduntil": null
+}
+
+### Test 6: Get Settings Again (Verify)
+GET {{baseUrl}}/api/partnerships/{{partnershipId}}/week-settings
+
