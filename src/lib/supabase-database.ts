@@ -289,27 +289,62 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
 // Week management functions
 export async function getCurrentWeek(partnershipId: string): Promise<Week | null> {
   try {
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Start of current week (Sunday)
-    startOfWeek.setHours(0, 0, 0, 0);
-    
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week
-    endOfWeek.setHours(23, 59, 59, 999);
+    // Use the database function for reliable current week retrieval
+    // This handles edge cases like between weeks or before first week
+    const { data, error } = await supabase.rpc('get_current_week_for_partnership', {
+      p_partnership_id: partnershipId
+    });
 
-    const { data, error } = await supabase
+    if (error) {
+      // Fallback to manual query if RPC fails
+      console.warn('RPC get_current_week_for_partnership failed, using fallback:', error);
+      return await getCurrentWeekFallback(partnershipId);
+    }
+
+    if (data && data.length > 0) {
+      return data[0] as Week;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error fetching current week:', error);
+    return null;
+  }
+}
+
+// Fallback method if RPC is not available
+async function getCurrentWeekFallback(partnershipId: string): Promise<Week | null> {
+  try {
+    const now = new Date().toISOString();
+
+    // First, try to find a week that contains the current time
+    const { data: currentWeek, error: currentError } = await supabase
       .from('weeks')
       .select('*')
       .eq('partnershipid', partnershipId)
-      .gte('weekstart', startOfWeek.toISOString())
-      .lte('weekstart', endOfWeek.toISOString())
-      .single();
+      .lte('weekstart', now)
+      .gte('weekend', now)
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows found
-    return data;
+    if (currentWeek) {
+      return currentWeek;
+    }
+
+    // If no current week, return the most recent week
+    const { data: latestWeek, error: latestError } = await supabase
+      .from('weeks')
+      .select('*')
+      .eq('partnershipid', partnershipId)
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (latestError && latestError.code !== 'PGRST116') throw latestError;
+    return latestWeek;
   } catch (error) {
-    console.error('Error fetching current week:', error);
+    console.error('Error in getCurrentWeekFallback:', error);
     return null;
   }
 }
@@ -483,27 +518,27 @@ export async function createPartnershipsForUser(
       };
 
       try {
-        const partnershipId = await createPartnership(partnershipData);
-        
+      const partnershipId = await createPartnership(partnershipData);
+      
         // Check if week already exists before creating
         const existingWeek = await getCurrentWeekForPartnership(partnershipId);
         let week1 = existingWeek;
         
         if (!week1) {
-          // Create Week 1 immediately for this new partnership
-          console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', combinedWeeklyGoal);
+      // Create Week 1 immediately for this new partnership
+      console.log('Creating Week 1 for partnership:', partnershipId, 'with goal:', combinedWeeklyGoal);
           week1 = await createNewWeek(partnershipId, combinedWeeklyGoal);
-          if (week1) {
-            console.log('Created Week 1 for new partnership:', week1);
-          } else {
-            console.error('Failed to create Week 1 for partnership:', partnershipId);
+      if (week1) {
+        console.log('Created Week 1 for new partnership:', week1);
+      } else {
+        console.error('Failed to create Week 1 for partnership:', partnershipId);
           }
         } else {
           console.log('Week already exists for partnership:', partnershipId);
-        }
-        
-        partnerships.push({
-          id: partnershipId,
+      }
+      
+      partnerships.push({
+        id: partnershipId,
           userid: userId,
           partnerid: otherUser.id,
           score: 0,
@@ -542,7 +577,7 @@ export async function createPartnershipsForUser(
               userid: userId,
               partnerid: otherUser.id,
               score: 0,
-              createdat: new Date().toISOString(),
+        createdat: new Date().toISOString(),
               weeklygoal: existingWeek?.weeklygoal || combinedWeeklyGoal,
               usersits: existingWeek?.inviteesits || 0, // userId is the invitee
               partnersits: existingWeek?.invitersits || 0, // otherUser is the inviter

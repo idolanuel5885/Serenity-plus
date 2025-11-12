@@ -204,49 +204,49 @@ export async function POST(request: NextRequest) {
           // Fallback: search by userid + partnershipid + iscompleted = false
           console.log('No sessionId provided, searching by userid + partnershipid');
           const { data: sessionData, error: sessionUpdateError } = await supabase
-            .from('sessions')
-            .update({
-              completedat: new Date().toISOString(),
-              iscompleted: true
-            })
-            .eq('userid', userId)
-            .eq('partnershipid', partnershipId)
-            .eq('iscompleted', false)
-            .select()
-            .maybeSingle();
+          .from('sessions')
+          .update({
+            completedat: new Date().toISOString(),
+            iscompleted: true
+          })
+          .eq('userid', userId)
+          .eq('partnershipid', partnershipId)
+          .eq('iscompleted', false)
+          .select()
+          .maybeSingle();
 
           if (sessionUpdateError) {
             console.warn('Session update with iscompleted failed, trying without iscompleted filter:', sessionUpdateError);
-            
+          
             // Second attempt: try without iscompleted filter
             const { data: sessionDataFallback, error: sessionUpdateErrorFallback } = await supabase
-              .from('sessions')
-              .update({
-                completedat: new Date().toISOString()
-              })
-              .eq('userid', userId)
-              .eq('partnershipid', partnershipId)
-              .is('completedat', null)
-              .select()
-              .maybeSingle();
+            .from('sessions')
+            .update({
+              completedat: new Date().toISOString()
+            })
+            .eq('userid', userId)
+            .eq('partnershipid', partnershipId)
+            .is('completedat', null)
+            .select()
+            .maybeSingle();
 
             if (sessionUpdateErrorFallback) {
               console.error('Session update failed even without iscompleted:', sessionUpdateErrorFallback);
               sessionError = sessionUpdateErrorFallback;
-            } else {
+          } else {
               if (sessionDataFallback) {
-                console.log('Session updated successfully without iscompleted column');
-                sessionUpdateAttempted = true;
+            console.log('Session updated successfully without iscompleted column');
+            sessionUpdateAttempted = true;
                 updatedSession = sessionDataFallback;
               } else {
                 console.warn('Session update returned no data - no matching session found');
                 sessionError = { message: 'No matching session found', code: 'PGRST116' };
               }
-            }
-          } else {
+          }
+        } else {
             if (sessionData) {
-              console.log('Session updated successfully with iscompleted column');
-              sessionUpdateAttempted = true;
+          console.log('Session updated successfully with iscompleted column');
+          sessionUpdateAttempted = true;
               updatedSession = sessionData;
             } else {
               console.warn('Session update returned no data - no matching session found');
@@ -284,7 +284,7 @@ export async function POST(request: NextRequest) {
             duplicate: true
           }
         });
-      }
+        }
 
       // Update the weeks table to increment sit count
       console.log('📊 UPDATING weeks table to increment sit count...');
@@ -360,7 +360,7 @@ export async function POST(request: NextRequest) {
             .select('weeklytarget')
             .eq('id', partnershipData.userid)
             .maybeSingle();
-          
+
           const { data: user2Data } = await supabase
             .from('users')
             .select('weeklytarget')

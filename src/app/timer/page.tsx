@@ -337,7 +337,7 @@ export default function TimerPage() {
 
     isCompletingRef.current = true;
     completionCallIdRef.current = callId;
-    
+
     console.log('=== TIMER: Calling session-complete API ===');
     console.log('Call ID:', callId);
     console.log('Timer: completeSession called with:', { 
