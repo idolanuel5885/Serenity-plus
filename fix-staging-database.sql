@@ -75,6 +75,7 @@ CREATE INDEX idx_partnerships_partnerid ON partnerships(partnerid);
 CREATE INDEX idx_weeks_partnershipid ON weeks(partnershipid);
 CREATE INDEX idx_sessions_userid ON sessions(userid);
 CREATE INDEX idx_sessions_partnershipid ON sessions(partnershipid);
+CREATE INDEX idx_sessions_weekid ON sessions(weekid);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
