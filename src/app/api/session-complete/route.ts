@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
         userid: userId,
         partnershipid: partnershipId,
         sitlength: sessionDuration, // Session duration in seconds
-        iscompleted: false,
-        completedat: null // Set to null initially, will be set when session completes
+        iscompleted: false
+        // completedat is not set - will be NULL until session completes
       };
       
       const { data: sessionData, error: sessionError } = await supabase
