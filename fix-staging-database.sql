@@ -49,8 +49,8 @@ CREATE TABLE weeks (
   weeknumber INTEGER NOT NULL,
   weekstart TIMESTAMP WITH TIME ZONE NOT NULL,
   weekend TIMESTAMP WITH TIME ZONE NOT NULL,
-  user1sits INTEGER DEFAULT 0,
-  user2sits INTEGER DEFAULT 0,
+  inviteesits INTEGER DEFAULT 0, -- The user who used the invite code
+  invitersits INTEGER DEFAULT 0, -- The user who created account and shared invite code
   weeklygoal INTEGER NOT NULL,
   goalmet BOOLEAN DEFAULT FALSE,
   createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW()

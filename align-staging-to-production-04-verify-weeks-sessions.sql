@@ -2,7 +2,7 @@
 -- These tables should already match, but this script ensures they're correct
 
 -- WEEKS table should have:
--- id, partnershipid, weeknumber, weekstart, weekend, user1sits, user2sits, weeklygoal, goalmet, createdat
+-- id, partnershipid, weeknumber, weekstart, weekend, inviteesits, invitersits, weeklygoal, goalmet, createdat
 -- (No changes needed - staging already matches)
 
 -- SESSIONS table should have:
