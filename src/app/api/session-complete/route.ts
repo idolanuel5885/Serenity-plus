@@ -447,13 +447,32 @@ export async function POST(request: NextRequest) {
       }
 
       console.log('Found current week:', currentWeek);
+      console.log('Current week sit counts BEFORE update:', { 
+        inviteesits: currentWeek.inviteesits, 
+        invitersits: currentWeek.invitersits 
+      });
 
       // Update the appropriate sit count in the weeks table
       // isUser1 means userId == partnership.userid (the invitee)
       // So if isUser1, update inviteesits, otherwise update invitersits
+      const currentInviteeSits = currentWeek.inviteesits || 0;
+      const currentInviterSits = currentWeek.invitersits || 0;
+      
+      console.log('User identification for week update:', { 
+        isUser1,
+        userId,
+        partnershipUserid: partnershipData.userid,
+        partnershipPartnerid: partnershipData.partnerid,
+        currentInviteeSits,
+        currentInviterSits
+      });
+      
       const updateData = isUser1 
-        ? { inviteesits: (currentWeek.inviteesits || 0) + 1 }
-        : { invitersits: (currentWeek.invitersits || 0) + 1 };
+        ? { inviteesits: currentInviteeSits + 1 }
+        : { invitersits: currentInviterSits + 1 };
+      
+      console.log('📊 About to update week with:', updateData);
+      console.log('Week ID:', currentWeek.id);
 
       const { data: updatedWeek, error: updateWeekError } = await supabase
         .from('weeks')
@@ -461,6 +480,13 @@ export async function POST(request: NextRequest) {
         .eq('id', currentWeek.id)
         .select()
         .maybeSingle();
+      
+      console.log('Week update result:', { 
+        updatedWeek, 
+        updateWeekError,
+        newInviteeSits: updatedWeek?.inviteesits,
+        newInviterSits: updatedWeek?.invitersits
+      });
 
       if (updateWeekError) {
         console.error('Error updating week sits:', updateWeekError);
