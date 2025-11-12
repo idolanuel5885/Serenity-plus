@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 // Mock Supabase client
 const mockSupabase = {
-  from: jest.fn(),
+  from: jest.fn() as jest.Mock,
 };
 
 // Mock the supabase module
@@ -32,16 +32,17 @@ describe('Weeks API', () => {
 
       const mockWeeksInsert = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           single: jest.fn().mockResolvedValue({ data: mockWeek, error: null }),
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'weeks') {
           return { insert: mockWeeksInsert };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Week 1 should be created with weeknumber = 1
       expect(mockWeek.weeknumber).toBe(1);
@@ -97,18 +98,19 @@ describe('Weeks API', () => {
         eq: jest.fn().mockReturnValue({
           gte: jest.fn().mockReturnValue({
             lte: jest.fn().mockReturnValue({
+              // @ts-expect-error - Jest mock types are strict, but this is valid for testing
               single: jest.fn().mockResolvedValue({ data: mockWeek, error: null }),
             }),
           }),
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'weeks') {
           return { select: mockWeeksSelect };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Should retrieve week by partnershipid and date range
       expect(mockWeeksSelect).toBeDefined();
@@ -119,6 +121,7 @@ describe('Weeks API', () => {
         eq: jest.fn().mockReturnValue({
           gte: jest.fn().mockReturnValue({
             lte: jest.fn().mockReturnValue({
+              // @ts-expect-error - Jest mock types are strict, but this is valid for testing
               single: jest.fn().mockResolvedValue({
                 data: null,
                 error: { code: 'PGRST116' },
@@ -128,12 +131,12 @@ describe('Weeks API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'weeks') {
           return { select: mockWeeksSelect };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Should return null when no week found
       expect(mockWeeksSelect).toBeDefined();
@@ -151,6 +154,7 @@ describe('Weeks API', () => {
       const mockWeeksUpdate = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
+            // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
               data: { ...mockWeek, user1sits: 1 },
               error: null,
@@ -159,12 +163,12 @@ describe('Weeks API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'weeks') {
           return { update: mockWeeksUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // user1sits should increment
       expect(mockWeeksUpdate).toBeDefined();
@@ -180,6 +184,7 @@ describe('Weeks API', () => {
       const mockWeeksUpdate = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
+            // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
               data: { ...mockWeek, user2sits: 1 },
               error: null,
@@ -188,12 +193,12 @@ describe('Weeks API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'weeks') {
           return { update: mockWeeksUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // user2sits should increment
       expect(mockWeeksUpdate).toBeDefined();
@@ -261,4 +266,3 @@ describe('Weeks API', () => {
     });
   });
 });
-

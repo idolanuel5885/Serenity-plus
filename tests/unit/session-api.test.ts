@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 // Mock Supabase client
 const mockSupabase = {
-  from: jest.fn(),
+  from: jest.fn() as jest.Mock,
 };
 
 // Mock the supabase module
@@ -11,7 +11,7 @@ jest.mock('../../../src/lib/supabase', () => ({
 }));
 
 // Mock supabase-database functions
-const mockEnsureCurrentWeekExists = jest.fn();
+const mockEnsureCurrentWeekExists = jest.fn() as jest.Mock;
 jest.mock('../../../src/lib/supabase-database', () => ({
   ensureCurrentWeekExists: mockEnsureCurrentWeekExists,
 }));
@@ -39,23 +39,26 @@ describe('Session API', () => {
       // Setup mocks
       const mockUsersSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: mockUser, error: null }),
         }),
       });
 
       const mockPartnershipsSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: mockPartnership, error: null }),
         }),
       });
 
       const mockSessionsInsert = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: mockSession, error: null }),
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'users') {
           return { select: mockUsersSelect };
         }
@@ -65,9 +68,10 @@ describe('Session API', () => {
         if (table === 'sessions') {
           return { insert: mockSessionsInsert };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
+      // @ts-expect-error - Jest mock types are strict, but this is valid for testing
       mockEnsureCurrentWeekExists.mockResolvedValue(mockWeek);
 
       // Simulate API call
@@ -108,16 +112,17 @@ describe('Session API', () => {
     it('should return error if user does not exist', async () => {
       const mockUsersSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } }),
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'users') {
           return { select: mockUsersSelect };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // User not found should return 400 error
       expect(mockUsersSelect).toBeDefined();
@@ -127,25 +132,27 @@ describe('Session API', () => {
       const mockUser = { id: 'user-123' };
       const mockUsersSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: mockUser, error: null }),
         }),
       });
 
       const mockPartnershipsSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } }),
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'users') {
           return { select: mockUsersSelect };
         }
         if (table === 'partnerships') {
           return { select: mockPartnershipsSelect };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Partnership not found should return 400 error
       expect(mockPartnershipsSelect).toBeDefined();
@@ -153,6 +160,7 @@ describe('Session API', () => {
 
     it('should link session to week via weekid', async () => {
       const mockWeek = { id: 'week-123', weeknumber: 1 };
+      // @ts-expect-error - Jest mock types are strict, but this is valid for testing
       mockEnsureCurrentWeekExists.mockResolvedValue(mockWeek);
 
       // Session should include weekid from ensureCurrentWeekExists
@@ -186,6 +194,7 @@ describe('Session API', () => {
       const mockSessionsUpdate = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
+            // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
               data: { ...mockSession, iscompleted: true, completedat: new Date().toISOString() },
               error: null,
@@ -194,12 +203,12 @@ describe('Session API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'sessions') {
           return { update: mockSessionsUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Session should be updated with completedat and iscompleted = true
       expect(mockSessionsUpdate).toBeDefined();
@@ -215,6 +224,7 @@ describe('Session API', () => {
 
       const mockPartnershipsSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
+          // @ts-expect-error - Jest mock types are strict, but this is valid for testing
           maybeSingle: jest.fn().mockResolvedValue({ data: mockPartnership, error: null }),
         }),
       });
@@ -223,6 +233,7 @@ describe('Session API', () => {
         eq: jest.fn().mockReturnValue({
           order: jest.fn().mockReturnValue({
             limit: jest.fn().mockReturnValue({
+              // @ts-expect-error - Jest mock types are strict, but this is valid for testing
               maybeSingle: jest.fn().mockResolvedValue({ data: mockWeek, error: null }),
             }),
           }),
@@ -232,6 +243,7 @@ describe('Session API', () => {
       const mockWeeksUpdate = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
+            // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
               data: { ...mockWeek, user1sits: 1 },
               error: null,
@@ -240,15 +252,15 @@ describe('Session API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'partnerships') {
           return { select: mockPartnershipsSelect };
         }
         if (table === 'weeks') {
           return { select: mockWeeksSelect, update: mockWeeksUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Week sit count should increment for correct user
       expect(mockWeeksUpdate).toBeDefined();
@@ -273,6 +285,7 @@ describe('Session API', () => {
           eq: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({
               select: jest.fn().mockReturnValue({
+                // @ts-expect-error - Jest mock types are strict, but this is valid for testing
                 maybeSingle: jest.fn().mockResolvedValue({
                   data: { id: 'session-123', iscompleted: true },
                   error: null,
@@ -283,12 +296,12 @@ describe('Session API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'sessions') {
           return { update: mockSessionsUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Should search by userid + partnershipid + iscompleted = false
       expect(mockSessionsUpdate).toBeDefined();
@@ -298,6 +311,7 @@ describe('Session API', () => {
       const mockSessionsUpdate = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
           select: jest.fn().mockReturnValue({
+            // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
               data: null,
               error: { code: 'PGRST116', message: 'Session not found' },
@@ -306,12 +320,12 @@ describe('Session API', () => {
         }),
       });
 
-      mockSupabase.from.mockImplementation((table: string) => {
+      (mockSupabase.from as jest.Mock).mockImplementation(((table: string) => {
         if (table === 'sessions') {
           return { update: mockSessionsUpdate };
         }
-        return {};
-      });
+        return {} as any;
+      }) as any);
 
       // Session not found should be handled gracefully
       expect(mockSessionsUpdate).toBeDefined();
@@ -354,4 +368,3 @@ describe('Session API', () => {
     });
   });
 });
-

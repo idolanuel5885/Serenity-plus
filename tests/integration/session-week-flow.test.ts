@@ -46,21 +46,21 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
     const { data: user1, error: user1Error } = await supabase
       .from('users')
-      .insert(user1Data)
+      .insert(user1Data as any)
       .select()
       .single();
 
-    if (user1Error) throw user1Error;
-    testUser1Id = user1.id;
+    if (user1Error || !user1) throw user1Error || new Error('User1 creation failed');
+    testUser1Id = (user1 as any).id;
 
     const { data: user2, error: user2Error } = await supabase
       .from('users')
-      .insert(user2Data)
+      .insert(user2Data as any)
       .select()
       .single();
 
-    if (user2Error) throw user2Error;
-    testUser2Id = user2.id;
+    if (user2Error || !user2) throw user2Error || new Error('User2 creation failed');
+    testUser2Id = (user2 as any).id;
 
     // Create partnership
     const partnershipData = {
@@ -71,12 +71,12 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
     const { data: partnership, error: partnershipError } = await supabase
       .from('partnerships')
-      .insert(partnershipData)
+      .insert(partnershipData as any)
       .select()
       .single();
 
-    if (partnershipError) throw partnershipError;
-    testPartnershipId = partnership.id;
+    if (partnershipError || !partnership) throw partnershipError || new Error('Partnership creation failed');
+    testPartnershipId = (partnership as any).id;
 
     // Verify Week 1 was created (should be created when partnership is created)
     const { data: week1, error: weekError } = await supabase
@@ -86,8 +86,8 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
       .eq('weeknumber', 1)
       .single();
 
-    if (weekError) throw weekError;
-    testWeekId = week1.id;
+    if (weekError || !week1) throw weekError || new Error('Week 1 not found');
+    testWeekId = (week1 as any).id;
   });
 
   afterAll(async () => {
@@ -124,11 +124,15 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       expect(error).toBeNull();
       expect(week).toBeDefined();
-      expect(week.weeknumber).toBe(1);
-      expect(week.partnershipid).toBe(testPartnershipId);
-      expect(week.weeklygoal).toBe(8); // 5 + 3 from both users' targets
-      expect(week.user1sits).toBe(0);
-      expect(week.user2sits).toBe(0);
+      if (!week) {
+        throw new Error('Week not found');
+      }
+      const weekData = week as any;
+      expect(weekData.weeknumber).toBe(1);
+      expect(weekData.partnershipid).toBe(testPartnershipId);
+      expect(weekData.weeklygoal).toBe(8); // 5 + 3 from both users' targets
+      expect(weekData.user1sits).toBe(0);
+      expect(weekData.user2sits).toBe(0);
     });
 
     it('should create session when timer starts and link to week', async () => {
@@ -145,20 +149,24 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       const { data: session, error } = await supabase
         .from('sessions')
-        .insert(sessionData)
+        .insert(sessionData as any)
         .select()
         .single();
 
       expect(error).toBeNull();
       expect(session).toBeDefined();
-      expect(session.userid).toBe(testUser1Id);
-      expect(session.partnershipid).toBe(testPartnershipId);
-      expect(session.weekid).toBe(testWeekId);
-      expect(session.sitlength).toBe(sessionDuration);
-      expect(session.iscompleted).toBe(false);
-      expect(session.completedat).toBeNull();
+      if (!session) {
+        throw new Error('Session not found');
+      }
+      const sessionDataResult = session as any;
+      expect(sessionDataResult.userid).toBe(testUser1Id);
+      expect(sessionDataResult.partnershipid).toBe(testPartnershipId);
+      expect(sessionDataResult.weekid).toBe(testWeekId);
+      expect(sessionDataResult.sitlength).toBe(sessionDuration);
+      expect(sessionDataResult.iscompleted).toBe(false);
+      expect(sessionDataResult.completedat).toBeNull();
 
-      testSessionId = session.id;
+      testSessionId = sessionDataResult.id;
     });
 
     it('should update session when completed', async () => {
@@ -166,6 +174,7 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       const { data: session, error } = await supabase
         .from('sessions')
+        // @ts-expect-error - Supabase types are strict, but this is valid at runtime
         .update({
           iscompleted: true,
           completedat: new Date().toISOString(),
@@ -176,8 +185,12 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       expect(error).toBeNull();
       expect(session).toBeDefined();
-      expect(session.iscompleted).toBe(true);
-      expect(session.completedat).not.toBeNull();
+      if (!session) {
+        throw new Error('Session not found after update');
+      }
+      const sessionDataResult = session as any;
+      expect(sessionDataResult.iscompleted).toBe(true);
+      expect(sessionDataResult.completedat).not.toBeNull();
     });
 
     it('should increment week sit count when session completes', async () => {
@@ -190,7 +203,12 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
         .eq('id', testPartnershipId)
         .single();
 
-      const isUser1 = partnership.userid === testUser1Id;
+      if (!partnership) {
+        throw new Error('Partnership not found');
+      }
+
+      const partnershipData = partnership as any;
+      const isUser1 = partnershipData.userid === testUser1Id;
 
       // Get current week
       const { data: weekBefore } = await supabase
@@ -200,12 +218,18 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
         .single();
 
       // Update week sit count
+      if (!weekBefore) {
+        throw new Error('Week not found before update');
+      }
+
+      const weekBeforeData = weekBefore as any;
       const updateData = isUser1
-        ? { user1sits: (weekBefore.user1sits || 0) + 1 }
-        : { user2sits: (weekBefore.user2sits || 0) + 1 };
+        ? { user1sits: (weekBeforeData.user1sits || 0) + 1 }
+        : { user2sits: (weekBeforeData.user2sits || 0) + 1 };
 
       const { data: weekAfter, error } = await supabase
         .from('weeks')
+        // @ts-expect-error - Supabase types are strict, but this is valid at runtime
         .update(updateData)
         .eq('id', testWeekId)
         .select()
@@ -213,11 +237,15 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       expect(error).toBeNull();
       expect(weekAfter).toBeDefined();
+      if (!weekAfter) {
+        throw new Error('Week not found after update');
+      }
 
+      const weekAfterData = weekAfter as any;
       if (isUser1) {
-        expect(weekAfter.user1sits).toBe(weekBefore.user1sits + 1);
+        expect(weekAfterData.user1sits).toBe((weekBeforeData.user1sits || 0) + 1);
       } else {
-        expect(weekAfter.user2sits).toBe(weekBefore.user2sits + 1);
+        expect(weekAfterData.user2sits).toBe((weekBeforeData.user2sits || 0) + 1);
       }
     });
 
@@ -231,7 +259,11 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
         .single();
 
       expect(session).toBeDefined();
-      expect(session.weekid).toBe(testWeekId);
+      if (!session) {
+        throw new Error('Session not found');
+      }
+      const sessionDataResult = session as any;
+      expect(sessionDataResult.weekid).toBe(testWeekId);
     });
   });
 });
