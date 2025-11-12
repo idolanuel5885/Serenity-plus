@@ -5,7 +5,7 @@ export async function POST(request: NextRequest) {
   console.log('SESSION-COMPLETE API ENTRY');
   try {
     const body = await request.json();
-    const { userId, partnershipId, sessionDuration, completed, sessionStarted } = body;
+    const { userId, partnershipId, sessionDuration, completed, sessionStarted, sessionId } = body;
 
     console.log('SESSION-COMPLETE API CALLED WITH:', { userId, partnershipId, sessionDuration, completed, sessionStarted });
     console.log('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
@@ -92,51 +92,109 @@ export async function POST(request: NextRequest) {
 
       if (completed) {
         console.log('PROCESSING SESSION COMPLETION');
-        console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId);
+        console.log('Processing completed session for userId:', userId, 'partnershipId:', partnershipId, 'sessionId:', sessionId);
         
         // Session completed - update session record
-        // Try to update with iscompleted column first, fallback to just completedat if column doesn't exist
         let sessionError = null;
         let sessionUpdateAttempted = false;
+        let updatedSession = null;
         
-        // First attempt: try with iscompleted column
-        const { error: sessionErrorWithIsCompleted } = await supabase
-          .from('sessions')
-          .update({
-            completedat: new Date().toISOString(),
-            iscompleted: true
-          })
-          .eq('userid', userId)
-          .eq('partnershipid', partnershipId)
-          .eq('iscompleted', false)
-          .select()
-          .maybeSingle();
-
-        if (sessionErrorWithIsCompleted) {
-          console.warn('Session update with iscompleted failed, trying without iscompleted filter:', sessionErrorWithIsCompleted);
-          
-          // Second attempt: try without iscompleted filter (in case column doesn't exist)
-          const { error: sessionErrorWithoutIsCompleted } = await supabase
+        if (sessionId) {
+          // Use session ID if provided (preferred method)
+          console.log('Updating session by ID:', sessionId);
+          const { data: sessionData, error: sessionUpdateError } = await supabase
             .from('sessions')
             .update({
-              completedat: new Date().toISOString()
+              completedat: new Date().toISOString(),
+              iscompleted: true
             })
-            .eq('userid', userId)
-            .eq('partnershipid', partnershipId)
-            .is('completedat', null)
+            .eq('id', sessionId)
             .select()
             .maybeSingle();
 
-          if (sessionErrorWithoutIsCompleted) {
-            console.error('Session update failed even without iscompleted:', sessionErrorWithoutIsCompleted);
-            sessionError = sessionErrorWithoutIsCompleted;
+          if (sessionUpdateError) {
+            console.error('Session update by ID failed:', sessionUpdateError);
+            // Try without iscompleted column in case it doesn't exist
+            const { data: sessionDataFallback, error: sessionUpdateErrorFallback } = await supabase
+              .from('sessions')
+              .update({
+                completedat: new Date().toISOString()
+              })
+              .eq('id', sessionId)
+              .select()
+              .maybeSingle();
+
+            if (sessionUpdateErrorFallback) {
+              console.error('Session update by ID failed even without iscompleted:', sessionUpdateErrorFallback);
+              sessionError = sessionUpdateErrorFallback;
+            } else {
+              console.log('Session updated successfully by ID (without iscompleted column)');
+              sessionUpdateAttempted = true;
+              updatedSession = sessionDataFallback;
+            }
           } else {
-            console.log('Session updated successfully without iscompleted column');
-            sessionUpdateAttempted = true;
+            if (sessionData) {
+              console.log('Session updated successfully by ID:', sessionData);
+              sessionUpdateAttempted = true;
+              updatedSession = sessionData;
+            } else {
+              console.warn('Session update by ID returned no data - session may not exist');
+              sessionError = { message: 'Session not found', code: 'PGRST116' };
+            }
           }
         } else {
-          console.log('Session updated successfully with iscompleted column');
-          sessionUpdateAttempted = true;
+          // Fallback: search by userid + partnershipid + iscompleted = false
+          console.log('No sessionId provided, searching by userid + partnershipid');
+          const { data: sessionData, error: sessionUpdateError } = await supabase
+            .from('sessions')
+            .update({
+              completedat: new Date().toISOString(),
+              iscompleted: true
+            })
+            .eq('userid', userId)
+            .eq('partnershipid', partnershipId)
+            .eq('iscompleted', false)
+            .select()
+            .maybeSingle();
+
+          if (sessionUpdateError) {
+            console.warn('Session update with iscompleted failed, trying without iscompleted filter:', sessionUpdateError);
+            
+            // Second attempt: try without iscompleted filter
+            const { data: sessionDataFallback, error: sessionUpdateErrorFallback } = await supabase
+              .from('sessions')
+              .update({
+                completedat: new Date().toISOString()
+              })
+              .eq('userid', userId)
+              .eq('partnershipid', partnershipId)
+              .is('completedat', null)
+              .select()
+              .maybeSingle();
+
+            if (sessionUpdateErrorFallback) {
+              console.error('Session update failed even without iscompleted:', sessionUpdateErrorFallback);
+              sessionError = sessionUpdateErrorFallback;
+            } else {
+              if (sessionDataFallback) {
+                console.log('Session updated successfully without iscompleted column');
+                sessionUpdateAttempted = true;
+                updatedSession = sessionDataFallback;
+              } else {
+                console.warn('Session update returned no data - no matching session found');
+                sessionError = { message: 'No matching session found', code: 'PGRST116' };
+              }
+            }
+          } else {
+            if (sessionData) {
+              console.log('Session updated successfully with iscompleted column');
+              sessionUpdateAttempted = true;
+              updatedSession = sessionData;
+            } else {
+              console.warn('Session update returned no data - no matching session found');
+              sessionError = { message: 'No matching session found', code: 'PGRST116' };
+            }
+          }
         }
 
         // Log error but don't block weeks update - we still want to update the weeks table
@@ -149,6 +207,8 @@ export async function POST(request: NextRequest) {
             hint: sessionError.hint
           });
           // Continue anyway - we'll still update the weeks table
+        } else if (sessionUpdateAttempted && updatedSession) {
+          console.log('✅ Session successfully updated:', updatedSession);
         }
 
       // Update the weeks table to increment sit count

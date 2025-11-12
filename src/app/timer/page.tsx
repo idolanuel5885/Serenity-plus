@@ -37,6 +37,7 @@ export default function TimerPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Fetch user data and partnerships on component mount
@@ -225,6 +226,14 @@ export default function TimerPage() {
         if (response.ok) {
           const result = await response.json();
           console.log('Session started:', result.data);
+          // Store the session ID for later use when completing the session
+          if (result.data?.sessionId) {
+            setCurrentSessionId(result.data.sessionId);
+            console.log('Stored session ID:', result.data.sessionId);
+          }
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Failed to create session:', errorData);
         }
       } catch (error) {
         console.error('Error starting session:', error);
@@ -240,6 +249,7 @@ export default function TimerPage() {
     setIsRunning(false);
     setTimeLeft(user?.usualSitLength ? user.usualSitLength * 60 : 15 * 60);
     setIsCompleted(false);
+    setCurrentSessionId(null); // Clear session ID on reset
   };
 
   // Get partnership data for lotus progress
