@@ -400,6 +400,7 @@ export async function POST(request: NextRequest) {
             sessionDuration,
             completed: true,
             sessionUpdated: sessionUpdateAttempted,
+            sessionId: updatedSession?.id || sessionId,
             weekUpdated: true,
             sessionUpdateError: sessionError ? {
               code: sessionError.code,
