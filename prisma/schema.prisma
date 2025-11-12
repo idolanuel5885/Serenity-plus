@@ -29,10 +29,10 @@ model User {
 
 model Partnership {
   id        String   @id @default(cuid())
-  userid    String   // NOT NULL, references users(id)
-  partnerid String   // NOT NULL, references users(id)
-  score     Int      @default(0) // DEFAULT 0
-  createdat DateTime @default(now())
+  userid    String   @map("userid") // NOT NULL, references users(id)
+  partnerid String   @map("partnerid") // NOT NULL, references users(id)
+  score     Int      @default(0) @map("score") // DEFAULT 0
+  createdat DateTime @default(now()) @map("createdat")
   // Relations
   user1     User     @relation("User1Partnerships", fields: [userid], references: [id])
   user2     User     @relation("User2Partnerships", fields: [partnerid], references: [id])
@@ -45,15 +45,15 @@ model Partnership {
 
 model Week {
   id            String      @id @default(cuid())
-  partnershipid String      // NOT NULL, references partnerships(id)
-  weeknumber    Int         // NOT NULL
-  weekstart     DateTime    // NOT NULL
-  weekend       DateTime    // NOT NULL
-  user1sits     Int         @default(0) // DEFAULT 0
-  user2sits     Int         @default(0) // DEFAULT 0
-  weeklygoal    Int         // NOT NULL
-  goalmet       Boolean     @default(false) // DEFAULT FALSE
-  createdat     DateTime    @default(now())
+  partnershipid String      @map("partnershipid") // NOT NULL, references partnerships(id)
+  weeknumber    Int         @map("weeknumber") // NOT NULL
+  weekstart     DateTime    @map("weekstart") // NOT NULL
+  weekend       DateTime    @map("weekend") // NOT NULL
+  user1sits     Int         @default(0) @map("user1sits") // DEFAULT 0
+  user2sits     Int         @default(0) @map("user2sits") // DEFAULT 0
+  weeklygoal    Int         @map("weeklygoal") // NOT NULL
+  goalmet       Boolean     @default(false) @map("goalmet") // DEFAULT FALSE
+  createdat     DateTime    @default(now()) @map("createdat")
   // Relations
   partnership  Partnership @relation(fields: [partnershipid], references: [id])
   sessions     Session[]
@@ -63,14 +63,14 @@ model Week {
 
 model Session {
   id            String       @id @default(cuid())
-  createdat     DateTime     @default(now())
-  sitlength     Int          // NOT NULL - Session length in seconds
-  iscompleted   Boolean      @default(false) // DEFAULT FALSE
-  completedat   DateTime?    // Nullable - set when session completes
-  startedat     DateTime?    // Nullable
-  userid        String       // NOT NULL, references users(id)
-  partnershipid String?       // Nullable, references partnerships(id)
-  weekid        String?      // Nullable, references weeks(id) - Link session to week
+  createdat     DateTime     @default(now()) @map("createdat")
+  sitlength     Int          @map("sitlength") // NOT NULL - Session length in seconds
+  iscompleted   Boolean      @default(false) @map("iscompleted") // DEFAULT FALSE
+  completedat   DateTime?    @map("completedat") // Nullable - set when session completes
+  startedat     DateTime?    @map("startedat") // Nullable
+  userid        String       @map("userid") // NOT NULL, references users(id)
+  partnershipid String?      @map("partnershipid") // Nullable, references partnerships(id)
+  weekid        String?      @map("weekid") // Nullable, references weeks(id) - Link session to week
   // Relations
   partnership   Partnership? @relation(fields: [partnershipid], references: [id])
   user          User         @relation(fields: [userid], references: [id])
