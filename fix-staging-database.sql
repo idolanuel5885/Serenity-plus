@@ -62,7 +62,7 @@ CREATE TABLE sessions (
   userid UUID NOT NULL REFERENCES users(id),
   partnershipid UUID REFERENCES partnerships(id),
   sitlength INTEGER NOT NULL,
-  completedat TIMESTAMP WITH TIME ZONE NOT NULL,
+  completedat TIMESTAMP WITH TIME ZONE, -- Nullable - set when session completes
   createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
