@@ -162,6 +162,7 @@ export default function TimerPage() {
         setUser({ id: 'unknown', name: 'You', usualSitLength: 15 });
         setTimeLeft(15 * 60);
         setLoading(false);
+        setPartnershipsLoading(false);
       }
     };
 
