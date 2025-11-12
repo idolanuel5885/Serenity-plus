@@ -216,28 +216,23 @@ export async function POST(request: NextRequest) {
         if (weekError.code === 'PGRST116') {
           console.log('No week exists, creating new week...');
           
-          // Get partnership data to get weekly goal
-          const { data: partnershipForWeek, error: partnershipWeekError } = await supabase
-            .from('partnerships')
-            .select('weeklygoal')
-            .eq('id', partnershipId)
+          // Get weekly goal from users' targets (weeklygoal is now in weeks table, not partnerships)
+          // Calculate combined goal from both users' weeklytargets
+          const { data: user1Data } = await supabase
+            .from('users')
+            .select('weeklytarget')
+            .eq('id', partnershipData.userid)
+            .maybeSingle();
+          
+          const { data: user2Data } = await supabase
+            .from('users')
+            .select('weeklytarget')
+            .eq('id', partnershipData.partnerid)
             .maybeSingle();
 
-          if (partnershipWeekError) {
-            console.error('Error fetching partnership for week creation:', partnershipWeekError);
-            return NextResponse.json({ 
-              error: 'Failed to fetch partnership for week creation',
-              details: partnershipWeekError.message
-            }, { status: 500 });
-          }
-
-          if (!partnershipForWeek) {
-            console.error('Partnership not found for week creation:', partnershipId);
-            return NextResponse.json({ 
-              error: 'Partnership not found for week creation',
-              details: 'Partnership does not exist'
-            }, { status: 404 });
-          }
+          const user1Target = user1Data?.weeklytarget || 5;
+          const user2Target = user2Data?.weeklytarget || 5;
+          const combinedWeeklyGoal = user1Target + user2Target;
 
           // Create new week
           const now = new Date();
@@ -256,7 +251,7 @@ export async function POST(request: NextRequest) {
               weeknumber: 1,
               weekstart: startOfWeek.toISOString(),
               weekend: endOfWeek.toISOString(),
-              weeklygoal: partnershipForWeek.weeklygoal,
+              weeklygoal: combinedWeeklyGoal, // Calculate from users' targets
               user1sits: 0,
               user2sits: 0
             })

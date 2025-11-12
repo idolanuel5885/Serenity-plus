@@ -13,8 +13,8 @@ export async function POST(request: NextRequest) {
     const { data: existingPartnership } = await supabase
       .from('partnerships')
       .select('id')
-      .eq('userId', userId)
-      .eq('partnerId', partnerId)
+      .eq('userid', userId)  // Note: column name is lowercase in database
+      .eq('partnerid', partnerId)  // Note: column name is lowercase in database
       .single();
 
     if (existingPartnership) {
@@ -26,18 +26,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Create partnership
+    // Note: Partnerships table now only stores: id, userid, partnerid, createdat, score
+    // Week-specific data goes in weeks table, partner data comes from users table
     const partnershipData = {
-      userId,
-      partnerId,
-      partnerName: 'Partner', // Will be updated when we have partner info
-      partnerEmail: 'partner@example.com',
-      partnerImage: '/icons/meditation-1.svg',
-      partnerWeeklyTarget: 5,
-      userSits: 0,
-      partnerSits: 0,
-      weeklyGoal: 5, // Default goal
+      userid: userId,  // Note: column name is lowercase in database
+      partnerid: partnerId,  // Note: column name is lowercase in database
       score: 0,
-      currentWeekStart: new Date().toISOString(),
     };
 
     const { data, error: createError } = await supabase
@@ -71,7 +65,7 @@ export async function GET(request: NextRequest) {
     const { data: partnerships, error: fetchError } = await supabase
       .from('partnerships')
       .select('*')
-      .eq('userId', userId);
+      .eq('userid', userId);  // Note: column name is lowercase in database
 
     if (fetchError) throw fetchError;
 

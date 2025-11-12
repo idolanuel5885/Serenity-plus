@@ -15,12 +15,13 @@ export interface Partnership {
   id: string;
   userid: string;
   partnerid: string;
+  score: number;
+  createdat: string;
+  // Week-specific fields (from weeks table, not partnerships table)
   weeklygoal: number;
   usersits: number;
   partnersits: number;
-  score: number;
   currentweekstart: string;
-  createdat: string;
 }
 
 export interface Week {
@@ -140,18 +141,16 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
   try {
     console.log('getUserPartnerships called with userId:', userId);
     
-    // Query partnerships where user is user1 (using correct column names: userid, partnerid, usersits, partnersits)
+    // Query partnerships where user is user1
+    // Note: weeklygoal, usersits, partnersits, currentweekstart are now in weeks table, not partnerships
     const { data: user1Partnerships, error: user1Error } = await supabase
       .from('partnerships')
       .select(`
         id,
-        weeklygoal,
         score,
-        currentweekstart,
-        usersits,
-        partnersits,
         userid,
         partnerid,
+        createdat,
         user2:users!partnerid(name, email, image, weeklytarget)
       `)
       .eq('userid', userId)
@@ -162,18 +161,16 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
       throw user1Error;
     }
 
-    // Query partnerships where user is user2 (using correct column names: userid, partnerid, usersits, partnersits)
+    // Query partnerships where user is user2
+    // Note: weeklygoal, usersits, partnersits, currentweekstart are now in weeks table, not partnerships
     const { data: user2Partnerships, error: user2Error } = await supabase
       .from('partnerships')
       .select(`
         id,
-        weeklygoal,
         score,
-        currentweekstart,
-        usersits,
-        partnersits,
         userid,
         partnerid,
+        createdat,
         user1:users!userid(name, email, image, weeklytarget)
       `)
       .eq('partnerid', userId)
@@ -187,33 +184,52 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
     // Transform the data to match the Partnership interface
     const transformPartnership = async (partnership: any, isUser1: boolean) => {
       try {
-        // Get current week data for this partnership (with error handling)
+        // Get current week data for this partnership - this is now the ONLY source for week-specific data
         const currentWeek = await getCurrentWeekForPartnership(partnership.id);
+        
+        if (!currentWeek) {
+          console.warn('No current week found for partnership:', partnership.id);
+          // Return with default values if no week exists yet
+          return {
+            id: partnership.id,
+            userid: userId,
+            partnerid: isUser1 ? partnership.partnerid : partnership.userid,
+            score: partnership.score,
+            createdat: partnership.createdat,
+            // Default values when no week exists
+            weeklygoal: 0,
+            usersits: 0,
+            partnersits: 0,
+            currentweekstart: new Date().toISOString(),
+          };
+        }
         
         return {
           id: partnership.id,
           userid: userId,
           partnerid: isUser1 ? partnership.partnerid : partnership.userid,
-          usersits: currentWeek ? (isUser1 ? currentWeek.user1sits : currentWeek.user2sits) : (isUser1 ? partnership.usersits : partnership.partnersits),
-          partnersits: currentWeek ? (isUser1 ? currentWeek.user2sits : currentWeek.user1sits) : (isUser1 ? partnership.partnersits : partnership.usersits),
-          weeklygoal: currentWeek ? currentWeek.weeklygoal : partnership.weeklygoal,
           score: partnership.score,
-          currentweekstart: currentWeek ? currentWeek.weekstart : partnership.currentweekstart,
-          createdat: partnership.createdat
+          createdat: partnership.createdat,
+          // All week-specific data comes from weeks table
+          usersits: isUser1 ? currentWeek.user1sits : currentWeek.user2sits,
+          partnersits: isUser1 ? currentWeek.user2sits : currentWeek.user1sits,
+          weeklygoal: currentWeek.weeklygoal,
+          currentweekstart: currentWeek.weekstart,
         };
       } catch (weekError) {
         console.error('Error fetching week for partnership:', partnership.id, weekError);
-        // Fallback to partnership data if week fetch fails
+        // Return with default values if week fetch fails
         return {
           id: partnership.id,
           userid: userId,
           partnerid: isUser1 ? partnership.partnerid : partnership.userid,
-          usersits: isUser1 ? partnership.usersits : partnership.partnersits,
-          partnersits: isUser1 ? partnership.partnersits : partnership.usersits,
-          weeklygoal: partnership.weeklygoal,
           score: partnership.score,
-          currentweekstart: partnership.currentweekstart,
-          createdat: partnership.createdat
+          createdat: partnership.createdat,
+          // Default values when week fetch fails
+          weeklygoal: 0,
+          usersits: 0,
+          partnersits: 0,
+          currentweekstart: new Date().toISOString(),
         };
       }
     };
@@ -417,14 +433,12 @@ export async function createPartnershipsForUser(
       const currentUser = await getUser(userId);
       const combinedWeeklyGoal = (currentUser?.weeklytarget || 0) + otherUser.weeklytarget;
       
+      // Partnership table now only stores: id, userid, partnerid, createdat, score
+      // Week-specific data (weeklygoal, usersits, partnersits, currentweekstart) goes in weeks table
       const partnershipData = {
         userid: userId,
         partnerid: otherUser.id,
-        weeklygoal: combinedWeeklyGoal, // Add the combined weekly goal
-        usersits: 0,
-        partnersits: 0,
         score: 0,
-        currentweekstart: new Date().toISOString(),
       };
 
       const partnershipId = await createPartnership(partnershipData);
@@ -440,8 +454,15 @@ export async function createPartnershipsForUser(
       
       partnerships.push({
         id: partnershipId,
-        ...partnershipData,
+        userid: userId,
+        partnerid: otherUser.id,
+        score: 0,
         createdat: new Date().toISOString(),
+        // Week-specific data from the created week (or defaults if week creation failed)
+        weeklygoal: week1?.weeklygoal || combinedWeeklyGoal,
+        usersits: week1?.user1sits || 0,
+        partnersits: week1?.user2sits || 0,
+        currentweekstart: week1?.weekstart || new Date().toISOString(),
       });
     }
 

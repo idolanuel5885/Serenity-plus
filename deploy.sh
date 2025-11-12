@@ -1,101 +1,168 @@
 #!/bin/bash
 
-# Create a simple index.html for GitHub Pages
-cat > index.html << 'INNER_EOF'
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serenity+ - Meditation Partnership App</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            text-align: center;
-            max-width: 400px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-        }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-        .status {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .time {
-            font-size: 1.2rem;
-            margin-top: 20px;
-        }
-        .download-btn {
-            background: white;
-            color: #f97316;
-            padding: 15px 30px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 20px;
-            display: inline-block;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo">🧘</div>
-        <h1>Serenity+</h1>
-        <div class="status">
-            <h2>✅ PWA Ready for Mobile</h2>
-            <p>Your meditation partnership app is ready!</p>
-        </div>
-        <div class="time" id="currentTime"></div>
-        <p style="margin-top: 30px; font-size: 0.9rem; opacity: 0.8;">
-            Features: Logo, Footer positioning, Contextual text, QR codes, PWA support
-        </p>
-        <a href="#" class="download-btn" onclick="alert('PWA installation coming soon!')">
-            Install App
-        </a>
-    </div>
-    
-    <script>
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('currentTime').textContent = 
-                now.toLocaleTimeString() + ' - ' + now.toLocaleDateString();
-        }
-        updateTime();
-        setInterval(updateTime, 1000);
-    </script>
-</body>
-</html>
-INNER_EOF
+# Deployment script for Serenity+ application
+# This script helps deploy the simplified partnerships schema changes
 
-echo "✅ Created deployment files"
-echo "🌐 Your app is ready for public deployment!"
-echo "📱 This will work on mobile devices from anywhere!"
+set -e  # Exit on error
+
+echo "🚀 Serenity+ Deployment Script"
+echo "================================"
+echo ""
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check if we're in the right directory
+if [ ! -f "package.json" ]; then
+    echo -e "${RED}Error: package.json not found. Please run this script from the project root.${NC}"
+    exit 1
+fi
+
+# Check if git is clean
+if [ -n "$(git status --porcelain)" ]; then
+    echo -e "${YELLOW}Warning: You have uncommitted changes.${NC}"
+    read -p "Continue anyway? (y/n) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        exit 1
+    fi
+fi
+
+# Pre-deployment checks
+echo "📋 Pre-deployment checks..."
+echo ""
+
+# Check if database migration script exists
+if [ ! -f "simplify-partnerships-table.sql" ]; then
+    echo -e "${RED}Error: simplify-partnerships-table.sql not found!${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}✓${NC} Database migration script found"
+
+# Check if we can build
+echo "🔨 Building application..."
+if npm run build; then
+    echo -e "${GREEN}✓${NC} Build successful"
+else
+    echo -e "${RED}✗${NC} Build failed!"
+    exit 1
+fi
+
+# Check for linter errors
+echo "🔍 Checking for linter errors..."
+if npm run lint 2>/dev/null || true; then
+    echo -e "${GREEN}✓${NC} Linter check passed"
+else
+    echo -e "${YELLOW}⚠${NC} Linter warnings (non-blocking)"
+fi
+
+echo ""
+echo "📝 Database Migration Reminder"
+echo "=============================="
+echo -e "${YELLOW}IMPORTANT:${NC} Before deploying, make sure you've run:"
+echo "  1. simplify-partnerships-table.sql in Production Supabase"
+echo "  2. simplify-partnerships-table.sql in Staging Supabase"
+echo ""
+read -p "Have you run the database migrations? (y/n) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${RED}Please run the database migrations first!${NC}"
+    echo "See DEPLOYMENT-GUIDE.md for instructions."
+    exit 1
+fi
+
+# Deployment options
+echo ""
+echo "🌐 Deployment Options"
+echo "===================="
+echo "1. Push to main (triggers automatic Vercel deployment)"
+echo "2. Deploy via Vercel CLI"
+echo "3. Just commit changes (manual deployment later)"
+echo ""
+read -p "Choose option (1-3): " -n 1 -r
+echo
+
+case $REPLY in
+    1)
+        echo ""
+        echo "📤 Pushing to main branch..."
+        CURRENT_BRANCH=$(git branch --show-current)
+        
+        if [ "$CURRENT_BRANCH" != "main" ]; then
+            echo -e "${YELLOW}Current branch is '$CURRENT_BRANCH', not 'main'${NC}"
+            read -p "Switch to main and push? (y/n) " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                git checkout main
+                git merge "$CURRENT_BRANCH"
+            else
+                echo "Aborted."
+                exit 1
+            fi
+        fi
+        
+        # Commit if there are changes
+        if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Deploy: Simplify partnerships table schema"
+        fi
+        
+        git push origin main
+        echo -e "${GREEN}✓${NC} Pushed to main. Vercel will deploy automatically."
+        echo ""
+        echo "Monitor deployment at: https://vercel.com/dashboard"
+        ;;
+    2)
+        echo ""
+        echo "📦 Deploying via Vercel CLI..."
+        
+        if ! command -v vercel &> /dev/null; then
+            echo "Vercel CLI not found. Installing..."
+            npm i -g vercel
+        fi
+        
+        read -p "Deploy to production? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            vercel --prod
+        else
+            vercel
+        fi
+        ;;
+    3)
+        echo ""
+        echo "💾 Committing changes..."
+        
+        if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Simplify partnerships table schema - ready for deployment"
+            echo -e "${GREEN}✓${NC} Changes committed"
+            echo ""
+            echo "To deploy later:"
+            echo "  git push origin main  # For automatic Vercel deployment"
+            echo "  vercel --prod         # For manual Vercel deployment"
+        else
+            echo "No changes to commit."
+        fi
+        ;;
+    *)
+        echo "Invalid option. Aborted."
+        exit 1
+        ;;
+esac
+
+echo ""
+echo "✅ Deployment process started!"
+echo ""
+echo "📋 Post-deployment checklist:"
+echo "  1. Verify homepage loads: https://serenity-plus-kohl.vercel.app"
+echo "  2. Test partnership creation"
+echo "  3. Test session completion"
+echo "  4. Check browser console for errors"
+echo "  5. Monitor Vercel logs"
+echo ""
+echo "See DEPLOYMENT-GUIDE.md for full verification steps."

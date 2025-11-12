@@ -37,11 +37,11 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing userId or partnershipId' }, { status: 400 });
     }
 
-    console.log('Step 1: Querying partnership data...');
-    // Get partnership data from Supabase
+    console.log('Step 1: Verifying partnership exists...');
+    // Verify partnership exists (partnerships table now only has: id, userid, partnerid, createdat, score)
     const { data: partnership, error: partnershipError } = await supabase
       .from('partnerships')
-      .select('*')
+      .select('id, userid, partnerid')
       .eq('id', partnershipId)
       .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .single();
@@ -59,11 +59,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
-    console.log('Partnership data:', partnership);
-    console.log('Partnership weeklygoal:', partnership.weeklygoal);
-    console.log('Step 2: Partnership found, getting current week...');
-    // Get current week data
-    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
+    console.log('Partnership verified:', partnership);
+    console.log('Step 2: Getting current week (weeklygoal comes from weeks table)...');
+    // Get current week data - weeklygoal is now in weeks table, not partnerships
+    // We'll get the default goal from the week, or use a fallback
+    const { data: existingWeek } = await supabase
+      .from('weeks')
+      .select('weeklygoal')
+      .eq('partnershipid', partnershipId)
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    const defaultWeeklyGoal = existingWeek?.weeklygoal || 5; // Fallback to 5 if no week exists
+    const currentWeek = await ensureCurrentWeekExists(partnershipId, defaultWeeklyGoal);
     if (!currentWeek) {
       console.log('Failed to get or create current week');
       return NextResponse.json({ error: 'Failed to get current week' }, { status: 500 });
@@ -124,10 +133,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing userId or partnershipId' }, { status: 400 });
     }
 
-    // Get partnership data
+    // Verify partnership exists (partnerships table now only has: id, userid, partnerid, createdat, score)
     const { data: partnership, error: partnershipError } = await supabase
       .from('partnerships')
-      .select('*')
+      .select('id, userid, partnerid')
       .eq('id', partnershipId)
       .or(`userid.eq.${userId},partnerid.eq.${userId}`)
       .single();
@@ -136,8 +145,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Partnership not found' }, { status: 404 });
     }
 
+    // Get weeklygoal from weeks table (not partnerships table)
+    const { data: existingWeek } = await supabase
+      .from('weeks')
+      .select('weeklygoal')
+      .eq('partnershipid', partnershipId)
+      .order('weeknumber', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    
+    const defaultWeeklyGoal = existingWeek?.weeklygoal || 5; // Fallback to 5 if no week exists
     // Ensure current week exists (should already exist)
-    const currentWeek = await ensureCurrentWeekExists(partnershipId, partnership.weeklygoal);
+    const currentWeek = await ensureCurrentWeekExists(partnershipId, defaultWeeklyGoal);
     if (!currentWeek) {
       return NextResponse.json({ error: 'Failed to get or create current week' }, { status: 500 });
     }
