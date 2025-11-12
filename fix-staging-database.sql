@@ -61,6 +61,7 @@ CREATE TABLE sessions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   userid UUID NOT NULL REFERENCES users(id),
   partnershipid UUID REFERENCES partnerships(id),
+  weekid UUID REFERENCES weeks(id), -- Link session to week
   sitlength INTEGER NOT NULL,
   completedat TIMESTAMP WITH TIME ZONE, -- Nullable - set when session completes
   createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW()

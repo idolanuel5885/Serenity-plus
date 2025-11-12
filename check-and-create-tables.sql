@@ -86,6 +86,7 @@ BEGIN
         -- Create indexes for better performance
         CREATE INDEX IF NOT EXISTS idx_sessions_userid ON sessions(userid);
         CREATE INDEX IF NOT EXISTS idx_sessions_partnershipid ON sessions(partnershipid);
+        CREATE INDEX IF NOT EXISTS idx_sessions_weekid ON sessions(weekid);
         CREATE INDEX IF NOT EXISTS idx_sessions_completedat ON sessions(completedat);
         
         -- Add RLS (Row Level Security) policies

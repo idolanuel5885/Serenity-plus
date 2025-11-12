@@ -101,6 +101,7 @@ CREATE INDEX IF NOT EXISTS idx_weeks_weeknumber ON weeks(partnershipid, weeknumb
 CREATE INDEX IF NOT EXISTS idx_weeks_weekstart ON weeks(weekstart);
 CREATE INDEX IF NOT EXISTS idx_sessions_userid ON sessions(userid);
 CREATE INDEX IF NOT EXISTS idx_sessions_partnershipid ON sessions(partnershipid);
+CREATE INDEX IF NOT EXISTS idx_sessions_weekid ON sessions(weekid);
 CREATE INDEX IF NOT EXISTS idx_sessions_completedat ON sessions(completedat);
 CREATE INDEX IF NOT EXISTS idx_invitations_invitecode ON invitations(invitecode);
 CREATE INDEX IF NOT EXISTS idx_notifications_userid ON notifications(userid);
