@@ -74,7 +74,7 @@ BEGIN
         CREATE TABLE IF NOT EXISTS sessions (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           createdat TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-          duration INTEGER NOT NULL, -- Duration in minutes
+          sitlength INTEGER NOT NULL, -- Session length in seconds
           iscompleted BOOLEAN DEFAULT FALSE,
           completedat TIMESTAMP WITH TIME ZONE,
           startedat TIMESTAMP WITH TIME ZONE,

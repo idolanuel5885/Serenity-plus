@@ -55,17 +55,12 @@ export async function POST(request: NextRequest) {
       }
 
       // Session started - create session record
-      // Build insert object - handle both 'duration' and 'sitlength' column names
       const sessionInsert: any = {
         userid: userId,
         partnershipid: partnershipId,
+        sitlength: sessionDuration, // Session duration in seconds
         iscompleted: false
       };
-      
-      // The sessions table might have 'duration' or 'sitlength' column
-      // Try both - the database will use whichever exists
-      sessionInsert.duration = sessionDuration;
-      sessionInsert.sitlength = sessionDuration; // Also set sitlength in case that's the column name
       
       const { data: sessionData, error: sessionError } = await supabase
         .from('sessions')

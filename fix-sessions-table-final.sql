@@ -1,5 +1,5 @@
 -- Fix sessions table structure to match what the API expects
--- The API expects: userid, partnershipid, duration, iscompleted, startedat, completedat
+-- The API expects: userid, partnershipid, sitlength, iscompleted, startedat, completedat
 
 -- First, check what we have
 SELECT column_name, data_type 
@@ -14,7 +14,7 @@ ALTER TABLE sessions DISABLE ROW LEVEL SECURITY;
 -- Add missing columns if they don't exist
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS userid UUID;
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS partnershipid UUID;
-ALTER TABLE sessions ADD COLUMN IF NOT EXISTS duration INTEGER;
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS sitlength INTEGER;
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS iscompleted BOOLEAN DEFAULT false;
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS startedat TIMESTAMP WITH TIME ZONE DEFAULT NOW();
 ALTER TABLE sessions ADD COLUMN IF NOT EXISTS completedat TIMESTAMP WITH TIME ZONE;
