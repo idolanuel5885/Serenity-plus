@@ -407,15 +407,7 @@ export default function TimerPage() {
               duration={user?.usualSitLength ? user.usualSitLength * 60 : 0}
               elapsed={user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : 0}
             />
-          ) : (
-            <div className="w-64 h-64 mx-auto flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <div className="text-4xl mb-2">🧘</div>
-                <p className="text-sm">No partnerships yet</p>
-                <p className="text-xs mt-1">Find a partner to see the lotus bloom</p>
-              </div>
-            </div>
-          )}
+          ) : null}
         </div>
 
         {/* Controls */}
