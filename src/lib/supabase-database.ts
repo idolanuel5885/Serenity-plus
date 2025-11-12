@@ -61,8 +61,15 @@ export async function getUser(userId: string): Promise<User | null> {
   }
 }
 
+// Partnership database record (only fields that exist in partnerships table)
+export interface PartnershipDB {
+  userid: string;
+  partnerid: string;
+  score: number;
+}
+
 export async function createPartnership(
-  partnershipData: Omit<Partnership, 'id' | 'createdat'>,
+  partnershipData: PartnershipDB,
 ): Promise<string> {
   try {
     const { data, error } = await supabase
