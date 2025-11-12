@@ -6,13 +6,13 @@ const mockSupabase = {
 };
 
 // Mock the supabase module
-jest.mock('../../../src/lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: mockSupabase,
 }));
 
 // Mock supabase-database functions
 const mockEnsureCurrentWeekExists = jest.fn() as jest.Mock;
-jest.mock('../../../src/lib/supabase-database', () => ({
+jest.mock('@/lib/supabase-database', () => ({
   ensureCurrentWeekExists: mockEnsureCurrentWeekExists,
 }));
 

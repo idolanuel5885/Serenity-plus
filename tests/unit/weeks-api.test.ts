@@ -6,7 +6,7 @@ const mockSupabase = {
 };
 
 // Mock the supabase module
-jest.mock('../../../src/lib/supabase', () => ({
+jest.mock('@/lib/supabase', () => ({
   supabase: mockSupabase,
 }));
 
