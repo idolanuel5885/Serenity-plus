@@ -25,8 +25,8 @@ describe('Weeks API', () => {
         weekstart: new Date().toISOString(),
         weekend: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         weeklygoal: 10, // Combined from both users' targets
-        user1sits: 0,
-        user2sits: 0,
+        inviteesits: 0,
+        invitersits: 0,
         goalmet: false,
       };
 
@@ -76,14 +76,14 @@ describe('Weeks API', () => {
 
     it('should initialize week with zero sits for both users', async () => {
       const mockWeek = {
-        user1sits: 0,
-        user2sits: 0,
+        inviteesits: 0,
+        invitersits: 0,
         goalmet: false,
       };
 
       // Both user sit counts should start at 0
-      expect(mockWeek.user1sits).toBe(0);
-      expect(mockWeek.user2sits).toBe(0);
+      expect(mockWeek.inviteesits).toBe(0);
+      expect(mockWeek.invitersits).toBe(0);
       expect(mockWeek.goalmet).toBe(false);
     });
   });
@@ -148,11 +148,11 @@ describe('Weeks API', () => {
   });
 
   describe('Week Sit Count Updates', () => {
-    it('should increment user1sits when user1 completes session', async () => {
+    it('should increment inviteesits when invitee completes session', async () => {
       const mockWeek = {
         id: 'week-123',
-        user1sits: 0,
-        user2sits: 0,
+        inviteesits: 0,
+        invitersits: 0,
       };
 
       const mockWeeksUpdate = jest.fn().mockReturnValue({
@@ -160,7 +160,7 @@ describe('Weeks API', () => {
           select: jest.fn().mockReturnValue({
             // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
-              data: { ...mockWeek, user1sits: 1 },
+              data: { ...mockWeek, inviteesits: 1 },
               error: null,
             }),
           }),
@@ -174,15 +174,15 @@ describe('Weeks API', () => {
         return {} as any;
       }) as any);
 
-      // user1sits should increment
+      // inviteesits should increment
       expect(mockWeeksUpdate).toBeDefined();
     });
 
-    it('should increment user2sits when user2 completes session', async () => {
+    it('should increment invitersits when inviter completes session', async () => {
       const mockWeek = {
         id: 'week-123',
-        user1sits: 0,
-        user2sits: 0,
+        inviteesits: 0,
+        invitersits: 0,
       };
 
       const mockWeeksUpdate = jest.fn().mockReturnValue({
@@ -190,7 +190,7 @@ describe('Weeks API', () => {
           select: jest.fn().mockReturnValue({
             // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
-              data: { ...mockWeek, user2sits: 1 },
+              data: { ...mockWeek, invitersits: 1 },
               error: null,
             }),
           }),
@@ -204,31 +204,31 @@ describe('Weeks API', () => {
         return {} as any;
       }) as any);
 
-      // user2sits should increment
+      // invitersits should increment
       expect(mockWeeksUpdate).toBeDefined();
     });
 
     it('should handle multiple sessions in same week', async () => {
       const mockWeek = {
         id: 'week-123',
-        user1sits: 2,
-        user2sits: 1,
+        inviteesits: 2,
+        invitersits: 1,
       };
 
       // Multiple sessions should increment correctly
-      expect(mockWeek.user1sits).toBe(2);
-      expect(mockWeek.user2sits).toBe(1);
+      expect(mockWeek.inviteesits).toBe(2);
+      expect(mockWeek.invitersits).toBe(1);
     });
 
     it('should calculate goalmet when weekly goal is reached', async () => {
       const mockWeek = {
-        user1sits: 5,
-        user2sits: 3,
+        inviteesits: 5,
+        invitersits: 3,
         weeklygoal: 8,
         goalmet: false,
       };
 
-      const totalSits = mockWeek.user1sits + mockWeek.user2sits;
+      const totalSits = mockWeek.inviteesits + mockWeek.invitersits;
       const goalMet = totalSits >= mockWeek.weeklygoal;
 
       // Goal should be met when total sits >= weekly goal

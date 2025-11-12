@@ -346,8 +346,8 @@ export async function POST(request: NextRequest) {
               weekstart: startOfWeek.toISOString(),
               weekend: endOfWeek.toISOString(),
               weeklygoal: combinedWeeklyGoal, // Calculate from users' targets
-              user1sits: 0,
-              user2sits: 0
+              inviteesits: 0, // The user who used the invite code
+              invitersits: 0 // The user who created account and shared invite code
             })
             .select()
             .maybeSingle();
@@ -363,9 +363,11 @@ export async function POST(request: NextRequest) {
           console.log('Created new week:', newWeek);
           
           // Now update the sit count
+          // isUser1 means userId == partnership.userid (the invitee)
+          // So if isUser1, update inviteesits, otherwise update invitersits
           const newWeekUpdateData = isUser1 
-            ? { user1sits: 1 }
-            : { user2sits: 1 };
+            ? { inviteesits: 1 }
+            : { invitersits: 1 };
 
           const { data: updatedWeek, error: updateWeekError } = await supabase
             .from('weeks')
@@ -405,9 +407,11 @@ export async function POST(request: NextRequest) {
       console.log('Found current week:', currentWeek);
 
       // Update the appropriate sit count in the weeks table
+      // isUser1 means userId == partnership.userid (the invitee)
+      // So if isUser1, update inviteesits, otherwise update invitersits
       const updateData = isUser1 
-        ? { user1sits: (currentWeek.user1sits || 0) + 1 }
-        : { user2sits: (currentWeek.user2sits || 0) + 1 };
+        ? { inviteesits: (currentWeek.inviteesits || 0) + 1 }
+        : { invitersits: (currentWeek.invitersits || 0) + 1 };
 
       const { data: updatedWeek, error: updateWeekError } = await supabase
         .from('weeks')

@@ -51,7 +51,9 @@
 - Constraint: UNIQUE(userid, partnerid)
 
 **WEEKS Table:**
-- Columns: `id`, `partnershipid`, `weeknumber`, `weekstart`, `weekend`, `user1sits`, `user2sits`, `weeklygoal`, `goalmet`, `createdat`
+- Columns: `id`, `partnershipid`, `weeknumber`, `weekstart`, `weekend`, `inviteesits`, `invitersits`, `weeklygoal`, `goalmet`, `createdat`
+- `inviteesits`: The user who used the invite code (was user1sits)
+- `invitersits`: The user who created account and shared invite code (was user2sits)
 
 **SESSIONS Table:**
 - Columns: `id`, `createdat`, `sitlength`, `iscompleted`, `completedat`, `startedat`, `userid`, `partnershipid`, `weekid`

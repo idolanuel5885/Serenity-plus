@@ -30,8 +30,8 @@ export interface Week {
   weeknumber: number;
   weekstart: string;
   weekend: string;
-  user1sits: number;
-  user2sits: number;
+  inviteesits: number; // The user who used the invite code (was user1sits)
+  invitersits: number; // The user who created account and shared invite code (was user2sits)
   weeklygoal: number;
   goalmet: boolean;
   createdat: string;
@@ -248,8 +248,10 @@ export async function getUserPartnerships(userId: string): Promise<Partnership[]
           score: partnership.score,
           createdat: partnership.createdat,
           // All week-specific data comes from weeks table
-          usersits: isUser1 ? currentWeek.user1sits : currentWeek.user2sits,
-          partnersits: isUser1 ? currentWeek.user2sits : currentWeek.user1sits,
+          // Note: isUser1 means current user is the one who called the API (invitee)
+          // So if isUser1, they are the invitee, partner is the inviter
+          usersits: isUser1 ? currentWeek.inviteesits : currentWeek.invitersits,
+          partnersits: isUser1 ? currentWeek.invitersits : currentWeek.inviteesits,
           weeklygoal: currentWeek.weeklygoal,
           currentweekstart: currentWeek.weekstart,
         };
@@ -345,8 +347,8 @@ export async function createNewWeek(partnershipId: string, weeklyGoal: number): 
       weekstart: startOfWeek.toISOString(),
       weekend: endOfWeek.toISOString(),
       weeklygoal: weeklyGoal,
-      user1sits: 0,
-      user2sits: 0,
+      inviteesits: 0, // The user who used the invite code
+      invitersits: 0, // The user who created account and shared invite code
       goalmet: false
     };
 
@@ -377,9 +379,11 @@ export async function updateWeekSits(
   newSitCount: number
 ): Promise<Week | null> {
   try {
+    // isUser1 means current user is the one who called the API (invitee)
+    // So if isUser1, update inviteesits, otherwise update invitersits
     const updateData = isUser1 
-      ? { user1sits: newSitCount }
-      : { user2sits: newSitCount };
+      ? { inviteesits: newSitCount }
+      : { invitersits: newSitCount };
 
     const { data, error } = await supabase
       .from('weeks')
@@ -505,9 +509,10 @@ export async function createPartnershipsForUser(
           score: 0,
           createdat: new Date().toISOString(),
           // Week-specific data from the created week (or defaults if week creation failed)
+          // Note: userId is the invitee (the one calling the API), otherUser is the inviter
           weeklygoal: week1?.weeklygoal || combinedWeeklyGoal,
-          usersits: week1?.user1sits || 0,
-          partnersits: week1?.user2sits || 0,
+          usersits: week1?.inviteesits || 0, // userId is the invitee
+          partnersits: week1?.invitersits || 0, // otherUser is the inviter
           currentweekstart: week1?.weekstart || new Date().toISOString(),
         });
       } catch (partnershipError: any) {
@@ -539,8 +544,8 @@ export async function createPartnershipsForUser(
               score: 0,
               createdat: new Date().toISOString(),
               weeklygoal: existingWeek?.weeklygoal || combinedWeeklyGoal,
-              usersits: existingWeek?.user1sits || 0,
-              partnersits: existingWeek?.user2sits || 0,
+              usersits: existingWeek?.inviteesits || 0, // userId is the invitee
+              partnersits: existingWeek?.invitersits || 0, // otherUser is the inviter
               currentweekstart: existingWeek?.weekstart || new Date().toISOString(),
             });
           }

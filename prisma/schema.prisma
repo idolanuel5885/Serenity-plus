@@ -49,8 +49,8 @@ model Week {
   weeknumber    Int         @map("weeknumber") // NOT NULL
   weekstart     DateTime    @map("weekstart") // NOT NULL
   weekend       DateTime    @map("weekend") // NOT NULL
-  user1sits     Int         @default(0) @map("user1sits") // DEFAULT 0
-  user2sits     Int         @default(0) @map("user2sits") // DEFAULT 0
+  inviteesits   Int         @default(0) @map("inviteesits") // DEFAULT 0 - The user who used the invite code (was user1sits)
+  invitersits   Int         @default(0) @map("invitersits") // DEFAULT 0 - The user who created account and shared invite code (was user2sits)
   weeklygoal    Int         @map("weeklygoal") // NOT NULL
   goalmet       Boolean     @default(false) @map("goalmet") // DEFAULT FALSE
   createdat     DateTime    @default(now()) @map("createdat")

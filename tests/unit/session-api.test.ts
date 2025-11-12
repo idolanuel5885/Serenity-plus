@@ -216,8 +216,8 @@ describe('Session API', () => {
       const mockPartnership = { userid: 'user-123', partnerid: 'user-456' };
       const mockWeek = {
         id: 'week-123',
-        user1sits: 0,
-        user2sits: 0,
+        inviteesits: 0,
+        invitersits: 0,
       };
 
       const mockPartnershipsSelect = jest.fn().mockReturnValue({
@@ -243,7 +243,7 @@ describe('Session API', () => {
           select: jest.fn().mockReturnValue({
             // @ts-expect-error - Jest mock types are strict, but this is valid for testing
             maybeSingle: jest.fn().mockResolvedValue({
-              data: { ...mockWeek, user1sits: 1 },
+              data: { ...mockWeek, inviteesits: 1 },
               error: null,
             }),
           }),

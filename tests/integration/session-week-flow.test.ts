@@ -131,8 +131,8 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
       expect(weekData.weeknumber).toBe(1);
       expect(weekData.partnershipid).toBe(testPartnershipId);
       expect(weekData.weeklygoal).toBe(8); // 5 + 3 from both users' targets
-      expect(weekData.user1sits).toBe(0);
-      expect(weekData.user2sits).toBe(0);
+      expect(weekData.inviteesits).toBe(0);
+      expect(weekData.invitersits).toBe(0);
     });
 
     it('should create session when timer starts and link to week', async () => {
@@ -213,7 +213,7 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
       // Get current week
       const { data: weekBefore } = await supabase
         .from('weeks')
-        .select('user1sits, user2sits')
+        .select('inviteesits, invitersits')
         .eq('id', testWeekId)
         .single();
 
@@ -223,9 +223,11 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
       }
 
       const weekBeforeData = weekBefore as any;
+      // isUser1 means userId == partnership.userid (the invitee)
+      // So if isUser1, update inviteesits, otherwise update invitersits
       const updateData = isUser1
-        ? { user1sits: (weekBeforeData.user1sits || 0) + 1 }
-        : { user2sits: (weekBeforeData.user2sits || 0) + 1 };
+        ? { inviteesits: (weekBeforeData.inviteesits || 0) + 1 }
+        : { invitersits: (weekBeforeData.invitersits || 0) + 1 };
 
       const { data: weekAfter, error } = await supabase
         .from('weeks')
@@ -243,9 +245,9 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
       const weekAfterData = weekAfter as any;
       if (isUser1) {
-        expect(weekAfterData.user1sits).toBe((weekBeforeData.user1sits || 0) + 1);
+        expect(weekAfterData.inviteesits).toBe((weekBeforeData.inviteesits || 0) + 1);
       } else {
-        expect(weekAfterData.user2sits).toBe((weekBeforeData.user2sits || 0) + 1);
+        expect(weekAfterData.invitersits).toBe((weekBeforeData.invitersits || 0) + 1);
       }
     });
 

@@ -18,7 +18,7 @@ export function calculateLotusProgress(
   currentSessionDuration?: number,
   currentSessionElapsed?: number
 ): LotusProgressData {
-  const totalSits = currentWeek.user1sits + currentWeek.user2sits;
+  const totalSits = currentWeek.inviteesits + currentWeek.invitersits;
   const weeklyTarget = currentWeek.weeklygoal;
   
   // Calculate base progress (completed sits this week from database)
