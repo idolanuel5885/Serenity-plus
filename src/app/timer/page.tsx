@@ -65,6 +65,7 @@ export default function TimerPage() {
         // If no userId, skip database calls
         if (!userId) {
           console.log('No userId found, skipping database calls');
+          setPartnershipsLoading(false);
           return;
         }
 
@@ -97,6 +98,7 @@ export default function TimerPage() {
 
             console.log('Found existing partnerships:', partnerships);
             setPartnerships(partnerships);
+            setPartnershipsLoading(false);
           } else {
             console.log('Timer: No partnerships found in database, retrying in 2 seconds...');
             // Retry after a short delay in case partnerships are still being created
