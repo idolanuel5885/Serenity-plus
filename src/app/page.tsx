@@ -193,7 +193,7 @@ export default function Home() {
       setPartnershipsLoaded(true);
       setLoading(false);
     }
-  }, [isFetchingPartnerships, userWeeklyTarget]);
+  }, [isFetchingPartnerships]);
 
   const calculateWeekEndsIn = (weekStart: string) => {
     const start = new Date(weekStart);
