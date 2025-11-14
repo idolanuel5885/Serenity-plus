@@ -5,13 +5,32 @@
 -- ============================================================================
 -- TEST 1: Verify Schema Changes Exist
 -- ============================================================================
+-- IMPORTANT: Run implement-week-auto-creation.sql FIRST before running these tests!
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'partnerships' AND column_name = 'autocreateweeks'
+  ) THEN
+    RAISE EXCEPTION 'Schema not set up! Please run implement-week-auto-creation.sql first. The autocreateweeks column does not exist in the partnerships table.';
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_name = 'week_creation_log'
+  ) THEN
+    RAISE EXCEPTION 'Schema not set up! Please run implement-week-auto-creation.sql first. The week_creation_log table does not exist.';
+  END IF;
+END $$;
+
 SELECT 
   'TEST 1: Schema Check' as test_name,
   CASE 
     WHEN EXISTS (
       SELECT 1 FROM information_schema.columns 
       WHERE table_name = 'partnerships' AND column_name = 'autocreateweeks'
-    ) THEN 'PASS'
+    ) THEN 'PASS - autocreateweeks column exists'
     ELSE 'FAIL - autocreateweeks column missing'
   END as result;
 
@@ -21,8 +40,20 @@ SELECT
     WHEN EXISTS (
       SELECT 1 FROM information_schema.tables 
       WHERE table_name = 'week_creation_log'
-    ) THEN 'PASS'
+    ) THEN 'PASS - week_creation_log table exists'
     ELSE 'FAIL - week_creation_log table missing'
+  END as result;
+
+SELECT 
+  'TEST 1c: Database functions exist' as test_name,
+  CASE 
+    WHEN EXISTS (
+      SELECT 1 FROM pg_proc p
+      JOIN pg_namespace n ON p.pronamespace = n.oid
+      WHERE n.nspname = 'public'
+      AND p.proname = 'create_next_week_for_partnership'
+    ) THEN 'PASS - create_next_week_for_partnership function exists'
+    ELSE 'FAIL - create_next_week_for_partnership function missing'
   END as result;
 
 -- ============================================================================
