@@ -290,31 +290,36 @@ BEGIN
     -- Try to schedule the job
     -- Note: This requires superuser privileges
     BEGIN
-      PERFORM cron.schedule(
-        'create-next-weeks-hourly',    -- Job name
-        '0 * * * *',                   -- Every hour at minute 0 (cron syntax)
-        $$
-        WITH partnerships_needing_weeks AS (
-          SELECT DISTINCT p.id as partnership_id
-          FROM partnerships p
-          INNER JOIN weeks w ON p.id = w.partnershipid
-          WHERE p.autocreateweeks = TRUE
-            AND (p.weekcreationpauseduntil IS NULL OR p.weekcreationpauseduntil < NOW())
-            AND w.weekend < NOW() - INTERVAL '1 minute'  -- Grace period of 1 minute
-            AND NOT EXISTS (
-              -- Check if next week already exists
-              SELECT 1 FROM weeks w2
-              WHERE w2.partnershipid = p.id
-              AND w2.weeknumber = w.weeknumber + 1
-            )
-          GROUP BY p.id
-          HAVING MAX(w.weekend) < NOW() - INTERVAL '1 minute'
-        )
-        SELECT create_next_week_for_partnership(partnership_id)
-        FROM partnerships_needing_weeks;
-        $$
-      );
-      RAISE NOTICE '✅ Scheduled job "create-next-weeks-hourly" created successfully!';
+      -- Use SELECT instead of PERFORM since cron.schedule returns a value
+      -- Store the result to avoid "query has no destination" error
+      DECLARE
+        v_job_id BIGINT;
+      BEGIN
+        SELECT cron.schedule(
+          'create-next-weeks-hourly',    -- Job name
+          '0 * * * *',                   -- Every hour at minute 0 (cron syntax)
+          $CRON$
+          WITH partnerships_needing_weeks AS (
+            SELECT DISTINCT p.id as partnership_id
+            FROM partnerships p
+            INNER JOIN weeks w ON p.id = w.partnershipid
+            WHERE p.autocreateweeks = TRUE
+              AND (p.weekcreationpauseduntil IS NULL OR p.weekcreationpauseduntil < NOW())
+              AND w.weekend < NOW() - INTERVAL '1 minute'
+              AND NOT EXISTS (
+                SELECT 1 FROM weeks w2
+                WHERE w2.partnershipid = p.id
+                AND w2.weeknumber = w.weeknumber + 1
+              )
+            GROUP BY p.id
+            HAVING MAX(w.weekend) < NOW() - INTERVAL '1 minute'
+          )
+          SELECT create_next_week_for_partnership(partnership_id)
+          FROM partnerships_needing_weeks;
+          $CRON$
+        ) INTO v_job_id;
+        RAISE NOTICE '✅ Scheduled job "create-next-weeks-hourly" created successfully with job ID: %', v_job_id;
+      END;
     EXCEPTION
       WHEN insufficient_privilege THEN
         RAISE WARNING '⚠️ Insufficient privileges to create cron job. Contact Supabase admin to enable pg_cron extension and schedule the job.';
