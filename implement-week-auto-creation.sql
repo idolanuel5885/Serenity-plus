@@ -278,36 +278,55 @@ COMMENT ON FUNCTION create_next_week_for_partnership IS 'Creates the next week f
 -- STEP 6: Create scheduled job (requires pg_cron extension)
 -- ============================================================================
 
--- First, enable pg_cron extension (requires superuser)
--- Note: This may need to be done by Supabase admin
--- CREATE EXTENSION IF NOT EXISTS pg_cron;
-
--- Schedule job to run every hour
--- This will find all partnerships that need a new week and create them
-SELECT cron.schedule(
-  'create-next-weeks-hourly',    -- Job name
-  '0 * * * *',                   -- Every hour at minute 0 (cron syntax)
-  $$
-  WITH partnerships_needing_weeks AS (
-    SELECT DISTINCT p.id as partnership_id
-    FROM partnerships p
-    INNER JOIN weeks w ON p.id = w.partnershipid
-    WHERE p.autocreateweeks = TRUE
-      AND (p.weekcreationpauseduntil IS NULL OR p.weekcreationpauseduntil < NOW())
-      AND w.weekend < NOW() - INTERVAL '1 minute'  -- Grace period of 1 minute
-      AND NOT EXISTS (
-        -- Check if next week already exists
-        SELECT 1 FROM weeks w2
-        WHERE w2.partnershipid = p.id
-        AND w2.weeknumber = w.weeknumber + 1
-      )
-    GROUP BY p.id
-    HAVING MAX(w.weekend) < NOW() - INTERVAL '1 minute'
-  )
-  SELECT create_next_week_for_partnership(partnership_id)
-  FROM partnerships_needing_weeks;
-  $$
-);
+-- Check if pg_cron extension exists and is available
+DO $$
+BEGIN
+  -- Check if pg_cron extension exists
+  IF EXISTS (
+    SELECT 1 FROM pg_extension WHERE extname = 'pg_cron'
+  ) THEN
+    RAISE NOTICE 'pg_cron extension found. Attempting to schedule job...';
+    
+    -- Try to schedule the job
+    -- Note: This requires superuser privileges
+    BEGIN
+      PERFORM cron.schedule(
+        'create-next-weeks-hourly',    -- Job name
+        '0 * * * *',                   -- Every hour at minute 0 (cron syntax)
+        $$
+        WITH partnerships_needing_weeks AS (
+          SELECT DISTINCT p.id as partnership_id
+          FROM partnerships p
+          INNER JOIN weeks w ON p.id = w.partnershipid
+          WHERE p.autocreateweeks = TRUE
+            AND (p.weekcreationpauseduntil IS NULL OR p.weekcreationpauseduntil < NOW())
+            AND w.weekend < NOW() - INTERVAL '1 minute'  -- Grace period of 1 minute
+            AND NOT EXISTS (
+              -- Check if next week already exists
+              SELECT 1 FROM weeks w2
+              WHERE w2.partnershipid = p.id
+              AND w2.weeknumber = w.weeknumber + 1
+            )
+          GROUP BY p.id
+          HAVING MAX(w.weekend) < NOW() - INTERVAL '1 minute'
+        )
+        SELECT create_next_week_for_partnership(partnership_id)
+        FROM partnerships_needing_weeks;
+        $$
+      );
+      RAISE NOTICE '✅ Scheduled job "create-next-weeks-hourly" created successfully!';
+    EXCEPTION
+      WHEN insufficient_privilege THEN
+        RAISE WARNING '⚠️ Insufficient privileges to create cron job. Contact Supabase admin to enable pg_cron extension and schedule the job.';
+      WHEN OTHERS THEN
+        RAISE WARNING '⚠️ Could not create cron job: %. You can manually trigger week creation using trigger_week_creation_for_all_partnerships() function.', SQLERRM;
+    END;
+  ELSE
+    RAISE WARNING '⚠️ pg_cron extension not found. Automatic week creation will not run on a schedule.';
+    RAISE WARNING '⚠️ You can manually trigger week creation using: SELECT * FROM trigger_week_creation_for_all_partnerships();';
+    RAISE WARNING '⚠️ Or contact Supabase admin to enable pg_cron extension for automatic scheduling.';
+  END IF;
+END $$;
 
 -- ============================================================================
 -- STEP 7: Helper function to manually trigger week creation (for testing)
@@ -367,7 +386,7 @@ COMMENT ON FUNCTION trigger_week_creation_for_all_partnerships IS 'Manually trig
 -- Check partnerships with auto-creation enabled
 -- SELECT id, autocreateweeks, weekcreationpauseduntil FROM partnerships WHERE autocreateweeks = TRUE;
 
--- Check scheduled jobs
+-- Check scheduled jobs (only works if pg_cron is enabled)
 -- SELECT * FROM cron.job WHERE jobname = 'create-next-weeks-hourly';
 
 -- Check for partnerships that should have a new week but don't
