@@ -24,7 +24,7 @@ test.describe('Week Settings API', () => {
       .limit(1);
 
     if (partnerships && partnerships.length > 0) {
-      testPartnershipId = partnerships[0]?.id || null;
+      testPartnershipId = (partnerships[0] as any)?.id || null;
     } else {
       // Create test users and partnership if none exists
       const { data: user1 } = await (supabase
@@ -52,11 +52,14 @@ test.describe('Week Settings API', () => {
         .single());
 
       if (user1 && user2) {
+        const user1Id = (user1 as any).id;
+        const user2Id = (user2 as any).id;
+        
         const { data: partnership } = await (supabase
           .from('partnerships')
           .insert({
-            userid: user1.id,
-            partnerid: user2.id,
+            userid: user1Id,
+            partnerid: user2Id,
             score: 0,
           } as any)
           .select()
