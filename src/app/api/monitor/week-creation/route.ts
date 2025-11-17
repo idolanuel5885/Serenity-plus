@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { sendAlerts } from '@/lib/alerting';
 
 /**
  * API endpoint to monitor week creation system health
@@ -69,6 +70,26 @@ export async function GET() {
       healthStatus = 'critical';
     } else if (hoursSinceLastActivity > 2 || needingWeeksCount > 0 || errors > 0) {
       healthStatus = 'warning';
+    }
+
+    // Send alerts if status is warning or critical (non-blocking)
+    if (healthStatus !== 'healthy') {
+      sendAlerts({
+        status: healthStatus,
+        message: healthStatus === 'critical' 
+          ? 'Week creation system is in critical state. Immediate attention required.'
+          : 'Week creation system has warnings that need attention.',
+        metrics: {
+          hours_since_last_activity: hoursSinceLastActivity < Infinity ? hoursSinceLastActivity : null,
+          partnerships_needing_weeks: needingWeeksCount,
+          errors_24h: errors,
+          successful_24h: successful,
+        },
+        errors: errors > 0 ? recentActivity?.filter(r => r.status === 'error').map(r => r.errormessage || 'Unknown error').slice(0, 5) : undefined,
+      }).catch(err => {
+        console.error('Failed to send alerts:', err);
+        // Don't block the response if alerting fails
+      });
     }
 
     return NextResponse.json({
