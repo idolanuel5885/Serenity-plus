@@ -74,7 +74,16 @@ export async function GET() {
 
     // Send alerts if status is warning or critical (non-blocking)
     if (healthStatus !== 'healthy') {
-      sendAlerts({
+      const errorMessages = errors > 0 
+        ? recentActivity?.filter(r => r.status === 'error').map(r => r.errormessage || 'Unknown error').slice(0, 5) || []
+        : [];
+
+      const alertOptions: {
+        status: 'warning' | 'critical';
+        message: string;
+        metrics: Record<string, any>;
+        errors?: string[];
+      } = {
         status: healthStatus,
         message: healthStatus === 'critical' 
           ? 'Week creation system is in critical state. Immediate attention required.'
@@ -85,8 +94,14 @@ export async function GET() {
           errors_24h: errors,
           successful_24h: successful,
         },
-        errors: errors > 0 ? recentActivity?.filter(r => r.status === 'error').map(r => r.errormessage || 'Unknown error').slice(0, 5) : undefined,
-      }).catch(err => {
+      };
+
+      // Only include errors if there are any
+      if (errorMessages.length > 0) {
+        alertOptions.errors = errorMessages;
+      }
+
+      sendAlerts(alertOptions).catch(err => {
         console.error('Failed to send alerts:', err);
         // Don't block the response if alerting fails
       });
