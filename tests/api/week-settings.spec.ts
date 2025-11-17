@@ -24,10 +24,10 @@ test.describe('Week Settings API', () => {
       .limit(1);
 
     if (partnerships && partnerships.length > 0) {
-      testPartnershipId = partnerships[0].id;
+      testPartnershipId = partnerships[0]?.id || null;
     } else {
       // Create test users and partnership if none exists
-      const { data: user1 } = await supabase
+      const { data: user1 } = await (supabase
         .from('users')
         .insert({
           name: 'Test User 1',
@@ -35,11 +35,11 @@ test.describe('Week Settings API', () => {
           weeklytarget: 5,
           usualsitlength: 30,
           invitecode: `TEST-${Date.now()}`,
-        })
+        } as any)
         .select()
-        .single();
+        .single());
 
-      const { data: user2 } = await supabase
+      const { data: user2 } = await (supabase
         .from('users')
         .insert({
           name: 'Test User 2',
@@ -47,23 +47,23 @@ test.describe('Week Settings API', () => {
           weeklytarget: 5,
           usualsitlength: 30,
           invitecode: `TEST-${Date.now()}-2`,
-        })
+        } as any)
         .select()
-        .single();
+        .single());
 
       if (user1 && user2) {
-        const { data: partnership } = await supabase
+        const { data: partnership } = await (supabase
           .from('partnerships')
           .insert({
             userid: user1.id,
             partnerid: user2.id,
             score: 0,
-          })
+          } as any)
           .select()
-          .single();
+          .single());
 
         if (partnership) {
-          testPartnershipId = partnership.id;
+          testPartnershipId = (partnership as any).id;
         }
       }
     }

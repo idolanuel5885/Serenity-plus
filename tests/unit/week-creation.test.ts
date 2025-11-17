@@ -72,7 +72,6 @@ describe('Week Creation Functions', () => {
       // Mock partnership query to check auto-creation settings
       const mockPartnershipSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          // @ts-expect-error - Jest mock types
           maybeSingle: jest.fn().mockResolvedValue({
             data: { id: 'partnership-123', autocreateweeks: true, weekcreationpauseduntil: null },
             error: null,
@@ -83,7 +82,6 @@ describe('Week Creation Functions', () => {
       // Mock weeks insert
       const mockWeeksInsert = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
-          // @ts-expect-error - Jest mock types
           single: jest.fn().mockResolvedValue({ data: mockWeek, error: null }),
         }),
       });
@@ -115,7 +113,6 @@ describe('Week Creation Functions', () => {
       // Mock partnership with auto-creation disabled
       const mockPartnershipSelect = jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          // @ts-expect-error - Jest mock types
           maybeSingle: jest.fn().mockResolvedValue({
             data: { id: 'partnership-123', autocreateweeks: false, weekcreationpauseduntil: null },
             error: null,
@@ -154,7 +151,6 @@ describe('Week Creation Functions', () => {
 
       const mockWeeksInsert = jest.fn().mockReturnValue({
         select: jest.fn().mockReturnValue({
-          // @ts-expect-error - Jest mock types
           single: jest.fn().mockResolvedValue({ data: mockWeek, error: null }),
         }),
       });
