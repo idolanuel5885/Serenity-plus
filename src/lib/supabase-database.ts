@@ -155,7 +155,7 @@ export async function ensureCurrentWeekExists(partnershipId: string, weeklyGoal:
       } else {
         // Automatic week creation is disabled or paused - create on-demand (backward compatible)
         console.log('Automatic week creation is disabled or paused, creating week on-demand');
-        currentWeek = await createNewWeek(partnershipId, weeklyGoal);
+      currentWeek = await createNewWeek(partnershipId, weeklyGoal);
       }
     }
     

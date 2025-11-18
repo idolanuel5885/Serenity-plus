@@ -1,6 +1,7 @@
 -- Manual Test Script for Automatic Week Creation System
 -- Run these tests in Supabase SQL Editor
--- Replace 'YOUR_TEST_PARTNERSHIP_ID' with an actual partnership ID from your database
+-- Note: This script automatically selects a partnership with at least one week for testing.
+-- All tests use this automatically-selected partnership ID.
 
 -- ============================================================================
 -- TEST 1: Verify Schema Changes Exist
@@ -59,9 +60,35 @@ SELECT
 -- ============================================================================
 -- TEST 2: Get Test Partnership Info
 -- ============================================================================
--- First, let's find a partnership to test with
+-- First, let's find a partnership to test with and store it in a variable
+DO $$
+DECLARE
+  v_test_partnership_id UUID;
+BEGIN
+  -- Find a partnership with at least one week
+  SELECT p.id INTO v_test_partnership_id
+  FROM partnerships p
+  INNER JOIN weeks w ON p.id = w.partnershipid
+  GROUP BY p.id
+  HAVING COUNT(DISTINCT w.id) > 0
+  ORDER BY MAX(w.weekend) DESC
+  LIMIT 1;
+  
+  IF v_test_partnership_id IS NULL THEN
+    RAISE EXCEPTION 'No partnerships with weeks found. Please create a partnership and at least one week first.';
+  END IF;
+  
+  -- Store in a temporary table for use in subsequent tests
+  CREATE TEMP TABLE IF NOT EXISTS test_partnership_id (id UUID);
+  DELETE FROM test_partnership_id;
+  INSERT INTO test_partnership_id VALUES (v_test_partnership_id);
+  
+  RAISE NOTICE 'Using partnership ID for tests: %', v_test_partnership_id;
+END $$;
+
+-- Display the test partnership info
 SELECT 
-  'TEST 2: Find Test Partnership' as test_name,
+  'TEST 2: Test Partnership Selected' as test_name,
   p.id as partnership_id,
   p.autocreateweeks,
   p.weekcreationpauseduntil,
@@ -69,20 +96,19 @@ SELECT
   MAX(w.weekend) as last_week_end,
   COUNT(DISTINCT w.id) as total_weeks
 FROM partnerships p
+INNER JOIN test_partnership_id t ON p.id = t.id
 LEFT JOIN weeks w ON p.id = w.partnershipid
-GROUP BY p.id, p.autocreateweeks, p.weekcreationpauseduntil
-HAVING COUNT(DISTINCT w.id) > 0  -- Has at least one week
-ORDER BY MAX(w.weekend) DESC
-LIMIT 5;
+GROUP BY p.id, p.autocreateweeks, p.weekcreationpauseduntil;
 
 -- ============================================================================
 -- TEST 3: Test get_current_week_for_partnership Function
 -- ============================================================================
--- Replace 'YOUR_TEST_PARTNERSHIP_ID' with actual ID from TEST 2
 SELECT 
   'TEST 3: get_current_week_for_partnership' as test_name,
   * 
-FROM get_current_week_for_partnership('YOUR_TEST_PARTNERSHIP_ID'::uuid);
+FROM get_current_week_for_partnership(
+  (SELECT id FROM test_partnership_id LIMIT 1)
+);
 
 -- ============================================================================
 -- TEST 4: Test create_next_week_for_partnership (IDEMPOTENCY TEST)
@@ -95,14 +121,14 @@ SELECT
   weekend,
   weeklygoal
 FROM weeks
-WHERE partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 ORDER BY weeknumber DESC
 LIMIT 3;
 
 -- Step 4b: Create next week (first time)
 SELECT 
   'TEST 4b: Create Next Week (First Call)' as test_name,
-  create_next_week_for_partnership('YOUR_TEST_PARTNERSHIP_ID'::uuid) as new_week_id;
+  create_next_week_for_partnership((SELECT id FROM test_partnership_id LIMIT 1)) as new_week_id;
 
 -- Step 4c: Verify week was created
 SELECT 
@@ -114,14 +140,14 @@ SELECT
   inviteesits,
   invitersits
 FROM weeks
-WHERE partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 ORDER BY weeknumber DESC
 LIMIT 3;
 
 -- Step 4d: Try to create again (should be idempotent)
 SELECT 
   'TEST 4d: Create Next Week (Second Call - Should Skip)' as test_name,
-  create_next_week_for_partnership('YOUR_TEST_PARTNERSHIP_ID'::uuid) as existing_week_id;
+  create_next_week_for_partnership((SELECT id FROM test_partnership_id LIMIT 1)) as existing_week_id;
 
 -- Step 4e: Check log for idempotency
 SELECT 
@@ -131,7 +157,7 @@ SELECT
   metadata->>'reason' as reason,
   createdat
 FROM week_creation_log
-WHERE partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 ORDER BY createdat DESC
 LIMIT 5;
 
@@ -141,13 +167,13 @@ LIMIT 5;
 -- Step 5a: Disable auto-creation for test partnership
 UPDATE partnerships 
 SET autocreateweeks = FALSE
-WHERE id = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE id = (SELECT id FROM test_partnership_id LIMIT 1)
 RETURNING id, autocreateweeks;
 
 -- Step 5b: Try to create week (should skip)
 SELECT 
   'TEST 5: Auto-Creation Disabled' as test_name,
-  create_next_week_for_partnership('YOUR_TEST_PARTNERSHIP_ID'::uuid) as result;
+  create_next_week_for_partnership((SELECT id FROM test_partnership_id LIMIT 1)) as result;
 
 -- Step 5c: Check log
 SELECT 
@@ -155,14 +181,14 @@ SELECT
   status,
   metadata->>'reason' as reason
 FROM week_creation_log
-WHERE partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 ORDER BY createdat DESC
 LIMIT 1;
 
 -- Step 5d: Re-enable auto-creation
 UPDATE partnerships 
 SET autocreateweeks = TRUE
-WHERE id = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE id = (SELECT id FROM test_partnership_id LIMIT 1)
 RETURNING id, autocreateweeks;
 
 -- ============================================================================
@@ -171,18 +197,18 @@ RETURNING id, autocreateweeks;
 -- Step 6a: Set pause until future date
 UPDATE partnerships 
 SET weekcreationpauseduntil = NOW() + INTERVAL '1 day'
-WHERE id = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE id = (SELECT id FROM test_partnership_id LIMIT 1)
 RETURNING id, weekcreationpauseduntil;
 
 -- Step 6b: Try to create (should skip)
 SELECT 
   'TEST 6: Paused Until Future' as test_name,
-  create_next_week_for_partnership('YOUR_TEST_PARTNERSHIP_ID'::uuid) as result;
+  create_next_week_for_partnership((SELECT id FROM test_partnership_id LIMIT 1)) as result;
 
 -- Step 6c: Clear pause
 UPDATE partnerships 
 SET weekcreationpauseduntil = NULL
-WHERE id = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE id = (SELECT id FROM test_partnership_id LIMIT 1)
 RETURNING id, weekcreationpauseduntil;
 
 -- ============================================================================
@@ -231,7 +257,7 @@ SELECT
 FROM weeks w1
 JOIN weeks w2 ON w1.partnershipid = w2.partnershipid 
   AND w2.weeknumber = w1.weeknumber + 1
-WHERE w1.partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE w1.partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 ORDER BY w1.weeknumber DESC
 LIMIT 1;
 
@@ -244,7 +270,7 @@ SELECT
   weeknumber,
   COUNT(*) as count
 FROM weeks
-WHERE partnershipid = 'YOUR_TEST_PARTNERSHIP_ID'::uuid
+WHERE partnershipid = (SELECT id FROM test_partnership_id LIMIT 1)
 GROUP BY partnershipid, weeknumber
 HAVING COUNT(*) > 1;
 

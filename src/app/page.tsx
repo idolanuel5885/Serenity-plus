@@ -91,54 +91,66 @@ export default function Home() {
             return [...prevPartnerships, ...newPartnerships];
           });
         } else {
-          // No existing partnerships, try to create new ones
-          console.log('No existing partnerships, creating new ones...');
+          // No existing partnerships, try to create new ones (fallback for edge cases)
+          // Note: For User2, partnership should already be created during onboarding
+          // This is a fallback in case partnership creation failed during onboarding
+          console.log('No existing partnerships, attempting fallback partnership creation...');
           const pendingInviteCode = localStorage.getItem('pendingInviteCode');
           const userInviteCode = localStorage.getItem('userInviteCode');
           const inviteCode = pendingInviteCode || userInviteCode;
-          console.log('Using invite code for partnership creation:', inviteCode);
-          console.log('All localStorage keys:', Object.keys(localStorage));
-          console.log('pendingInviteCode:', pendingInviteCode);
-          console.log('userInviteCode:', userInviteCode);
-          console.log('=== CALLING createPartnershipsForUser ===', { userId, inviteCode });
-          const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined);
+          
+          if (inviteCode) {
+            console.log('Using invite code for fallback partnership creation:', inviteCode);
+            console.log('All localStorage keys:', Object.keys(localStorage));
+            console.log('pendingInviteCode:', pendingInviteCode);
+            console.log('userInviteCode:', userInviteCode);
+            console.log('=== CALLING createPartnershipsForUser (FALLBACK) ===', { userId, inviteCode });
+            const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined);
+            
+            if (newPartnerships.length > 0) {
+              // Clear pendingInviteCode since partnership is now created
+              localStorage.removeItem('pendingInviteCode');
+              
+              // Process the partnerships that were created
+              const partnerships = await Promise.all(newPartnerships.map(async (partnership) => {
+                const partnerDetails = await getPartnerDetails(partnership.partnerid);
+                return {
+                  id: partnership.id,
+                  partner: {
+                    id: partnership.partnerid,
+                    name: partnerDetails?.name || 'Unknown Partner',
+                    email: partnerDetails?.email || '',
+                    image: partnerDetails?.image || '/icons/meditation-1.svg',
+                    weeklyTarget: partnerDetails?.weeklytarget || 0,
+                  },
+                  userSits: partnership.usersits,
+                  partnerSits: partnership.partnersits,
+                  userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
+                  weeklyGoal: userWeeklyTarget + (partnerDetails?.weeklytarget || 0), // Calculate from both users' targets
+                  score: partnership.score,
+                  currentWeekStart: partnership.currentweekstart,
+                };
+              }));
 
-          if (newPartnerships.length > 0) {
-            const partnerships = await Promise.all(newPartnerships.map(async (partnership) => {
-              const partnerDetails = await getPartnerDetails(partnership.partnerid);
-              return {
-                id: partnership.id,
-                partner: {
-                  id: partnership.partnerid,
-                  name: partnerDetails?.name || 'Unknown Partner',
-                  email: partnerDetails?.email || '',
-                  image: partnerDetails?.image || '/icons/meditation-1.svg',
-                  weeklyTarget: partnerDetails?.weeklytarget || 0,
-                },
-                userSits: partnership.usersits,
-                partnerSits: partnership.partnersits,
-                userWeeklyTarget: userWeeklyTarget, // Use the user's target from users table
-                weeklyGoal: userWeeklyTarget + (partnerDetails?.weeklytarget || 0), // Calculate from both users' targets
-                score: partnership.score,
-                currentWeekStart: partnership.currentweekstart,
-              };
-            }));
-
-            console.log('Created new partnerships:', partnerships);
-            console.log('Partnership sit counts:', partnerships.map(p => ({
-              id: p.id,
-              userSits: p.userSits,
-              partnerSits: p.partnerSits,
-              partnerName: p.partner.name
-            })));
-            // Prevent duplicate partnerships by checking if they already exist
-            setPartnerships(prevPartnerships => {
-              const existingIds = prevPartnerships.map(p => p.id);
-              const newPartnerships = partnerships.filter(p => !existingIds.includes(p.id));
-              return [...prevPartnerships, ...newPartnerships];
-            });
+              console.log('Created new partnerships (fallback):', partnerships);
+              console.log('Partnership sit counts:', partnerships.map(p => ({
+                id: p.id,
+                userSits: p.userSits,
+                partnerSits: p.partnerSits,
+                partnerName: p.partner.name
+              })));
+              // Prevent duplicate partnerships by checking if they already exist
+              setPartnerships(prevPartnerships => {
+                const existingIds = prevPartnerships.map(p => p.id);
+                const newPartnerships = partnerships.filter(p => !existingIds.includes(p.id));
+                return [...prevPartnerships, ...newPartnerships];
+              });
+            } else {
+              console.log('No partnerships created in fallback - showing empty partnerships');
+              setPartnerships([]);
+            }
           } else {
-            console.log('No other users found, showing empty partnerships');
+            console.log('No invite code available for partnership creation');
             setPartnerships([]);
           }
         }

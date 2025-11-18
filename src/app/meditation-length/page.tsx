@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createUser } from '../../lib/supabase-database'; // Import createUser from Supabase
+import { createUser, createPartnershipsForUser } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
 
 export default function MeditationLengthPage() {
@@ -148,11 +148,26 @@ export default function MeditationLengthPage() {
         console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
         
-        // DO NOT remove pendingInviteCode here - it's needed for partnership creation later
-        // The pendingInviteCode (User1's invite code) will be used on the homepage
-        // to find User1 and create the partnership
+        // If User2 has a pendingInviteCode (User1's invite code), create partnership immediately
         if (pendingInviteCodeLocal) {
-          console.log('Preserved pendingInviteCode for partnership creation:', pendingInviteCodeLocal);
+          console.log('User2 detected with pendingInviteCode, creating partnership immediately...');
+          try {
+            const partnerships = await createPartnershipsForUser(supabaseUserId, pendingInviteCodeLocal);
+            if (partnerships.length > 0) {
+              console.log('✅ Partnership created successfully during onboarding:', partnerships);
+              // Clear pendingInviteCode since partnership is now created
+              localStorage.removeItem('pendingInviteCode');
+            } else {
+              console.warn('⚠️ Partnership creation returned empty array - invite code may be invalid or User1 not found');
+              // Keep pendingInviteCode for homepage to retry
+            }
+          } catch (partnershipError) {
+            console.error('❌ Error creating partnership during onboarding:', partnershipError);
+            // Keep pendingInviteCode for homepage to retry as fallback
+            // Don't block user from continuing - they can retry on homepage
+          }
+        } else {
+          console.log('No pendingInviteCode - User1 flow (no partnership creation needed)');
         }
       } catch (supabaseError: any) {
         console.log('Supabase error, attempting to find existing user:', supabaseError);
