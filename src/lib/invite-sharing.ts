@@ -98,11 +98,13 @@ export function constructInviteLink(inviteCode: string): string {
 
 /**
  * Prepare share data with default message
+ * Note: For Web Share API, we put the link only in the URL field to avoid duplication
+ * For app-specific URLs (email, WhatsApp, SMS), we'll include the link in the text
  */
 export function prepareShareData(inviteLink: string): ShareData {
   return {
     title: 'Meditate with me on Serenity+',
-    text: `Hey come meditate with me! ${inviteLink}`,
+    text: 'Hey I started using this app accountability-partnership app to meditate and I want you to be my partner!',
     url: inviteLink,
   };
 }
@@ -169,6 +171,7 @@ export async function copyInviteLink(inviteLink: string): Promise<boolean> {
 
 /**
  * Generate share URLs for specific apps
+ * Includes the link in the message for app-specific sharing
  */
 export function getAppShareUrls(shareData: ShareData): {
   email: string;
@@ -176,7 +179,8 @@ export function getAppShareUrls(shareData: ShareData): {
   sms: string;
 } {
   const { text, url } = shareData;
-  const fullMessage = `${text}`;
+  // Include link in message for app-specific sharing (email, WhatsApp, SMS)
+  const fullMessage = `${text}\n\n${url}`;
 
   return {
     email: `mailto:?subject=${encodeURIComponent(shareData.title)}&body=${encodeURIComponent(fullMessage)}`,
