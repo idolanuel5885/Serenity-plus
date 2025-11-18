@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails } from '../lib/supabase-database';
+import { shareInvite } from '../lib/invite-sharing';
+import FallbackShareModal from '../components/FallbackShareModal';
 
 interface Partnership {
   id: string;
@@ -28,6 +30,9 @@ export default function Home() {
   const [partnershipsLoaded, setPartnershipsLoaded] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userWeeklyTarget, setUserWeeklyTarget] = useState<number>(0);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [shareModalLink, setShareModalLink] = useState('');
+  const [isSharing, setIsSharing] = useState(false);
   const router = useRouter();
 
   const isFetchingRef = useRef(false);
@@ -211,6 +216,45 @@ export default function Home() {
     return `${days}d ${hours}h`;
   };
 
+  const handleInviteClick = async () => {
+    // Check if user is authenticated
+    const storedUserId = localStorage.getItem('userId');
+    const userName = localStorage.getItem('userName') || localStorage.getItem('userNickname');
+
+    if (!storedUserId || !userName) {
+      // User not authenticated, redirect to welcome page
+      router.push('/welcome');
+      return;
+    }
+
+    setIsSharing(true);
+    try {
+      const result = await shareInvite();
+
+      if (!result.success) {
+        // Show error message
+        alert(result.error || 'Unable to share invite. Please try again.');
+        setIsSharing(false);
+        return;
+      }
+
+      if (result.usedNativeShare) {
+        // Native share was successful, we're done
+        setIsSharing(false);
+        return;
+      }
+
+      // Native share not available or was cancelled, show fallback modal
+      setShareModalLink(result.inviteLink);
+      setShowShareModal(true);
+      setIsSharing(false);
+    } catch (error) {
+      console.error('Error sharing invite:', error);
+      alert('Unable to share invite. Please try again.');
+      setIsSharing(false);
+    }
+  };
+
   useEffect(() => {
     const checkForUser = async () => {
       try {
@@ -326,12 +370,13 @@ export default function Home() {
             {partnerships.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-gray-600 mb-3">No partners yet</p>
-                <Link
-                  href="/invite"
-                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                <button
+                  onClick={handleInviteClick}
+                  disabled={isSharing}
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Invite Partners
-                </Link>
+                  {isSharing ? 'Preparing...' : 'Invite Partners'}
+                </button>
               </div>
             ) : (
               <div className="space-y-3">
@@ -354,6 +399,14 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Fallback Share Modal */}
+        {showShareModal && (
+          <FallbackShareModal
+            inviteLink={shareModalLink}
+            onClose={() => setShowShareModal(false)}
+          />
+        )}
       </div>
     );
   }
