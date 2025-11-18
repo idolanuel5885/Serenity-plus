@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createUser, createPartnershipsForUser } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
+import { createUser, createPartnershipsForUser, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
 
 export default function MeditationLengthPage() {
@@ -110,7 +110,7 @@ export default function MeditationLengthPage() {
         // Determine pairing status:
         // - User2 (has pendingInviteCode) → 'paired' (will be paired immediately)
         // - User1 (no pendingInviteCode) → 'not_started' (will invite later)
-        const pairingStatus = pendingInviteCodeLocal ? 'paired' : 'not_started';
+        const pairingStatus: PairingStatus = pendingInviteCodeLocal ? 'paired' : 'not_started';
         
         const userData = {
           name: nickname,
