@@ -40,8 +40,9 @@
 
 ### Production Schema (serenity-plus - Source of Truth)
 **USERS Table:**
-- Columns: `id`, `name`, `email`, `weeklytarget`, `usualsitlength`, `image`, `invitecode`, `createdat`
+- Columns: `id`, `name`, `email`, `weeklytarget`, `usualsitlength`, `image`, `invitecode`, `pairing_status`, `createdat`
 - `invitecode`: TEXT (NOT UNIQUE - duplicates exist in production)
+- `pairing_status`: TEXT (NOT NULL, DEFAULT 'not_started') - Values: 'not_started', 'awaiting_partner', 'paired'
 - Missing: `updatedat`, `primarywindow`, `timezone`, `whypractice`, `supportneeds`
 
 **PARTNERSHIPS Table:**
@@ -150,24 +151,35 @@ src/
      - User2: Generates new unique invite code during onboarding (NOT User1's invite code)
      - User1's invite code is stored as `pendingInviteCode` in User2's localStorage
      - `pendingInviteCode` is preserved and used later for partnership creation
+   - **Pairing Status Logic**:
+     - User1 (no pendingInviteCode): Created with `pairing_status = 'not_started'`
+     - User2 (has pendingInviteCode): Created with `pairing_status = 'paired'` (will be paired immediately)
    - Creates user in Supabase via `createUser()` function
+   - If User2 has `pendingInviteCode`, creates partnership immediately during onboarding
    - Stores `supabaseUserId` and `userInviteCode` in localStorage
    - Redirects to homepage
 
 ### Partnership Creation Flow
-1. **User1 creates account** → Gets unique `invitecode` (e.g., `invite-123-abc`)
-2. **User1 shares invite** → Generates QR code/link with their `invitecode`
-3. **User2 receives invite** → `pendingInviteCode` stored in localStorage (User1's invite code)
-4. **User2 creates account** → Gets their own unique `invitecode` (e.g., `invite-456-def`)
-5. **User2 completes onboarding** → **Partnership created immediately** during onboarding:
+1. **User1 creates account** → Gets unique `invitecode` (e.g., `invite-123-abc`), `pairing_status = 'not_started'`
+2. **User1 clicks "Invite Partners"** → `pairing_status` updated to `'awaiting_partner'` immediately (before share)
+3. **User1 shares invite** → Generates QR code/link with their `invitecode` (native share or fallback modal)
+4. **User2 receives invite** → `pendingInviteCode` stored in localStorage (User1's invite code)
+5. **User2 creates account** → Gets their own unique `invitecode` (e.g., `invite-456-def`), `pairing_status = 'paired'`
+6. **User2 completes onboarding** → **Partnership created immediately** during onboarding:
    - In `meditation-length/page.tsx`, after user creation succeeds
    - If `pendingInviteCode` exists, calls `createPartnershipsForUser(userId, pendingInviteCode)`
    - `createPartnershipsForUser()` finds User1 by matching `invitecode = pendingInviteCode`
    - Creates partnership between User2 and User1
+   - **Updates both users' `pairing_status` to `'paired'`** (User1 and User2)
    - Automatically creates Week 1 for the partnership
    - Clears `pendingInviteCode` from localStorage
-6. **User2 redirected to homepage** → Partnership already exists, homepage displays it immediately
-7. **Homepage fallback** → If partnership creation failed during onboarding, homepage attempts to create it as fallback
+7. **User2 redirected to homepage** → Partnership already exists, homepage displays it immediately
+8. **Homepage fallback** → If partnership creation failed during onboarding, homepage attempts to create it as fallback
+
+### Pairing Status States
+- **`not_started`**: User1 before clicking "Invite Partners" button
+- **`awaiting_partner`**: User1 after clicking "Invite Partners" button, until partnership is created
+- **`paired`**: Both users after partnership is created (User2 is always created with this status)
 
 ### Key Functions
 

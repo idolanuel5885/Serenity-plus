@@ -107,6 +107,11 @@ export default function MeditationLengthPage() {
           allLocalStorage: Object.keys(localStorage),
         });
 
+        // Determine pairing status:
+        // - User2 (has pendingInviteCode) → 'paired' (will be paired immediately)
+        // - User1 (no pendingInviteCode) → 'not_started' (will invite later)
+        const pairingStatus = pendingInviteCodeLocal ? 'paired' : 'not_started';
+        
         const userData = {
           name: nickname,
           email: `user-${Date.now()}@example.com`,
@@ -114,6 +119,7 @@ export default function MeditationLengthPage() {
           usualsitlength: selectedLength,
           image: '/icons/meditation-1.svg',
           invitecode: finalUserInviteCode,
+          pairingstatus: pairingStatus,
         };
 
         console.log('Creating user with data:', userData);

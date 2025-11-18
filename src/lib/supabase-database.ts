@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 
+export type PairingStatus = 'not_started' | 'awaiting_partner' | 'paired';
+
 export interface User {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export interface User {
   usualsitlength: number;
   image: string;
   invitecode: string;
+  pairingstatus: PairingStatus;
   createdat: string;
 }
 
@@ -58,6 +61,35 @@ export async function getUser(userId: string): Promise<User | null> {
   } catch (error) {
     console.error('Error fetching user:', error);
     return null;
+  }
+}
+
+/**
+ * Update a user's pairing status
+ * @param userId - The user ID to update
+ * @param status - The new pairing status
+ * @returns true if successful, false otherwise
+ */
+export async function updateUserPairingStatus(
+  userId: string,
+  status: PairingStatus,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('users')
+      .update({ pairing_status: status })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating user pairing status:', error);
+      return false;
+    }
+
+    console.log(`Updated user ${userId} pairing status to: ${status}`);
+    return true;
+  } catch (error) {
+    console.error('Error updating user pairing status:', error);
+    return false;
   }
 }
 
@@ -552,6 +584,13 @@ export async function createPartnershipsForUser(
 
       try {
       const partnershipId = await createPartnership(partnershipData);
+      
+        // Update both users' pairing status to 'paired'
+        // userId is the invitee (User2), otherUser.id is the inviter (User1)
+        console.log('Updating pairing status for both users to "paired"...');
+        await updateUserPairingStatus(userId, 'paired');
+        await updateUserPairingStatus(otherUser.id, 'paired');
+        console.log('✅ Both users updated to "paired" status');
       
         // Check if week already exists before creating
         const existingWeek = await getCurrentWeekForPartnership(partnershipId);

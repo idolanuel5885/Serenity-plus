@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails } from '../lib/supabase-database';
+import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails, updateUserPairingStatus, PairingStatus } from '../lib/supabase-database';
 import { shareInvite } from '../lib/invite-sharing';
 import FallbackShareModal from '../components/FallbackShareModal';
 
@@ -33,6 +33,7 @@ export default function Home() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [shareModalLink, setShareModalLink] = useState('');
   const [isSharing, setIsSharing] = useState(false);
+  const [pairingStatus, setPairingStatus] = useState<PairingStatus | null>(null);
   const router = useRouter();
 
   const isFetchingRef = useRef(false);
@@ -51,10 +52,11 @@ export default function Home() {
 
       // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
-        // Get user's weekly target
+        // Get user's weekly target and pairing status
         const user = await getUser(userId);
         if (user) {
           setUserWeeklyTarget(user.weeklytarget);
+          setPairingStatus(user.pairingstatus);
         }
         
         // Get existing partnerships from database
@@ -239,6 +241,17 @@ export default function Home() {
       return;
     }
 
+    // Update pairing status to 'awaiting_partner' immediately when button is clicked
+    // This happens before share attempt, as we can't reliably know if share succeeded
+    console.log('Updating pairing status to "awaiting_partner" on invite button click...');
+    const statusUpdated = await updateUserPairingStatus(storedUserId, 'awaiting_partner');
+    if (statusUpdated) {
+      setPairingStatus('awaiting_partner');
+      console.log('✅ Pairing status updated to "awaiting_partner"');
+    } else {
+      console.warn('⚠️ Failed to update pairing status, but continuing with share');
+    }
+
     setIsSharing(true);
     try {
       const result = await shareInvite();
@@ -379,18 +392,8 @@ export default function Home() {
           {/* Partners Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
             <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
-            {partnerships.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-sm text-gray-600 mb-3">No partners yet</p>
-                <button
-                  onClick={handleInviteClick}
-                  disabled={isSharing}
-                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSharing ? 'Preparing...' : 'Invite Partners'}
-                </button>
-              </div>
-            ) : (
+            {pairingStatus === 'paired' && partnerships.length > 0 ? (
+              // User is paired - show partnership summary
               <div className="space-y-3">
                 {partnerships.map((partnership) => (
                   <div key={partnership.id} className="flex items-center justify-between">
@@ -408,6 +411,56 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+            ) : pairingStatus === 'not_started' ? (
+              // User hasn't started inviting - show invite button
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-600 mb-3">No partners yet</p>
+                <button
+                  onClick={handleInviteClick}
+                  disabled={isSharing}
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSharing ? 'Preparing...' : 'Invite Partners'}
+                </button>
+              </div>
+            ) : pairingStatus === 'awaiting_partner' ? (
+              // User has invited but partner hasn't joined yet - show awaiting message
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-600 mb-3">Waiting for your partner to join...</p>
+                <p className="text-xs text-gray-500">We'll let you know when they accept your invite</p>
+              </div>
+            ) : (
+              // Fallback: Show based on partnerships (for backward compatibility)
+              partnerships.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-sm text-gray-600 mb-3">No partners yet</p>
+                  <button
+                    onClick={handleInviteClick}
+                    disabled={isSharing}
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSharing ? 'Preparing...' : 'Invite Partners'}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {partnerships.map((partnership) => (
+                    <div key={partnership.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                        <span className="font-medium">{partnership.partner.name}</span>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <div>
+                          You {partnership.userSits}/{userWeeklyTarget} *{' '}
+                          {partnership.partner.name} {partnership.partnerSits}/{partnership.partner.weeklyTarget}
+                        </div>
+                        <div>Week Ends In {calculateWeekEndsIn(partnership.currentWeekStart)}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
             )}
           </div>
         </div>
