@@ -42,7 +42,15 @@ export interface Week {
 
 export async function createUser(userData: Omit<User, 'id' | 'createdat'>): Promise<string> {
   try {
-    const { data, error } = await supabase.from('users').insert([userData]).select().single();
+    // Map camelCase to snake_case for database columns
+    // pairingstatus -> pairing_status (only field with underscore)
+    const dbUserData: any = {
+      ...userData,
+      pairing_status: userData.pairingstatus,
+    };
+    delete dbUserData.pairingstatus; // Remove camelCase version
+
+    const { data, error } = await supabase.from('users').insert([dbUserData]).select().single();
 
     if (error) throw error;
     return data.id;
@@ -56,8 +64,19 @@ export async function getUser(userId: string): Promise<User | null> {
   try {
     const { data, error } = await supabase.from('users').select('*').eq('id', userId).single();
 
-    if (error) throw error;
-    return data;
+    if (error) {
+      console.error('Error fetching user:', error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    // Map snake_case database column to camelCase TypeScript interface
+    // pairing_status -> pairingstatus
+    return {
+      ...data,
+      pairingstatus: (data as any).pairing_status || 'not_started',
+    } as User;
   } catch (error) {
     console.error('Error fetching user:', error);
     return null;
