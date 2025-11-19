@@ -56,11 +56,11 @@ export default function LotusAnimation({
   }, [progress, animationData]);
 
   if (!animationData) {
+    // Return empty div with same dimensions to prevent layout shift
+    // Animation will appear as soon as JSON loads (very fast)
     return (
       <div className="flex justify-center items-center py-8">
-        <div className="w-64 h-64 flex items-center justify-center">
-          <div className="text-gray-500">Loading lotus animation...</div>
-        </div>
+        <div className="w-64 h-64"></div>
       </div>
     );
   }

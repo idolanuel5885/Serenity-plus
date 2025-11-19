@@ -66,7 +66,8 @@ export default function SimpleLotusAnimation({
     return (
       <div className="flex justify-center items-center py-8">
         <div className="w-64 h-64 flex items-center justify-center">
-          <div className="text-gray-500">Loading lotus animation...</div>
+          {/* Empty div to prevent layout shift - animation loads very quickly */}
+          <div className="w-64 h-64"></div>
         </div>
       </div>
     );
