@@ -344,21 +344,25 @@ export default function TimerPage() {
   const getLotusProgress = () => {
     if (!partnership) return 0;
     
-    // If we have API data, use it
+    // If we have API data (from useLotusProgress hook), use it for real-time updates
     if (progressData) {
       return progressData.currentProgress;
     }
     
-    // Fallback calculation for static export (localStorage-based)
-    const totalSits = 5 + partnership.partner.weeklyTarget; // Hardcoded for now
-    const completedSits = partnership.userSits + partnership.partnerSits;
-    const baseProgress = (completedSits / totalSits) * 100;
+    // Use partnership data from cache/homepage for initial display
+    // This matches calculateLotusProgress logic but uses cached week data
+    const totalSits = partnership.userSits + partnership.partnerSits;
+    const weeklyGoal = partnership.weeklyGoal || 10; // Fallback to 10 if not set
+    const baseProgress = Math.min((totalSits / weeklyGoal) * 100, 100);
     
     // Add current session progress if running or just completed
     if ((isRunning || isCompleted) && user?.usualSitLength) {
-      const sessionProgress = ((user.usualSitLength * 60 - timeLeft) / (user.usualSitLength * 60)) * 100;
-      const sessionContribution = (1 / totalSits) * 100;
-      return Math.min(baseProgress + (sessionProgress / 100) * sessionContribution, 100);
+      const sessionDuration = user.usualSitLength * 60;
+      const sessionElapsed = sessionDuration - timeLeft;
+      const sessionContribution = (1 / weeklyGoal) * 100; // Each sit contributes this percentage
+      const sessionCompletionPercentage = sessionElapsed / sessionDuration;
+      const sessionProgress = sessionCompletionPercentage * sessionContribution;
+      return Math.min(baseProgress + sessionProgress, 100);
     }
     
     return baseProgress;
