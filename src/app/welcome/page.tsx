@@ -139,11 +139,13 @@ export default function WelcomePage() {
         {inviteData ? (
           <>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-              Let&apos;s set you up to start meditating with {inviteData.inviterName}
+              Grow a lotus with someone you love.
             </h1>
             <p className="text-lg text-gray-700 mt-4">
-              You&apos;ll be accountability partners, supporting each other&apos;s meditation
-              practice.
+              When one of you meditates, its petals open a little more.
+            </p>
+            <p className="text-lg text-gray-700 mt-2">
+              A shared practice, at a gentle pace.
             </p>
 
             <div className="mt-6 flex items-center gap-3">
@@ -176,10 +178,13 @@ export default function WelcomePage() {
         ) : (
           <>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
-              Meditate daily with a gentle nudge.
+              Grow a lotus with someone you love.
             </h1>
             <p className="text-lg text-gray-700 mt-4">
-              Pair with one buddy. Tiny steps, big change.
+              When one of you meditates, its petals open a little more.
+            </p>
+            <p className="text-lg text-gray-700 mt-2">
+              A shared practice, at a gentle pace.
             </p>
           </>
         )}
