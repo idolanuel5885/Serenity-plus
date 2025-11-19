@@ -426,9 +426,9 @@ export default function Home() {
   }, []);
 
   // Check if install banner should be shown
-  // Only show on Home screen after onboarding is complete
+  // Only show on Home screen after onboarding is complete AND app is not already installed
   useEffect(() => {
-    if (hasCompletedOnboarding() && userId && partnershipsLoaded) {
+    if (hasCompletedOnboarding() && userId && partnershipsLoaded && !isPWAInstalled()) {
       setShowInstallBanner(true);
     } else {
       setShowInstallBanner(false);
