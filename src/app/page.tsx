@@ -92,6 +92,32 @@ export default function Home() {
             const newPartnerships = partnerships.filter(p => !existingIds.includes(p.id));
             return [...prevPartnerships, ...newPartnerships];
           });
+          
+          // Cache partnership data in sessionStorage for timer page
+          // Store the full partnership data including week information
+          try {
+            const cachedData = {
+              partnerships: partnerships.map(p => ({
+                id: p.id,
+                partnerid: p.partner.id,
+                partnerName: p.partner.name,
+                partnerEmail: p.partner.email,
+                partnerImage: p.partner.image,
+                partnerWeeklyTarget: p.partner.weeklyTarget,
+                userSits: p.userSits,
+                partnerSits: p.partnerSits,
+                weeklyGoal: p.weeklyGoal,
+                currentWeekStart: p.currentWeekStart,
+                score: p.score,
+              })),
+              userWeeklyTarget: userWeeklyTarget,
+              timestamp: Date.now(),
+            };
+            sessionStorage.setItem('cachedPartnerships', JSON.stringify(cachedData));
+            console.log('✅ Cached partnership data in sessionStorage for timer page');
+          } catch (cacheError) {
+            console.warn('Failed to cache partnership data:', cacheError);
+          }
         } else {
           // No existing partnerships, try to create new ones (fallback for edge cases)
           // Note: For User2, partnership should already be created during onboarding
@@ -135,6 +161,32 @@ export default function Home() {
               }));
 
               console.log('Created new partnerships (fallback):', partnerships);
+              
+              // Cache the newly created partnerships
+              try {
+                const cachedData = {
+                  partnerships: partnerships.map(p => ({
+                    id: p.id,
+                    partnerid: p.partner.id,
+                    partnerName: p.partner.name,
+                    partnerEmail: p.partner.email,
+                    partnerImage: p.partner.image,
+                    partnerWeeklyTarget: p.partner.weeklyTarget,
+                    userSits: p.userSits,
+                    partnerSits: p.partnerSits,
+                    weeklyGoal: p.weeklyGoal,
+                    currentWeekStart: p.currentWeekStart,
+                    score: p.score,
+                  })),
+                  userWeeklyTarget: userWeeklyTarget,
+                  timestamp: Date.now(),
+                };
+                sessionStorage.setItem('cachedPartnerships', JSON.stringify(cachedData));
+                console.log('✅ Cached newly created partnership data in sessionStorage');
+              } catch (cacheError) {
+                console.warn('Failed to cache partnership data:', cacheError);
+              }
+              
               console.log('Partnership sit counts:', partnerships.map(p => ({
                 id: p.id,
                 userSits: p.userSits,

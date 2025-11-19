@@ -70,11 +70,70 @@ export default function TimerPage() {
           return;
         }
 
-        // Get partnerships from database (same method as homepage) - do this in background
+        // Try to load from sessionStorage cache first (from homepage)
         try {
-          console.log('Timer: Fetching partnerships for userId:', userData.id);
-          const existingPartnerships = await getUserPartnerships(userData.id);
-          console.log('Timer: Existing partnerships from database:', existingPartnerships);
+          const cachedDataStr = sessionStorage.getItem('cachedPartnerships');
+          if (cachedDataStr) {
+            const cachedData = JSON.parse(cachedDataStr);
+            const cacheAge = Date.now() - (cachedData.timestamp || 0);
+            const MAX_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
+            
+            if (cacheAge < MAX_CACHE_AGE && cachedData.partnerships && cachedData.partnerships.length > 0) {
+              console.log('✅ Timer: Using cached partnership data from homepage (age:', Math.round(cacheAge / 1000), 'seconds)');
+              
+              // Convert cached data to timer page format
+              const partnerships = cachedData.partnerships.map((p: any) => ({
+                id: p.id,
+                partner: {
+                  id: p.partnerid,
+                  name: p.partnerName || 'Unknown Partner',
+                  email: p.partnerEmail || '',
+                  image: p.partnerImage || '/icons/meditation-1.svg',
+                  weeklyTarget: p.partnerWeeklyTarget || 0,
+                },
+                userSits: p.userSits || 0,
+                partnerSits: p.partnerSits || 0,
+                weeklyGoal: p.weeklyGoal || (cachedData.userWeeklyTarget || 5) + (p.partnerWeeklyTarget || 0),
+                score: p.score || 0,
+                currentWeekStart: p.currentWeekStart || new Date().toISOString(),
+              }));
+              
+              setPartnerships(partnerships);
+              setPartnershipsLoading(false);
+              console.log('✅ Timer: Initialized partnerships from cache, lotus can display immediately');
+              
+              // Still fetch fresh data in background for real-time updates
+              // (but don't block UI)
+              fetchFreshPartnerships(userData.id).catch(err => {
+                console.warn('Background partnership refresh failed:', err);
+              });
+              
+              return; // Exit early, we have cached data
+            } else {
+              console.log('Timer: Cached data expired or invalid, fetching fresh data');
+            }
+          }
+        } catch (cacheError) {
+          console.warn('Timer: Error reading cache, fetching fresh data:', cacheError);
+        }
+
+        // No cache or cache invalid - fetch from database
+        await fetchFreshPartnerships(userData.id);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        // Fallback to default
+        setUser({ id: 'unknown', name: 'You', usualSitLength: 15 });
+        setTimeLeft(15 * 60);
+        setLoading(false);
+        setPartnershipsLoading(false);
+      }
+    };
+
+    const fetchFreshPartnerships = async (userId: string) => {
+      try {
+        console.log('Timer: Fetching fresh partnerships for userId:', userId);
+        const existingPartnerships = await getUserPartnerships(userId);
+        console.log('Timer: Existing partnerships from database:', existingPartnerships);
 
           if (existingPartnerships.length > 0) {
             // Convert database partnerships to UI format (same as homepage)
@@ -97,77 +156,55 @@ export default function TimerPage() {
               };
             }));
 
-            console.log('Found existing partnerships:', partnerships);
+            console.log('Timer: Found existing partnerships:', partnerships);
+            setPartnerships(partnerships);
+            setPartnershipsLoading(false);
+            
+            // Update cache with fresh data
+            try {
+              const cachedData = {
+                partnerships: partnerships.map(p => ({
+                  id: p.id,
+                  partnerid: p.partner.id,
+                  partnerName: p.partner.name,
+                  partnerEmail: p.partner.email,
+                  partnerImage: p.partner.image,
+                  partnerWeeklyTarget: p.partner.weeklyTarget,
+                  userSits: p.userSits,
+                  partnerSits: p.partnerSits,
+                  weeklyGoal: p.weeklyGoal,
+                  currentWeekStart: p.currentWeekStart,
+                  score: p.score,
+                })),
+                userWeeklyTarget: 5, // Will be updated if we have user data
+                timestamp: Date.now(),
+              };
+              sessionStorage.setItem('cachedPartnerships', JSON.stringify(cachedData));
+              console.log('✅ Timer: Updated cache with fresh partnership data');
+            } catch (cacheError) {
+              console.warn('Timer: Failed to update cache:', cacheError);
+            }
+          } else {
+            console.log('Timer: No partnerships found in database');
+            setPartnerships([]);
+            setPartnershipsLoading(false);
+          }
+        } catch (error) {
+          console.log('Timer: Error fetching partnerships from database:', error);
+          // Fallback to localStorage if database fails
+          const partnershipsData = localStorage.getItem('partnerships');
+          if (partnershipsData) {
+            const partnerships = JSON.parse(partnershipsData);
+            console.log('Timer: Loaded partnerships from localStorage fallback:', partnerships);
             setPartnerships(partnerships);
             setPartnershipsLoading(false);
           } else {
-            console.log('Timer: No partnerships found in database, retrying in 2 seconds...');
-            // Retry after a short delay in case partnerships are still being created
-            setTimeout(async () => {
-              try {
-                console.log('Timer: Retrying partnership fetch...');
-                const retryPartnerships = await getUserPartnerships(userData.id);
-                console.log('Timer: Retry partnerships result:', retryPartnerships);
-                
-                if (retryPartnerships.length > 0) {
-                  const partnerships = await Promise.all(retryPartnerships.map(async (partnership) => {
-                    const partnerDetails = await getPartnerDetails(partnership.partnerid);
-                    return {
-                      id: partnership.id,
-                      partner: {
-                        id: partnership.partnerid,
-                        name: partnerDetails?.name || 'Unknown Partner',
-                        email: partnerDetails?.email || '',
-                        image: partnerDetails?.image || '/icons/meditation-1.svg',
-                        weeklyTarget: partnerDetails?.weeklytarget || 0,
-                      },
-                      userSits: partnership.usersits,
-                      partnerSits: partnership.partnersits,
-                      weeklyGoal: (partnerDetails?.weeklytarget || 0) + 5,
-                      score: partnership.score,
-                      currentWeekStart: partnership.currentweekstart,
-                    };
-                  }));
-                  console.log('Timer: Found partnerships on retry:', partnerships);
-                  setPartnerships(partnerships);
-                  setPartnershipsLoading(false);
-                } else {
-                  console.log('Timer: Still no partnerships found after retry');
-                  setPartnerships([]);
-                  setPartnershipsLoading(false);
-                }
-              } catch (retryError) {
-                console.log('Timer: Retry failed:', retryError);
-                setPartnerships([]);
-                setPartnershipsLoading(false);
-              }
-            }, 2000);
-            setPartnerships([]);
-          }
-        } catch (error) {
-          console.log('Error fetching partnerships from database:', error);
-          // Fallback to localStorage if database fails
-        const partnershipsData = localStorage.getItem('partnerships');
-        if (partnershipsData) {
-          const partnerships = JSON.parse(partnershipsData);
-            console.log('Loaded partnerships from localStorage fallback:', partnerships);
-          setPartnerships(partnerships);
-          setPartnershipsLoading(false);
-          } else {
-            console.log('No partnerships found in localStorage either');
+            console.log('Timer: No partnerships found in localStorage either');
             setPartnerships([]);
             setPartnershipsLoading(false);
           }
         }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        // Fallback to default
-        setUser({ id: 'unknown', name: 'You', usualSitLength: 15 });
-        setTimeLeft(15 * 60);
-        setLoading(false);
-        setPartnershipsLoading(false);
-      }
-    };
+      };
 
     fetchData();
   }, []);
