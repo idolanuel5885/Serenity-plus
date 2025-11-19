@@ -425,6 +425,16 @@ export default function Home() {
     });
   }, []);
 
+  // Check if install banner should be shown
+  // Only show on Home screen after onboarding is complete
+  useEffect(() => {
+    if (hasCompletedOnboarding() && userId && partnershipsLoaded) {
+      setShowInstallBanner(true);
+    } else {
+      setShowInstallBanner(false);
+    }
+  }, [userId, partnershipsLoaded]);
+
   useEffect(() => {
     const checkForUser = async () => {
       try {
@@ -624,6 +634,9 @@ export default function Home() {
             onClose={handleModalClose}
           />
         )}
+
+        {/* Install Banner - only show on Home screen after onboarding */}
+        {showInstallBanner && <InstallBanner />}
       </div>
     );
   }
