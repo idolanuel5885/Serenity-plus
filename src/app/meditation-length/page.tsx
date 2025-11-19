@@ -180,24 +180,103 @@ export default function MeditationLengthPage() {
         console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
         
-        // If User2 has a pendingInviteCode (User1's invite code), create partnership immediately
+        // If User2 has a pendingInviteCode, prepare "pending partnership" data for immediate homepage display
         if (pendingInviteCodeLocal) {
-          console.log('User2 detected with pendingInviteCode, creating partnership immediately...');
-          try {
-            const partnerships = await createPartnershipsForUser(supabaseUserId, pendingInviteCodeLocal);
-            if (partnerships.length > 0) {
-              console.log('✅ Partnership created successfully during onboarding:', partnerships);
-              // Clear pendingInviteCode since partnership is now created
-              localStorage.removeItem('pendingInviteCode');
-            } else {
-              console.warn('⚠️ Partnership creation returned empty array - invite code may be invalid or User1 not found');
-              // Keep pendingInviteCode for homepage to retry
+          console.log('User2 detected with pendingInviteCode, preparing pending partnership data...');
+          
+          // Wait a bit for User1 fetch to complete (if it hasn't already)
+          // Give it up to 500ms, but don't block if it takes longer
+          let user1Final = user1Data;
+          if (!user1Final) {
+            // Try one more time to get User1 data
+            try {
+              user1Final = await Promise.race([
+                getUserByInviteCode(pendingInviteCodeLocal),
+                new Promise(resolve => setTimeout(() => resolve(null), 500))
+              ]) as any;
+            } catch (err) {
+              console.warn('User1 fetch timed out or failed, will use placeholder:', err);
             }
-          } catch (partnershipError) {
-            console.error('❌ Error creating partnership during onboarding:', partnershipError);
-            // Keep pendingInviteCode for homepage to retry as fallback
-            // Don't block user from continuing - they can retry on homepage
           }
+          
+          // Calculate week end date (7 days from now)
+          const now = new Date();
+          const weekEnd = new Date(now);
+          weekEnd.setDate(now.getDate() + 7);
+          weekEnd.setHours(23, 59, 59, 999);
+          
+          // Create "pending partnership" data with all known information
+          const pendingPartnership = {
+            id: `pending-${Date.now()}`, // Temporary ID
+            partnerid: user1Final?.id || 'unknown',
+            partnerName: user1Final?.name || 'Your Partner',
+            partnerEmail: user1Final?.email || '',
+            partnerImage: user1Final?.image || '/icons/meditation-1.svg',
+            partnerWeeklyTarget: user1Final?.weeklytarget || 5,
+            userSits: 0, // New partnership
+            partnerSits: 0, // New partnership
+            weeklyGoal: parseInt(weeklyTarget) + (user1Final?.weeklytarget || 5),
+            currentWeekStart: now.toISOString(),
+            score: 0,
+            isPending: true, // Flag to indicate this is temporary
+            inviteCode: pendingInviteCodeLocal, // Store for background creation
+            userId: supabaseUserId, // Store for background creation
+          };
+          
+          // Store in sessionStorage for homepage to display immediately
+          try {
+            const pendingData = {
+              partnerships: [pendingPartnership],
+              userWeeklyTarget: parseInt(weeklyTarget),
+              timestamp: Date.now(),
+              isPending: true, // Flag to indicate background creation needed
+            };
+            sessionStorage.setItem('pendingPartnership', JSON.stringify(pendingData));
+            console.log('✅ Stored pending partnership data in sessionStorage');
+          } catch (cacheError) {
+            console.warn('Failed to store pending partnership:', cacheError);
+          }
+          
+          // Create partnership in background (don't block redirect)
+          // This will update the homepage when it completes
+          createPartnershipsForUser(supabaseUserId, pendingInviteCodeLocal)
+            .then(partnerships => {
+              if (partnerships.length > 0) {
+                console.log('✅ Background partnership creation successful:', partnerships);
+                // Clear pending partnership from sessionStorage
+                sessionStorage.removeItem('pendingPartnership');
+                // Clear pendingInviteCode
+                localStorage.removeItem('pendingInviteCode');
+                // Cache real partnership data (same as homepage does)
+                const cachedData = {
+                  partnerships: partnerships.map(p => ({
+                    id: p.id,
+                    partnerid: p.partnerid,
+                    partnerName: 'Partner', // Will be fetched by homepage
+                    partnerEmail: '',
+                    partnerImage: '/icons/meditation-1.svg',
+                    partnerWeeklyTarget: 5, // Will be fetched by homepage
+                    userSits: p.usersits,
+                    partnerSits: p.partnersits,
+                    weeklyGoal: p.weeklygoal,
+                    currentWeekStart: p.currentweekstart,
+                    score: p.score,
+                  })),
+                  userWeeklyTarget: parseInt(weeklyTarget),
+                  timestamp: Date.now(),
+                };
+                sessionStorage.setItem('cachedPartnerships', JSON.stringify(cachedData));
+                console.log('✅ Updated sessionStorage with real partnership data');
+              } else {
+                console.warn('⚠️ Background partnership creation returned empty array');
+                // Keep pending partnership, homepage fallback will handle it
+              }
+            })
+            .catch(partnershipError => {
+              console.error('❌ Background partnership creation failed:', partnershipError);
+              // Keep pending partnership, homepage fallback will handle it
+              // Don't show error to user - data is already correct
+            });
         } else {
           console.log('No pendingInviteCode - User1 flow (no partnership creation needed)');
         }
