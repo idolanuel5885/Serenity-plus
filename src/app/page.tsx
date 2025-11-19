@@ -8,6 +8,8 @@ import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDeta
 import { shareInvite } from '../lib/invite-sharing';
 import FallbackShareModal from '../components/FallbackShareModal';
 import { preloadLotusAnimation } from '../lib/lotus-animation-cache';
+import InstallBanner from '../components/InstallBanner';
+import { hasCompletedOnboarding } from '../lib/pwa-install-detection';
 
 interface Partnership {
   id: string;
@@ -35,6 +37,7 @@ export default function Home() {
   const [shareModalLink, setShareModalLink] = useState('');
   const [isSharing, setIsSharing] = useState(false);
   const [pairingStatus, setPairingStatus] = useState<PairingStatus | null>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
   const router = useRouter();
 
   const isFetchingRef = useRef(false);
