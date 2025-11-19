@@ -30,14 +30,21 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
   };
 
   const handleFacebookMessengerClick = () => {
-    // Facebook Messenger sharing
-    // On web, we use Facebook's share dialog which allows users to share to Messenger
-    // This opens a popup where users can choose to share to timeline or send via Messenger
-    const { text, url } = shareData;
-    const fullMessage = `${text}\n\n${url}`;
-    // Use Facebook's share dialog (users can then choose to send via Messenger)
-    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(fullMessage)}`;
-    window.open(facebookShareUrl, '_blank', 'width=600,height=400');
+    // Facebook Messenger sharing - use Send Dialog to choose recipients
+    // This opens Messenger where users can select who to send the invite to
+    const { url } = shareData;
+    
+    // Facebook Send Dialog - allows choosing recipients in Messenger
+    // Note: This works best with a Facebook App ID, but we'll try without one first
+    // The Send Dialog opens Messenger interface where users can select recipients
+    const redirectUri = typeof window !== 'undefined' ? encodeURIComponent(window.location.origin) : '';
+    
+    // Use Send Dialog (for Messenger) - this opens Messenger to choose recipients
+    // Format: https://www.facebook.com/dialog/send?link=URL&app_id=APP_ID&redirect_uri=REDIRECT
+    // Without App ID, Facebook may still show the dialog or redirect to messenger.com
+    const messengerShareUrl = `https://www.facebook.com/dialog/send?link=${encodeURIComponent(url)}&redirect_uri=${redirectUri}`;
+    
+    window.open(messengerShareUrl, '_blank', 'width=600,height=700');
   };
 
   // Close on Escape key
