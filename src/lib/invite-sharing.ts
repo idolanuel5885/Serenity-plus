@@ -170,28 +170,53 @@ export async function copyInviteLink(inviteLink: string): Promise<boolean> {
 }
 
 /**
+ * Detect if the user is on a mobile device
+ */
+export function isMobileDevice(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  
+  // Check for touch screen
+  const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  
+  // Check user agent for mobile devices
+  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+  const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+  const isMobileUserAgent = mobileRegex.test(userAgent);
+  
+  // Check screen width (mobile typically < 768px)
+  const isSmallScreen = window.innerWidth < 768;
+  
+  // Consider it mobile if it has touch screen AND (mobile user agent OR small screen)
+  return hasTouchScreen && (isMobileUserAgent || isSmallScreen);
+}
+
+/**
  * Generate share URLs for specific apps
  * Includes the link in the message for app-specific sharing
  */
 export function getAppShareUrls(shareData: ShareData): {
   email: string;
   whatsapp: string;
-  sms: string;
+  facebookMessenger: string;
 } {
   const { text, url } = shareData;
-  // Include link in message for app-specific sharing (email, WhatsApp, SMS)
+  // Include link in message for app-specific sharing
   const fullMessage = `${text}\n\n${url}`;
 
   return {
     email: `mailto:?subject=${encodeURIComponent(shareData.title)}&body=${encodeURIComponent(fullMessage)}`,
     whatsapp: `https://wa.me/?text=${encodeURIComponent(fullMessage)}`,
-    sms: `sms:?body=${encodeURIComponent(fullMessage)}`,
+    facebookMessenger: `https://www.facebook.com/dialog/send?link=${encodeURIComponent(url)}&app_id=YOUR_APP_ID&redirect_uri=${encodeURIComponent(window.location.origin)}`,
   };
 }
 
 /**
  * Main function to handle invite sharing
  * Returns the invite link and whether native share was used
+ * On desktop browsers, always uses fallback modal (skips Web Share API)
+ * On mobile devices, tries Web Share API first, falls back to modal if unavailable
  */
 export async function shareInvite(): Promise<{
   success: boolean;
@@ -217,7 +242,18 @@ export async function shareInvite(): Promise<{
     // Prepare share data
     const shareData = prepareShareData(inviteLink);
 
-    // Try native share first
+    // On desktop, skip Web Share API and always use fallback modal
+    // This gives us full control over what options appear
+    if (!isMobileDevice()) {
+      console.log('Desktop browser detected - using fallback modal');
+      return {
+        success: true,
+        inviteLink,
+        usedNativeShare: false,
+      };
+    }
+
+    // On mobile, try native share first
     const nativeShareSuccess = await shareWithWebAPI(shareData);
 
     if (nativeShareSuccess) {

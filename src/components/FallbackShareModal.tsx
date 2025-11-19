@@ -29,8 +29,15 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
     window.open(appUrls.whatsapp, '_blank');
   };
 
-  const handleSMSClick = () => {
-    window.location.href = appUrls.sms;
+  const handleFacebookMessengerClick = () => {
+    // Facebook Messenger sharing
+    // On web, we use Facebook's share dialog which allows users to share to Messenger
+    // This opens a popup where users can choose to share to timeline or send via Messenger
+    const { text, url } = shareData;
+    const fullMessage = `${text}\n\n${url}`;
+    // Use Facebook's share dialog (users can then choose to send via Messenger)
+    const facebookShareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(fullMessage)}`;
+    window.open(facebookShareUrl, '_blank', 'width=600,height=400');
   };
 
   // Close on Escape key
@@ -120,7 +127,7 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
           {/* WhatsApp Button */}
           <button
             onClick={handleWhatsAppClick}
-            className="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <svg
               className="w-5 h-5"
@@ -132,25 +139,19 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
             Share via WhatsApp
           </button>
 
-          {/* SMS Button */}
+          {/* Facebook Messenger Button */}
           <button
-            onClick={handleSMSClick}
-            className="w-full flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors"
+            onClick={handleFacebookMessengerClick}
+            className="w-full flex items-center justify-center gap-3 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <svg
               className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
+              fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.14.18-.357.295-.6.295-.002 0-.003 0-.005 0l.213-3.054 5.56-5.022c.24-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.658-.64.135-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/>
             </svg>
-            Share via SMS
+            Share via Facebook Messenger
           </button>
         </div>
 
