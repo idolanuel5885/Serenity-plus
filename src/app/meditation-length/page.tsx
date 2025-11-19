@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createUser, createPartnershipsForUser, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
+import { createUser, createPartnershipsForUser, getUserByInviteCode, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
 
 export default function MeditationLengthPage() {
@@ -113,6 +113,30 @@ export default function MeditationLengthPage() {
         // - User2 (has pendingInviteCode) → 'paired' (will be paired immediately)
         // - User1 (no pendingInviteCode) → 'not_started' (will invite later)
         const pairingStatus: PairingStatus = pendingInviteCodeLocal ? 'paired' : 'not_started';
+        
+        // If User2, fetch User1's details in parallel with user creation
+        let user1Data: any = null;
+        if (pendingInviteCodeLocal) {
+          console.log('Fetching User1 details by invite code (parallel with user creation)...');
+          getUserByInviteCode(pendingInviteCodeLocal)
+            .then(user1 => {
+              if (user1) {
+                user1Data = {
+                  id: user1.id,
+                  name: user1.name,
+                  email: user1.email,
+                  image: user1.image,
+                  weeklytarget: user1.weeklytarget,
+                };
+                console.log('✅ User1 details fetched:', user1Data);
+              } else {
+                console.warn('⚠️ User1 not found by invite code:', pendingInviteCodeLocal);
+              }
+            })
+            .catch(err => {
+              console.error('Error fetching User1:', err);
+            });
+        }
         
         const userData = {
           name: nickname,

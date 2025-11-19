@@ -51,6 +51,76 @@ export default function Home() {
 
       isFetchingRef.current = true;
 
+      // Check for pending partnership first (from onboarding completion)
+      try {
+        const pendingDataStr = sessionStorage.getItem('pendingPartnership');
+        if (pendingDataStr) {
+          const pendingData = JSON.parse(pendingDataStr);
+          const cacheAge = Date.now() - (pendingData.timestamp || 0);
+          const MAX_PENDING_AGE = 2 * 60 * 1000; // 2 minutes
+          
+          if (cacheAge < MAX_PENDING_AGE && pendingData.partnerships && pendingData.partnerships.length > 0) {
+            console.log('✅ Found pending partnership from onboarding, displaying immediately');
+            
+            // Display pending partnership immediately
+            const pendingPartnership = pendingData.partnerships[0];
+            const partnerships = [{
+              id: pendingPartnership.id,
+              partner: {
+                id: pendingPartnership.partnerid,
+                name: pendingPartnership.partnerName,
+                email: pendingPartnership.partnerEmail,
+                image: pendingPartnership.partnerImage,
+                weeklyTarget: pendingPartnership.partnerWeeklyTarget,
+              },
+              userSits: pendingPartnership.userSits,
+              partnerSits: pendingPartnership.partnerSits,
+              weeklyGoal: pendingPartnership.weeklyGoal,
+              score: pendingPartnership.score,
+              currentWeekStart: pendingPartnership.currentWeekStart,
+            }];
+            
+            setPartnerships(partnerships);
+            setUserWeeklyTarget(pendingData.userWeeklyTarget);
+            setPairingStatus('paired'); // User2 is paired
+            isFetchingRef.current = false;
+            setPartnershipsLoaded(true);
+            setLoading(false);
+            
+            // Create partnership in background if needed
+            if (pendingData.isPending && pendingPartnership.inviteCode && pendingPartnership.userId) {
+              console.log('Creating partnership in background...');
+              createPartnershipsForUser(pendingPartnership.userId, pendingPartnership.inviteCode)
+                .then(realPartnerships => {
+                  if (realPartnerships.length > 0) {
+                    console.log('✅ Background partnership creation successful');
+                    // Clear pending partnership
+                    sessionStorage.removeItem('pendingPartnership');
+                    // Refresh partnerships from database
+                    fetchPartnerships(userId).catch(err => {
+                      console.warn('Error refreshing partnerships after background creation:', err);
+                    });
+                  } else {
+                    console.warn('⚠️ Background partnership creation returned empty');
+                    // Keep pending partnership, will retry on next load
+                  }
+                })
+                .catch(err => {
+                  console.error('❌ Background partnership creation failed:', err);
+                  // Keep pending partnership, homepage fallback will handle it
+                });
+            }
+            
+            return; // Exit early, we have pending partnership displayed
+          } else {
+            console.log('Pending partnership expired, removing');
+            sessionStorage.removeItem('pendingPartnership');
+          }
+        }
+      } catch (pendingError) {
+        console.warn('Error reading pending partnership:', pendingError);
+      }
+
       // Try Supabase first, fallback to localStorage if Supabase not configured
       try {
         // Get user's weekly target and pairing status
