@@ -52,7 +52,7 @@ export default function NicknamePage() {
       <div className="px-6 py-8 flex-1 flex flex-col min-h-0">
         <div className="flex-1 flex flex-col">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">What should we call you?</h1>
-          <p className="text-sm text-gray-600 mb-8">You can change this later.</p>
+          <p className="text-sm text-gray-700 mb-8">You can change this later.</p>
 
           <div className="flex-1">
             <input
@@ -80,7 +80,7 @@ export default function NicknamePage() {
           <button
             type="submit"
             disabled={!nickname.trim()}
-            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
           >
             Continue
           </button>

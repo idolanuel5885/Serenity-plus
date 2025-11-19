@@ -427,7 +427,7 @@ export default function TimerPage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your meditation preferences...</p>
+          <p className="text-gray-700">Loading your meditation preferences...</p>
         </div>
       </div>
     );
@@ -457,7 +457,7 @@ export default function TimerPage() {
           <div className="text-6xl font-mono font-bold">{formatTime(timeLeft)}</div>
 
           {user && (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-700">
               Your preferred session: {user.usualSitLength} minutes
             </p>
           )}
@@ -483,21 +483,21 @@ export default function TimerPage() {
               {!isRunning ? (
                 <button
                   onClick={startTimer}
-                  className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
+                  className="bg-green-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
                 >
                   Start
                 </button>
               ) : (
                 <button
                   onClick={pauseTimer}
-                  className="bg-yellow-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors"
+                  className="bg-yellow-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-yellow-700 transition-colors cursor-pointer"
                 >
                   Pause
                 </button>
               )}
               <button
                 onClick={resetTimer}
-                className="bg-gray-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+                className="bg-gray-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors cursor-pointer"
               >
                 Reset
               </button>
@@ -505,11 +505,11 @@ export default function TimerPage() {
           ) : (
             <div className="text-center space-y-4">
               <div className="text-2xl font-bold text-green-600">Session Complete! 🎉</div>
-              <p className="text-gray-600">Great job! You've completed your meditation session.</p>
+              <p className="text-gray-700">Great job! You've completed your meditation session.</p>
               <div className="flex gap-4 justify-center">
                 <button
                   onClick={resetTimer}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                   Start Another
                 </button>

@@ -46,7 +46,7 @@ export default function MeditationsPerWeekPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             How many times a week do you want to meditate?
           </h1>
-          <p className="text-sm text-gray-600 mb-8">
+          <p className="text-sm text-gray-700 mb-8">
             This will be your weekly commitment to yourself and to{' '}
             {partnerName ? partnerName : 'your future meditation partner'}
           </p>
@@ -82,7 +82,7 @@ export default function MeditationsPerWeekPage() {
         >
           <button
             type="submit"
-            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors cursor-pointer"
           >
             Continue
           </button>

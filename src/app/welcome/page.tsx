@@ -82,7 +82,7 @@ export default function WelcomePage() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-700">Loading...</p>
         </div>
       </div>
     );
@@ -103,7 +103,7 @@ export default function WelcomePage() {
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
               Let&apos;s set you up to start meditating with {inviteData.inviterName}
             </h1>
-            <p className="text-lg text-gray-600 mt-4">
+            <p className="text-lg text-gray-700 mt-4">
               You&apos;ll be accountability partners, supporting each other&apos;s meditation
               practice.
             </p>
@@ -120,13 +120,13 @@ export default function WelcomePage() {
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-300 flex items-center justify-center">
-                    <span className="text-lg font-medium text-gray-600">
+                    <span className="text-lg font-medium text-gray-700">
                       {inviteData.inviterName.charAt(0).toUpperCase()}
                     </span>
                   </div>
                 )}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-700">
                 <div className="font-medium">{inviteData.inviterName}</div>
                 <div className="flex items-center gap-2">
                   <span>+</span>
@@ -140,7 +140,7 @@ export default function WelcomePage() {
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
               Meditate daily with a gentle nudge.
             </h1>
-            <p className="text-lg text-gray-600 mt-4">
+            <p className="text-lg text-gray-700 mt-4">
               Pair with one buddy. Tiny steps, big change.
             </p>
           </>
@@ -149,14 +149,14 @@ export default function WelcomePage() {
         <div className="mt-8 space-y-4">
           <Link
             href="/nickname"
-            className="block w-full bg-black text-white text-center py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            className="block w-full bg-black text-white text-center py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors cursor-pointer"
           >
             {inviteData ? 'Set up your profile' : 'Get started'}
           </Link>
 
           <button
             onClick={() => setShowLearnMore(!showLearnMore)}
-            className="block w-full text-gray-600 text-center py-2 text-sm hover:text-gray-800 transition-colors"
+            className="block w-full text-gray-700 text-center py-2 text-sm hover:text-gray-800 transition-colors cursor-pointer"
           >
             Learn more
           </button>

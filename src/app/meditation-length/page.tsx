@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabase';
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -31,6 +32,7 @@ export default function MeditationLengthPage() {
   ];
 
   const handleSubmit = async () => {
+    setIsSubmitting(true);
     console.log('=== COMPLETE SETUP BUTTON CLICKED ===');
     console.log('Complete Setup button clicked!');
 
@@ -257,12 +259,14 @@ export default function MeditationLengthPage() {
 
       // Redirect immediately - no setTimeout needed
       console.log('Redirecting to homepage...');
-      router.push('/');
-    } catch (error) {
-      console.error('Onboarding error:', error);
-      alert('Failed to create your account. Please try again.');
-    }
-  };
+            router.push('/');
+          } catch (error) {
+            console.error('Onboarding error:', error);
+            alert('Failed to create your account. Please try again.');
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -278,7 +282,7 @@ export default function MeditationLengthPage() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
             How long do you want each meditation to be?
           </h1>
-          <p className="text-sm text-gray-600 mb-8">
+          <p className="text-sm text-gray-700 mb-8">
             This will be the time you are accountable to meditating in each sitting
           </p>
 
@@ -312,9 +316,17 @@ export default function MeditationLengthPage() {
         >
           <button
             onClick={handleSubmit}
-            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            disabled={isSubmitting}
+            className="w-full bg-black text-white py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer relative"
           >
-            Complete Setup
+            {isSubmitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                <span>Setting up...</span>
+              </span>
+            ) : (
+              'Complete Setup'
+            )}
           </button>
         </div>
       </div>

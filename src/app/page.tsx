@@ -241,17 +241,6 @@ export default function Home() {
       return;
     }
 
-    // Update pairing status to 'awaiting_partner' immediately when button is clicked
-    // This happens before share attempt, as we can't reliably know if share succeeded
-    console.log('Updating pairing status to "awaiting_partner" on invite button click...');
-    const statusUpdated = await updateUserPairingStatus(storedUserId, 'awaiting_partner');
-    if (statusUpdated) {
-      setPairingStatus('awaiting_partner');
-      console.log('✅ Pairing status updated to "awaiting_partner"');
-    } else {
-      console.warn('⚠️ Failed to update pairing status, but continuing with share');
-    }
-
     setIsSharing(true);
     try {
       const result = await shareInvite();
@@ -264,12 +253,19 @@ export default function Home() {
       }
 
       if (result.usedNativeShare) {
-        // Native share was successful, we're done
+        // Native share was successful - update status AFTER share completes
+        console.log('Updating pairing status to "awaiting_partner" after native share...');
+        const statusUpdated = await updateUserPairingStatus(storedUserId, 'awaiting_partner');
+        if (statusUpdated) {
+          setPairingStatus('awaiting_partner');
+          console.log('✅ Pairing status updated to "awaiting_partner"');
+        }
         setIsSharing(false);
         return;
       }
 
       // Native share not available or was cancelled, show fallback modal
+      // Status will be updated when modal closes (in handleModalClose)
       setShareModalLink(result.inviteLink);
       setShowShareModal(true);
       setIsSharing(false);
@@ -277,6 +273,20 @@ export default function Home() {
       console.error('Error sharing invite:', error);
       alert('Unable to share invite. Please try again.');
       setIsSharing(false);
+    }
+  };
+
+  const handleModalClose = async () => {
+    setShowShareModal(false);
+    // Update pairing status AFTER modal closes
+    const storedUserId = localStorage.getItem('userId');
+    if (storedUserId) {
+      console.log('Updating pairing status to "awaiting_partner" after modal closes...');
+      const statusUpdated = await updateUserPairingStatus(storedUserId, 'awaiting_partner');
+      if (statusUpdated) {
+        setPairingStatus('awaiting_partner');
+        console.log('✅ Pairing status updated to "awaiting_partner"');
+      }
     }
   };
 
@@ -376,8 +386,8 @@ export default function Home() {
         <div className="p-6 space-y-8">
           {/* Main CTA - Sit Now Button */}
           <div className="flex justify-center items-center">
-            <Link href="/timer">
-              <div className="w-32 h-32 cursor-pointer hover:opacity-90 transition-opacity">
+            <Link href="/timer" className="cursor-pointer">
+              <div className="w-32 h-32 hover:opacity-90 transition-opacity">
                 <Image
                   src="/sit-now-button.jpg"
                   alt="Sit Now"
@@ -414,11 +424,11 @@ export default function Home() {
             ) : pairingStatus === 'not_started' ? (
               // User hasn't started inviting - show invite button
               <div className="text-center py-4">
-                <p className="text-sm text-gray-600 mb-3">No partners yet</p>
+                <p className="text-sm text-gray-700 mb-3">No partners yet</p>
                 <button
                   onClick={handleInviteClick}
                   disabled={isSharing}
-                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   {isSharing ? 'Preparing...' : 'Invite Partners'}
                 </button>
@@ -426,18 +436,25 @@ export default function Home() {
             ) : pairingStatus === 'awaiting_partner' ? (
               // User has invited but partner hasn't joined yet - show awaiting message
               <div className="text-center py-4">
-                <p className="text-sm text-gray-600 mb-3">Waiting for your partner to join...</p>
-                <p className="text-xs text-gray-500">We'll let you know when they accept your invite</p>
+                <p className="text-sm text-gray-700 mb-3">Waiting for your partner to join...</p>
+                <p className="text-xs text-gray-600 mb-3">We'll let you know when they accept your invite</p>
+                <button
+                  onClick={handleInviteClick}
+                  disabled={isSharing}
+                  className="inline-block bg-gray-200 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                >
+                  {isSharing ? 'Preparing...' : 'Resend Invite'}
+                </button>
               </div>
             ) : (
               // Fallback: Show based on partnerships (for backward compatibility)
               partnerships.length === 0 ? (
                 <div className="text-center py-4">
-                  <p className="text-sm text-gray-600 mb-3">No partners yet</p>
+                  <p className="text-sm text-gray-700 mb-3">No partners yet</p>
                   <button
                     onClick={handleInviteClick}
                     disabled={isSharing}
-                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {isSharing ? 'Preparing...' : 'Invite Partners'}
                   </button>
@@ -450,7 +467,7 @@ export default function Home() {
                         <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
                         <span className="font-medium">{partnership.partner.name}</span>
                       </div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-700">
                         <div>
                           You {partnership.userSits}/{userWeeklyTarget} *{' '}
                           {partnership.partner.name} {partnership.partnerSits}/{partnership.partner.weeklyTarget}
@@ -469,7 +486,7 @@ export default function Home() {
         {showShareModal && (
           <FallbackShareModal
             inviteLink={shareModalLink}
-            onClose={() => setShowShareModal(false)}
+            onClose={handleModalClose}
           />
         )}
       </div>
@@ -482,7 +499,7 @@ export default function Home() {
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-700">Loading...</p>
         </div>
       </div>
     );

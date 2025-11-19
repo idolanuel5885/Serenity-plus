@@ -51,7 +51,7 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
           <h2 className="text-xl font-bold text-gray-900">Share Invite Link</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
             aria-label="Close"
           >
             <svg
@@ -70,7 +70,7 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
           </button>
         </div>
 
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-gray-700 mb-6">
           Choose how you'd like to share your invite link:
         </p>
 
@@ -78,7 +78,7 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
           {/* Copy Link Button */}
           <button
             onClick={handleCopyLink}
-            className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors"
+            className="w-full flex items-center justify-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors cursor-pointer"
           >
             <svg
               className="w-5 h-5"
@@ -156,7 +156,7 @@ export default function FallbackShareModal({ inviteLink, onClose }: FallbackShar
 
         {/* Link Preview */}
         <div className="mt-6 p-3 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-500 mb-1">Your invite link:</p>
+          <p className="text-xs text-gray-600 mb-1">Your invite link:</p>
           <p className="text-sm text-gray-900 break-all">{inviteLink}</p>
         </div>
       </div>
