@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import Head from 'next/head';
 
 export default function WelcomePage() {
   const [showLearnMore, setShowLearnMore] = useState(false);
@@ -11,6 +12,44 @@ export default function WelcomePage() {
     inviterImage?: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Add Open Graph meta tags for Facebook sharing
+  useEffect(() => {
+    const shareMessage = 'Hey I started using this app accountability-partnership app to meditate and I want you to be my partner!';
+    const shareTitle = 'Meditate with me on Serenity+';
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    
+    // Update or create Open Graph meta tags
+    const updateMetaTag = (property: string, content: string) => {
+      let meta = document.querySelector(`meta[property="${property}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('property', property);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    // Update or create standard meta tags
+    const updateStandardMetaTag = (name: string, content: string) => {
+      let meta = document.querySelector(`meta[name="${name}"]`);
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', name);
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', content);
+    };
+
+    // Set Open Graph tags for Facebook sharing
+    updateMetaTag('og:title', shareTitle);
+    updateMetaTag('og:description', shareMessage);
+    updateMetaTag('og:url', shareUrl);
+    updateMetaTag('og:type', 'website');
+    
+    // Also update standard description meta tag
+    updateStandardMetaTag('description', shareMessage);
+  }, []);
 
   useEffect(() => {
     const checkForInvite = async () => {
