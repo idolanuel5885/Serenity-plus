@@ -291,13 +291,27 @@ export default function TimerPage() {
   };
 
   // Get partnership data for lotus progress
-    const partnership = partnerships[0];
+  const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
   
   // Debug logging for lotus progress
   console.log('Timer: Partnerships loaded:', partnerships);
   console.log('Timer: First partnership:', partnership);
   console.log('Timer: Partnership ID:', partnershipId);
+  
+  // Calculate initial lotus progress from cached/loaded partnership data
+  // This allows immediate display without waiting for API call
+  const getInitialLotusProgress = () => {
+    if (!partnership) return 0;
+    
+    // Use partnership data to calculate initial progress
+    // This matches what calculateLotusProgress does with week data
+    const totalSits = partnership.userSits + partnership.partnerSits;
+    const weeklyGoal = partnership.weeklyGoal || 10; // Fallback to 10 if not set
+    const baseProgress = Math.min((totalSits / weeklyGoal) * 100, 100);
+    
+    return baseProgress;
+  };
   
   // Memoize the lotus progress hook parameters to prevent infinite re-renders
   // Update when meditation state changes OR when timeLeft changes significantly (every 5 seconds)
@@ -499,7 +513,7 @@ export default function TimerPage() {
             </p>
           )}
 
-          {partnershipsLoading ? (
+          {partnershipsLoading && partnerships.length === 0 ? (
             <div className="w-64 h-64 mx-auto flex items-center justify-center">
               <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
