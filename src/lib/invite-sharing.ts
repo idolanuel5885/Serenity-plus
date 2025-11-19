@@ -204,9 +204,6 @@ export function getAppShareUrls(shareData: ShareData): {
   const { text, url } = shareData;
   // Include link in message for app-specific sharing
   const fullMessage = `${text}\n\n${url}`;
-  
-  // Get origin safely (for Facebook Messenger redirect_uri)
-  const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
   return {
     email: `mailto:?subject=${encodeURIComponent(shareData.title)}&body=${encodeURIComponent(fullMessage)}`,
