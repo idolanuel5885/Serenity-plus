@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getUserPartnerships, createPartnershipsForUser, getUser, getPartnerDetails, updateUserPairingStatus, PairingStatus } from '../lib/supabase-database';
 import { shareInvite } from '../lib/invite-sharing';
 import FallbackShareModal from '../components/FallbackShareModal';
+import { preloadLotusAnimation } from '../lib/lotus-animation-cache';
 
 interface Partnership {
   id: string;
@@ -341,6 +342,15 @@ export default function Home() {
       }
     }
   };
+
+  // Preload lotus animation JSON on homepage mount
+  // This ensures animation is ready instantly when user navigates to timer
+  useEffect(() => {
+    preloadLotusAnimation().catch(err => {
+      console.warn('Failed to preload lotus animation:', err);
+      // Non-blocking - timer page will fetch if preload fails
+    });
+  }, []);
 
   useEffect(() => {
     const checkForUser = async () => {

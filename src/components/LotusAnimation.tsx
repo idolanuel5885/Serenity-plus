@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Lottie from 'lottie-react';
+import { getCachedAnimationData, preloadLotusAnimation } from '../lib/lotus-animation-cache';
 
 interface LotusAnimationProps {
   progress: number; // 0-100, represents the current progress of the lotus opening
@@ -19,24 +20,20 @@ export default function LotusAnimation({
   const lottieRef = useRef<any>(null);
   const [animationData, setAnimationData] = useState<any>(null);
 
-  // Fetch the lotus animation data
+  // Load animation data - check cache first, then fetch if needed
   useEffect(() => {
-    fetch('/real_lotus.json')
-      .then(response => response.json())
+    // Check if data is already cached (preloaded from homepage)
+    const cached = getCachedAnimationData();
+    if (cached) {
+      console.log('Lotus animation: Using cached data');
+      setAnimationData(cached);
+      return;
+    }
+
+    // Not cached, fetch it (fallback for direct navigation to timer page)
+    console.log('Lotus animation: Fetching data (not preloaded)');
+    preloadLotusAnimation()
       .then(data => {
-        console.log('Lotus animation data loaded:', data);
-        console.log('Animation frames:', data.op, 'FPS:', data.fr);
-        
-        // Just unhide the layers without modifying scale/opacity
-        if (data.layers) {
-          data.layers.forEach((layer: any, _index: number) => {
-            if (layer.hd === true) {
-              layer.hd = false;
-              console.log('Unhiding layer:', layer.nm);
-            }
-          });
-        }
-        
         setAnimationData(data);
       })
       .catch(error => console.error('Error loading lotus animation:', error));
