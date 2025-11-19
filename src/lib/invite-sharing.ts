@@ -204,11 +204,14 @@ export function getAppShareUrls(shareData: ShareData): {
   const { text, url } = shareData;
   // Include link in message for app-specific sharing
   const fullMessage = `${text}\n\n${url}`;
+  
+  // Get origin safely (for Facebook Messenger redirect_uri)
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
 
   return {
     email: `mailto:?subject=${encodeURIComponent(shareData.title)}&body=${encodeURIComponent(fullMessage)}`,
     whatsapp: `https://wa.me/?text=${encodeURIComponent(fullMessage)}`,
-    facebookMessenger: `https://www.facebook.com/dialog/send?link=${encodeURIComponent(url)}&app_id=YOUR_APP_ID&redirect_uri=${encodeURIComponent(window.location.origin)}`,
+    facebookMessenger: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(fullMessage)}`,
   };
 }
 
