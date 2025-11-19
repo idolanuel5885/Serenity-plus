@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Head from 'next/head';
 
 export default function WelcomePage() {
   const [showLearnMore, setShowLearnMore] = useState(false);
