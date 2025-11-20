@@ -5,6 +5,7 @@ import Link from 'next/link';
 import LotusAnimation from '@/components/LotusAnimation';
 import { useLotusProgress } from '@/hooks/useLotusProgress';
 import { getUserPartnerships, getPartnerDetails } from '@/lib/supabase-database';
+import { preloadLotusAnimation } from '@/lib/lotus-animation-cache';
 
 interface User {
   id: string;
@@ -44,6 +45,13 @@ export default function TimerPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Preload lotus animation if not already cached (safety measure)
+        // Usually cached from homepage, but ensures immediate loading for direct navigation
+        preloadLotusAnimation().catch(err => {
+          console.warn('Failed to preload lotus animation:', err);
+          // Non-blocking - component will fetch if needed
+        });
+
         // Get user data from localStorage FIRST (synchronously, before any async operations)
         const userId = localStorage.getItem('userId');
         const userName = localStorage.getItem('userName') || 'You';
@@ -294,28 +302,20 @@ export default function TimerPage() {
   const partnership = partnerships[0];
   const partnershipId = partnership?.id || '';
   
+  // Detect if we're in solo mode (no partnership)
+  const isSoloMode = !partnershipsLoading && partnerships.length === 0;
+  
   // Debug logging for lotus progress
   console.log('Timer: Partnerships loaded:', partnerships);
   console.log('Timer: First partnership:', partnership);
   console.log('Timer: Partnership ID:', partnershipId);
-  
-  // Calculate initial lotus progress from cached/loaded partnership data
-  // This allows immediate display without waiting for API call
-  const getInitialLotusProgress = () => {
-    if (!partnership) return 0;
-    
-    // Use partnership data to calculate initial progress
-    // This matches what calculateLotusProgress does with week data
-    const totalSits = partnership.userSits + partnership.partnerSits;
-    const weeklyGoal = partnership.weeklyGoal || 10; // Fallback to 10 if not set
-    const baseProgress = Math.min((totalSits / weeklyGoal) * 100, 100);
-    
-    return baseProgress;
-  };
+  console.log('Timer: Solo mode:', isSoloMode);
   
   // Memoize the lotus progress hook parameters to prevent infinite re-renders
-  // Update when meditation state changes OR when timeLeft changes significantly (every 5 seconds)
+  // Only create params if we have a partnership (hook won't be called in solo mode)
   const lotusProgressParams = useMemo(() => {
+    if (!partnershipId) return null; // Don't create params for solo mode
+    
     const sessionElapsed = user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined;
     const sessionDuration = user?.usualSitLength ? user.usualSitLength * 60 : undefined;
     
@@ -334,14 +334,36 @@ export default function TimerPage() {
       sessionDuration,
       sessionElapsed
     };
-  }, [user?.id, partnershipId, isRunning, user?.usualSitLength, timeLeft]); // Update every second for smooth animation
+  }, [user?.id, partnershipId, isRunning, user?.usualSitLength, timeLeft]);
 
-  // Use lotus progress hook (only if we have a real partnership ID)
-  const { progressData } = useLotusProgress(lotusProgressParams);
+  // Use lotus progress hook ONLY if we have a partnership (solo mode skips this)
+  const { progressData } = partnershipId && lotusProgressParams 
+    ? useLotusProgress(lotusProgressParams)
+    : { progressData: null };
 
+  // Calculate solo mode lotus progress (0% to 100% based on meditation duration only)
+  const getSoloLotusProgress = () => {
+    if (!user?.usualSitLength) return 0;
+    
+    const totalDuration = user.usualSitLength * 60; // Convert minutes to seconds
+    const elapsed = totalDuration - timeLeft;
+    
+    // Calculate progress as percentage: (elapsed / totalDuration) * 100
+    // Clamp between 0 and 100
+    const progress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+    
+    return progress;
+  };
 
-  // Calculate progress for lotus animation (individual per user)
+  // Calculate progress for lotus animation
+  // Handles both solo mode (time-based) and partnership mode (partnership-based)
   const getLotusProgress = () => {
+    // Solo mode: simple time-based progress (0% to 100% over meditation duration)
+    if (isSoloMode) {
+      return getSoloLotusProgress();
+    }
+    
+    // Partnership mode: existing partnership-based progress calculation (unchanged)
     if (!partnership) return 0;
     
     // If we have API data (from useLotusProgress hook), use it for real-time updates
@@ -521,7 +543,7 @@ export default function TimerPage() {
             <div className="w-64 h-64 mx-auto flex items-center justify-center">
               <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
-          ) : partnership ? (
+          ) : (partnership || isSoloMode) ? (
             <LotusAnimation
               progress={getLotusProgress()}
               isActive={isRunning}
