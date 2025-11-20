@@ -312,10 +312,8 @@ export default function TimerPage() {
   console.log('Timer: Solo mode:', isSoloMode);
   
   // Memoize the lotus progress hook parameters to prevent infinite re-renders
-  // Only create params if we have a partnership (hook won't be called in solo mode)
+  // Always create params (hook must be called unconditionally per React rules)
   const lotusProgressParams = useMemo(() => {
-    if (!partnershipId) return null; // Don't create params for solo mode
-    
     const sessionElapsed = user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : undefined;
     const sessionDuration = user?.usualSitLength ? user.usualSitLength * 60 : undefined;
     
@@ -329,17 +327,16 @@ export default function TimerPage() {
     
     return {
       userId: user?.id || '',
-      partnershipId,
+      partnershipId: partnershipId || '', // Empty string if no partnership (hook will skip internally)
       isMeditationActive: isRunning,
       sessionDuration,
       sessionElapsed
     };
   }, [user?.id, partnershipId, isRunning, user?.usualSitLength, timeLeft]);
 
-  // Use lotus progress hook ONLY if we have a partnership (solo mode skips this)
-  const { progressData } = partnershipId && lotusProgressParams 
-    ? useLotusProgress(lotusProgressParams)
-    : { progressData: null };
+  // Always call the hook (React rules requirement)
+  // Hook internally checks for partnershipId and skips if empty
+  const { progressData } = useLotusProgress(lotusProgressParams);
 
   // Calculate solo mode lotus progress (0% to 100% based on meditation duration only)
   const getSoloLotusProgress = () => {
