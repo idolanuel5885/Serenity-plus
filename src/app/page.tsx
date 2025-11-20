@@ -9,7 +9,7 @@ import { shareInvite } from '../lib/invite-sharing';
 import FallbackShareModal from '../components/FallbackShareModal';
 import { preloadLotusAnimation } from '../lib/lotus-animation-cache';
 import InstallBanner from '../components/InstallBanner';
-import { hasCompletedOnboarding } from '../lib/pwa-install-detection';
+import { hasCompletedOnboarding, isPWAInstalled } from '../lib/pwa-install-detection';
 
 interface Partnership {
   id: string;
