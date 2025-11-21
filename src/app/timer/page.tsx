@@ -30,9 +30,55 @@ interface Partnership {
 }
 
 export default function TimerPage() {
+  // Check sessionStorage cache SYNCHRONOUSLY during component initialization
+  // This prevents the spinner from appearing if cache exists
+  const getInitialPartnershipsFromCache = (): { partnerships: Partnership[]; isLoading: boolean } => {
+    if (typeof window === 'undefined') {
+      return { partnerships: [], isLoading: true };
+    }
+
+    try {
+      const cachedDataStr = sessionStorage.getItem('cachedPartnerships');
+      if (cachedDataStr) {
+        const cachedData = JSON.parse(cachedDataStr);
+        const cacheAge = Date.now() - (cachedData.timestamp || 0);
+        const MAX_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
+
+        if (cacheAge < MAX_CACHE_AGE && Array.isArray(cachedData.partnerships)) {
+          // Cache exists and is fresh - use it immediately
+          const partnerships = cachedData.partnerships.map((p: any) => ({
+            id: p.id,
+            partner: {
+              id: p.partnerid,
+              name: p.partnerName || 'Unknown Partner',
+              email: p.partnerEmail || '',
+              image: p.partnerImage || '/icons/meditation-1.svg',
+              weeklyTarget: p.partnerWeeklyTarget || 0,
+            },
+            userSits: p.userSits || 0,
+            partnerSits: p.partnerSits || 0,
+            weeklyGoal: p.weeklyGoal || (cachedData.userWeeklyTarget || 5) + (p.partnerWeeklyTarget || 0),
+            score: p.score || 0,
+            currentWeekStart: p.currentWeekStart || new Date().toISOString(),
+          }));
+
+          console.log('✅ Timer: Initialized partnerships from cache during component init (no spinner)');
+          return { partnerships, isLoading: false };
+        }
+      }
+    } catch (error) {
+      console.warn('Timer: Error reading cache during init:', error);
+    }
+
+    // No cache or cache invalid - will need to fetch
+    return { partnerships: [], isLoading: true };
+  };
+
+  const initialCacheData = getInitialPartnershipsFromCache();
+
   const [user, setUser] = useState<User | null>(null);
-  const [partnerships, setPartnerships] = useState<Partnership[]>([]);
-  const [partnershipsLoading, setPartnershipsLoading] = useState(true);
+  const [partnerships, setPartnerships] = useState<Partnership[]>(initialCacheData.partnerships);
+  const [partnershipsLoading, setPartnershipsLoading] = useState(initialCacheData.isLoading);
   // Initialize timeLeft - will be updated immediately in useEffect on client
   const [timeLeft, setTimeLeft] = useState(15 * 60); // Default 15 minutes
   const [isRunning, setIsRunning] = useState(false);
