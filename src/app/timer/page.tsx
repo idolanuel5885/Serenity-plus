@@ -124,62 +124,19 @@ export default function TimerPage() {
           return;
         }
 
-        // CRITICAL: Check sessionStorage cache SYNCHRONOUSLY first (before any async operations)
-        // This eliminates the spinner for users coming from homepage (both solo and partnership modes)
-        try {
-          const cachedDataStr = sessionStorage.getItem('cachedPartnerships');
-          if (cachedDataStr) {
-            const cachedData = JSON.parse(cachedDataStr);
-            const cacheAge = Date.now() - (cachedData.timestamp || 0);
-            const MAX_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
-            
-            // If cache exists and is fresh, use it immediately (works for both empty array and partnerships)
-            // Empty array = solo mode, non-empty = partnership mode
-            if (cacheAge < MAX_CACHE_AGE && Array.isArray(cachedData.partnerships)) {
-              console.log('✅ Timer: Using cached partnership data from homepage (age:', Math.round(cacheAge / 1000), 'seconds, partnerships:', cachedData.partnerships.length, ')');
-              
-              // Convert cached data to timer page format
-              // Handle both empty array (solo mode) and partnerships array
-              const partnerships = cachedData.partnerships.map((p: any) => ({
-                id: p.id,
-                partner: {
-                  id: p.partnerid,
-                  name: p.partnerName || 'Unknown Partner',
-                  email: p.partnerEmail || '',
-                  image: p.partnerImage || '/icons/meditation-1.svg',
-                  weeklyTarget: p.partnerWeeklyTarget || 0,
-                },
-                userSits: p.userSits || 0,
-                partnerSits: p.partnerSits || 0,
-                weeklyGoal: p.weeklyGoal || (cachedData.userWeeklyTarget || 5) + (p.partnerWeeklyTarget || 0),
-                score: p.score || 0,
-                currentWeekStart: p.currentWeekStart || new Date().toISOString(),
-              }));
-              
-              // Set state IMMEDIATELY (synchronously) - no spinner needed
-              setPartnerships(partnerships);
-              setPartnershipsLoading(false); // This happens immediately, before any async fetch
-              console.log('✅ Timer: Initialized partnerships from cache immediately, lotus can display without spinner');
-              
-              // Fetch fresh data in background (non-blocking, doesn't affect UI)
-              // This keeps data fresh but doesn't block the UI
-              fetchFreshPartnerships(userData.id).catch(err => {
-                console.warn('Background partnership refresh failed:', err);
-                // Non-blocking - UI already showing cached data
-              });
-              
-              return; // Exit early, we have cached data and UI is already updated
-            } else {
-              console.log('Timer: Cached data expired (age:', Math.round(cacheAge / 1000), 'seconds) or invalid, fetching fresh data');
-            }
-          } else {
-            console.log('Timer: No cached data found, will fetch from database');
-          }
-        } catch (cacheError) {
-          console.warn('Timer: Error reading cache, fetching fresh data:', cacheError);
+        // If we already initialized from cache during component init (partnershipsLoading is false),
+        // just refresh in background. Otherwise, fetch from database.
+        if (!partnershipsLoading) {
+          // Cache was used during initialization - just refresh in background
+          console.log('Timer: Cache was used during init, refreshing in background');
+          fetchFreshPartnerships(userData.id).catch(err => {
+            console.warn('Background partnership refresh failed:', err);
+          });
+          return; // Exit early, UI already showing cached data
         }
 
-        // No cache or cache invalid - fetch from database
+        // No cache or cache expired - fetch from database
+        console.log('Timer: No valid cache found, fetching from database');
         await fetchFreshPartnerships(userData.id);
       } catch (error) {
         console.error('Error fetching data:', error);
