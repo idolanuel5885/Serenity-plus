@@ -549,9 +549,9 @@ export default function TimerPage() {
             </p>
           )}
 
-          {/* Only show spinner if we're actually loading AND have no partnerships yet */}
-          {/* If cache was used, partnershipsLoading is false from init, so no spinner */}
-          {partnershipsLoading && partnerships.length === 0 && !user ? (
+          {/* Only show spinner if we're loading AND cache wasn't used during init */}
+          {/* This prevents spinner flash when cache exists from homepage */}
+          {partnershipsLoading && partnerships.length === 0 && !cacheUsedRef.current ? (
             <div className="w-64 h-64 mx-auto flex items-center justify-center">
               <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
