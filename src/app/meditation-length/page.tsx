@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createUser, createPartnershipsForUser, getUserByInviteCode, getUserByEmail, updateReturnToken, generateReturnToken, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
+import { createUser, createPartnershipsForUser, getUserByInviteCode, getUserByEmail, updateReturnToken, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
 import { sendReturnLinkEmail } from '../../lib/email-service';
 

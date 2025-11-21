@@ -776,43 +776,26 @@ export async function getUserByEmail(email: string): Promise<User | null> {
  * Returns a 32-character alphanumeric token
  */
 export function generateReturnToken(): string {
-  // Use crypto.randomBytes for secure random generation (Node.js)
-  // Fallback to crypto.getRandomValues for browser environments
-  if (typeof window === 'undefined') {
-    // Node.js environment
-    try {
-      const crypto = require('crypto');
-      return crypto.randomBytes(24).toString('base64url'); // 32 characters, URL-safe
-    } catch (e) {
-      // Fallback if crypto is not available
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-      let token = '';
-      for (let i = 0; i < 32; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return token;
-    }
+  // Use crypto.getRandomValues (available in both Node.js 18+ and browsers)
+  // This is the modern, cross-platform approach
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const array = new Uint8Array(24);
+    crypto.getRandomValues(array);
+    // Convert to base64url (URL-safe base64) manually
+    // Base64url encoding: replace + with -, / with _, and remove padding
+    const base64 = btoa(String.fromCharCode(...array))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
+    return base64;
   } else {
-    // Browser environment - use crypto.getRandomValues
-    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-      const array = new Uint8Array(24);
-      crypto.getRandomValues(array);
-      // Convert to base64url (URL-safe base64) manually
-      // Base64url encoding: replace + with -, / with _, and remove padding
-      const base64 = btoa(String.fromCharCode(...array))
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-      return base64;
-    } else {
-      // Fallback to Math.random (less secure, but acceptable for pilot)
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-      let token = '';
-      for (let i = 0; i < 32; i++) {
-        token += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return token;
+    // Fallback to Math.random (less secure, but acceptable for pilot)
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+    let token = '';
+    for (let i = 0; i < 32; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length));
     }
+    return token;
   }
 }
 
