@@ -78,7 +78,8 @@ export default function TimerPage() {
           return;
         }
 
-        // Try to load from sessionStorage cache first (from homepage)
+        // CRITICAL: Check sessionStorage cache SYNCHRONOUSLY first (before any async operations)
+        // This eliminates the spinner for users coming from homepage (both solo and partnership modes)
         try {
           const cachedDataStr = sessionStorage.getItem('cachedPartnerships');
           if (cachedDataStr) {
@@ -86,10 +87,13 @@ export default function TimerPage() {
             const cacheAge = Date.now() - (cachedData.timestamp || 0);
             const MAX_CACHE_AGE = 5 * 60 * 1000; // 5 minutes
             
-            if (cacheAge < MAX_CACHE_AGE && cachedData.partnerships && cachedData.partnerships.length > 0) {
-              console.log('✅ Timer: Using cached partnership data from homepage (age:', Math.round(cacheAge / 1000), 'seconds)');
+            // If cache exists and is fresh, use it immediately (works for both empty array and partnerships)
+            // Empty array = solo mode, non-empty = partnership mode
+            if (cacheAge < MAX_CACHE_AGE && Array.isArray(cachedData.partnerships)) {
+              console.log('✅ Timer: Using cached partnership data from homepage (age:', Math.round(cacheAge / 1000), 'seconds, partnerships:', cachedData.partnerships.length, ')');
               
               // Convert cached data to timer page format
+              // Handle both empty array (solo mode) and partnerships array
               const partnerships = cachedData.partnerships.map((p: any) => ({
                 id: p.id,
                 partner: {
@@ -106,20 +110,24 @@ export default function TimerPage() {
                 currentWeekStart: p.currentWeekStart || new Date().toISOString(),
               }));
               
+              // Set state IMMEDIATELY (synchronously) - no spinner needed
               setPartnerships(partnerships);
-              setPartnershipsLoading(false);
-              console.log('✅ Timer: Initialized partnerships from cache, lotus can display immediately');
+              setPartnershipsLoading(false); // This happens immediately, before any async fetch
+              console.log('✅ Timer: Initialized partnerships from cache immediately, lotus can display without spinner');
               
-              // Still fetch fresh data in background for real-time updates
-              // (but don't block UI)
+              // Fetch fresh data in background (non-blocking, doesn't affect UI)
+              // This keeps data fresh but doesn't block the UI
               fetchFreshPartnerships(userData.id).catch(err => {
                 console.warn('Background partnership refresh failed:', err);
+                // Non-blocking - UI already showing cached data
               });
               
-              return; // Exit early, we have cached data
+              return; // Exit early, we have cached data and UI is already updated
             } else {
-              console.log('Timer: Cached data expired or invalid, fetching fresh data');
+              console.log('Timer: Cached data expired (age:', Math.round(cacheAge / 1000), 'seconds) or invalid, fetching fresh data');
             }
+          } else {
+            console.log('Timer: No cached data found, will fetch from database');
           }
         } catch (cacheError) {
           console.warn('Timer: Error reading cache, fetching fresh data:', cacheError);
