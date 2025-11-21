@@ -19,6 +19,7 @@ model User {
   image         String?        @default("/icons/meditation-1.svg") @map("image") // Has default in production
   invitecode    String         @map("invitecode") // NOT NULL in production, NOT UNIQUE (duplicates allowed)
   pairingstatus String         @default("not_started") @map("pairing_status") // NOT NULL, DEFAULT 'not_started'
+  returntoken   String?        @unique @map("return_token") // Secret token for email-based account recovery
   createdat     DateTime       @default(now()) @map("createdat")
   // Relations
   partnershipsAsUser1 Partnership[] @relation("User1Partnerships")

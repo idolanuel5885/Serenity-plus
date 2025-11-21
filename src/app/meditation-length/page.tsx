@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { createUser, createPartnershipsForUser, getUserByInviteCode, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
+import { createUser, createPartnershipsForUser, getUserByInviteCode, getUserByEmail, updateReturnToken, generateReturnToken, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
+import { sendReturnLinkEmail } from '../../lib/email-service';
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(1);
@@ -42,48 +43,20 @@ export default function MeditationLengthPage() {
 
     // Get all stored data
     const nickname = localStorage.getItem('userNickname');
+    const email = localStorage.getItem('userEmail');
     const weeklyTarget = localStorage.getItem('userWeeklyTarget');
     const usualSitLength = localStorage.getItem('usualSitLength');
     const pendingInviteCode = localStorage.getItem('pendingInviteCode');
 
-    console.log('Retrieved data:', { nickname, weeklyTarget, usualSitLength, pendingInviteCode });
+    console.log('Retrieved data:', { nickname, email, weeklyTarget, usualSitLength, pendingInviteCode });
 
-    if (!nickname || !weeklyTarget || !usualSitLength) {
-      console.error('Missing required data:', { nickname, weeklyTarget, usualSitLength });
+    if (!nickname || !email || !weeklyTarget || !usualSitLength) {
+      console.error('Missing required data:', { nickname, email, weeklyTarget, usualSitLength });
       alert('Missing required data. Please start over.');
       return;
     }
 
     try {
-      // For static export, create a mock user ID and store in localStorage
-      const userId = `user-${Date.now()}`;
-      console.log('Creating user with ID:', userId);
-
-      // Store all user data in localStorage for demo purposes
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('userEmail', `user-${Date.now()}@example.com`);
-      localStorage.setItem('userName', nickname);
-      localStorage.setItem('userWeeklyTarget', weeklyTarget);
-      localStorage.setItem('userUsualSitLength', usualSitLength);
-      localStorage.setItem('userPrimaryWindow', '06:00–09:00');
-      localStorage.setItem('userTimezone', 'GMT+0');
-      localStorage.setItem('userWhyPractice', 'Mindfulness and stress relief');
-      localStorage.setItem('userSupportNeeds', 'Gentle reminders');
-
-      // If there's a pending invite, store partnership info
-      if (pendingInviteCode) {
-        localStorage.setItem('partnershipInviteCode', pendingInviteCode);
-        localStorage.setItem('partnershipStatus', 'pending');
-        console.log('Partnership invite stored for demo');
-      }
-
-      console.log('User account created successfully (demo mode)');
-      console.log('All localStorage keys after creation:', Object.keys(localStorage));
-
-      // Ensure localStorage is written synchronously
-      localStorage.setItem('userId', userId);
-      console.log('UserId confirmed in localStorage:', localStorage.getItem('userId'));
-
       // Create user in Supabase database
       let supabaseUserId = null;
       // Get the pending invite code (User1's invite code) - but don't use it for account creation
@@ -138,21 +111,50 @@ export default function MeditationLengthPage() {
             });
         }
         
-        const userData = {
-          name: nickname,
-          email: `user-${Date.now()}@example.com`,
-          weeklytarget: parseInt(weeklyTarget),
-          usualsitlength: selectedLength,
-          image: '/icons/meditation-1.svg',
-          invitecode: finalUserInviteCode,
-          pairingstatus: pairingStatus,
-        };
+        // Check if user with this email already exists
+        const existingUser = await getUserByEmail(email);
+        let returnToken: string | null = null;
 
-        console.log('Creating user with data:', userData);
-        console.log('About to call createUser with invite code:', userData.invitecode);
-        supabaseUserId = await createUser(userData);
-        console.log('User created in Supabase with ID:', supabaseUserId);
-        console.log('User created with invite code:', userData.invitecode);
+        if (existingUser) {
+          // User exists - link to existing user
+          console.log('User with email already exists, linking to existing user:', existingUser.id);
+          supabaseUserId = existingUser.id;
+          
+          // Rotate return token (generate new one, invalidates old)
+          returnToken = await updateReturnToken(existingUser.id);
+          if (!returnToken) {
+            console.error('Failed to generate return token for existing user');
+            // Continue anyway - user can still use the app
+          } else {
+            console.log('✅ Generated new return token for existing user');
+          }
+        } else {
+          // New user - create with real email
+          const userData = {
+            name: nickname,
+            email: email.toLowerCase().trim(), // Use real email from onboarding
+            weeklytarget: parseInt(weeklyTarget),
+            usualsitlength: selectedLength,
+            image: '/icons/meditation-1.svg',
+            invitecode: finalUserInviteCode,
+            pairingstatus: pairingStatus,
+          };
+
+          console.log('Creating new user with data:', userData);
+          console.log('About to call createUser with invite code:', userData.invitecode);
+          supabaseUserId = await createUser(userData);
+          console.log('User created in Supabase with ID:', supabaseUserId);
+          console.log('User created with invite code:', userData.invitecode);
+          
+          // Generate return token for new user
+          returnToken = await updateReturnToken(supabaseUserId);
+          if (!returnToken) {
+            console.error('Failed to generate return token for new user');
+            // Continue anyway - user can still use the app
+          } else {
+            console.log('✅ Generated return token for new user');
+          }
+        }
         
         // Debug: Verify the user actually exists in the database
         console.log('=== VERIFYING USER CREATION ===');
@@ -179,6 +181,30 @@ export default function MeditationLengthPage() {
         localStorage.setItem('userInviteCode', finalUserInviteCode);
         console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
+        localStorage.setItem('userEmail', email); // Store email for future use
+        
+        // Send return link email (non-blocking - don't wait for it)
+        if (returnToken) {
+          console.log('Sending return link email...');
+          sendReturnLinkEmail({
+            email: email,
+            returnToken: returnToken,
+            userName: nickname,
+          })
+            .then(success => {
+              if (success) {
+                console.log('✅ Return link email sent successfully');
+              } else {
+                console.warn('⚠️ Failed to send return link email (non-blocking)');
+              }
+            })
+            .catch(error => {
+              console.error('Error sending return link email (non-blocking):', error);
+              // Don't block user from continuing
+            });
+        } else {
+          console.warn('⚠️ No return token available, skipping email send');
+        }
         
         // If User2 has a pendingInviteCode, prepare "pending partnership" data for immediate homepage display
         if (pendingInviteCodeLocal) {

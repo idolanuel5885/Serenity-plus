@@ -36,8 +36,8 @@ export default function NicknamePage() {
     // Store nickname in localStorage
     localStorage.setItem('userNickname', nickname);
 
-    // Redirect to next step
-    router.push('/meditations-per-week');
+    // Redirect to email collection step (new step in onboarding)
+    router.push('/email');
   };
 
   return (

@@ -740,3 +740,134 @@ export async function getUserByInviteCode(inviteCode: string): Promise<User | nu
     return null;
   }
 }
+
+/**
+ * Find a user by their email address
+ * Used for email-based identity recovery
+ */
+export async function getUserByEmail(email: string): Promise<User | null> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', email.toLowerCase().trim())
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching user by email:', error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    // Map snake_case to camelCase
+    return {
+      ...data,
+      pairingstatus: (data as any).pairing_status || 'not_started',
+    } as User;
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    return null;
+  }
+}
+
+/**
+ * Generate a secure random token for email-based account recovery
+ * Returns a 32-character alphanumeric token
+ */
+export function generateReturnToken(): string {
+  // Use crypto.randomBytes for secure random generation (Node.js)
+  // Fallback to crypto.getRandomValues for browser environments
+  if (typeof window === 'undefined') {
+    // Node.js environment
+    try {
+      const crypto = require('crypto');
+      return crypto.randomBytes(24).toString('base64url'); // 32 characters, URL-safe
+    } catch (e) {
+      // Fallback if crypto is not available
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+      let token = '';
+      for (let i = 0; i < 32; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return token;
+    }
+  } else {
+    // Browser environment - use crypto.getRandomValues
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      const array = new Uint8Array(24);
+      crypto.getRandomValues(array);
+      // Convert to base64url (URL-safe base64) manually
+      // Base64url encoding: replace + with -, / with _, and remove padding
+      const base64 = btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+      return base64;
+    } else {
+      // Fallback to Math.random (less secure, but acceptable for pilot)
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+      let token = '';
+      for (let i = 0; i < 32; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return token;
+    }
+  }
+}
+
+/**
+ * Update a user's return token (rotates the old token)
+ * This invalidates the old token and generates a new one
+ */
+export async function updateReturnToken(userId: string): Promise<string | null> {
+  try {
+    const newToken = generateReturnToken();
+    
+    const { error } = await supabase
+      .from('users')
+      .update({ return_token: newToken })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating return token:', error);
+      return null;
+    }
+
+    console.log(`Updated return token for user ${userId}`);
+    return newToken;
+  } catch (error) {
+    console.error('Error updating return token:', error);
+    return null;
+  }
+}
+
+/**
+ * Find a user by their return token
+ * Used to restore user identity via magic link
+ */
+export async function getUserByReturnToken(token: string): Promise<User | null> {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('return_token', token)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching user by return token:', error);
+      return null;
+    }
+
+    if (!data) return null;
+
+    // Map snake_case to camelCase
+    return {
+      ...data,
+      pairingstatus: (data as any).pairing_status || 'not_started',
+    } as User;
+  } catch (error) {
+    console.error('Error fetching user by return token:', error);
+    return null;
+  }
+}
