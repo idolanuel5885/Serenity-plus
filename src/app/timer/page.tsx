@@ -79,6 +79,8 @@ export default function TimerPage() {
   const [user, setUser] = useState<User | null>(null);
   const [partnerships, setPartnerships] = useState<Partnership[]>(initialCacheData.partnerships);
   const [partnershipsLoading, setPartnershipsLoading] = useState(initialCacheData.isLoading);
+  // Track if cache was used during initialization - prevents spinner flash
+  const cacheUsedRef = useRef(!initialCacheData.isLoading);
   // Initialize timeLeft - will be updated immediately in useEffect on client
   const [timeLeft, setTimeLeft] = useState(15 * 60); // Default 15 minutes
   const [isRunning, setIsRunning] = useState(false);
@@ -547,7 +549,9 @@ export default function TimerPage() {
             </p>
           )}
 
-          {partnershipsLoading && partnerships.length === 0 ? (
+          {/* Only show spinner if we're actually loading AND have no partnerships yet */}
+          {/* If cache was used, partnershipsLoading is false from init, so no spinner */}
+          {partnershipsLoading && partnerships.length === 0 && !user ? (
             <div className="w-64 h-64 mx-auto flex items-center justify-center">
               <div className="w-32 h-32 border-2 border-orange-200 border-t-orange-500 rounded-full animate-spin"></div>
             </div>
