@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { getUserByReturnToken } from '../../lib/supabase-database';
 
-export default function ReturnPage() {
+function ReturnPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -153,3 +153,19 @@ export default function ReturnPage() {
   );
 }
 
+export default function ReturnPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-700">Loading...</p>
+          </div>
+        </div>
+      }
+    >
+      <ReturnPageContent />
+    </Suspense>
+  );
+}
