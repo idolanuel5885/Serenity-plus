@@ -51,7 +51,7 @@ test.describe('Onboarding Flow', () => {
     await page.goto('/welcome?invite=ABC123');
     // Wait for the page to load and check URL parameters
     await page.waitForTimeout(1000);
-    await expect(page.locator('h1')).toContainText("Let's set you up to start meditating with");
+    await expect(page.locator('h1')).toContainText('Meditate to Open The Lotus');
   });
 
 

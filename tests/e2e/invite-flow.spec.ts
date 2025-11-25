@@ -55,7 +55,7 @@ test.describe('Invite Flow', () => {
     await page.goto('/welcome?invite=ABC123');
 
     // Should show invite acceptance page
-    await expect(page.locator('h1')).toContainText("Let's set you up to start meditating with");
+    await expect(page.locator('h1')).toContainText('Meditate to Open The Lotus');
 
     // Complete onboarding
     await page.click('text=Set up your profile');
