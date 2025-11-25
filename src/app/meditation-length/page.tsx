@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createUser, createPartnershipsForUser, getUserByInviteCode, getUserByEmail, updateReturnToken, PairingStatus } from '../../lib/supabase-database'; // Import createUser and createPartnershipsForUser from Supabase
 import { supabase } from '../../lib/supabase';
-import { sendReturnLinkEmail } from '../../lib/email-service';
 
 export default function MeditationLengthPage() {
   const [selectedLength, setSelectedLength] = useState<number>(1);
@@ -183,19 +182,26 @@ export default function MeditationLengthPage() {
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
         localStorage.setItem('userEmail', email); // Store email for future use
         
-        // Send return link email (non-blocking - don't wait for it)
+        // Send return link email via API route (non-blocking - don't wait for it)
         if (returnToken) {
-          console.log('Sending return link email...');
-          sendReturnLinkEmail({
-            email: email,
-            returnToken: returnToken,
-            userName: nickname,
+          console.log('Sending return link email via API...');
+          fetch('/api/send-return-link', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              returnToken: returnToken,
+              userName: nickname,
+            }),
           })
-            .then(success => {
-              if (success) {
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
                 console.log('✅ Return link email sent successfully');
               } else {
-                console.warn('⚠️ Failed to send return link email (non-blocking)');
+                console.warn('⚠️ Failed to send return link email:', data.error);
               }
             })
             .catch(error => {
