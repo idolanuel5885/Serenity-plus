@@ -11,13 +11,11 @@ test.describe('Solo Meditation Mode E2E', () => {
   test.beforeEach(async ({ page, context }) => {
     // Clear all storage
     await context.clearCookies();
-    await page.evaluate(() => {
+    
+    // Setup user data (no partnership) using addInitScript to avoid security errors
+    await page.addInitScript(() => {
       localStorage.clear();
       sessionStorage.clear();
-    });
-
-    // Setup user data (no partnership)
-    await page.evaluate(() => {
       localStorage.setItem('userId', 'test-user-solo');
       localStorage.setItem('userName', 'Solo User');
       localStorage.setItem('userUsualSitLength', '15');

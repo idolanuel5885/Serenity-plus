@@ -2,16 +2,17 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Onboarding Flow', () => {
   test('BR-001: Complete onboarding flow for new user', async ({ page }) => {
-    // Clear localStorage to simulate new user
+    // Clear localStorage to simulate new user using addInitScript
+    await page.addInitScript(() => {
+      localStorage.clear();
+    });
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
 
     // Should redirect to welcome page
-    await page.goto('/');
     await expect(page).toHaveURL('/welcome');
 
     // Welcome screen
-    await expect(page.locator('h1')).toContainText('Meditate daily with a gentle nudge');
+    await expect(page.locator('h1')).toContainText('Meditate to Open The Lotus');
     await page.click('text=Get started');
 
     // Nickname screen
@@ -19,6 +20,12 @@ test.describe('Onboarding Flow', () => {
     await expect(page.locator('h1')).toContainText('What should we call you?');
     await page.fill('input[placeholder="e.g., Ido"]', 'Test User');
     await page.click('button[type="submit"]');
+
+    // Email screen (new step)
+    await expect(page).toHaveURL('/email');
+    await expect(page.locator('h1')).toContainText('Save your lotus');
+    await page.fill('input[type="email"]', 'test@example.com');
+    await page.click('button:has-text("Continue")');
 
     // Meditations per week screen
     await expect(page).toHaveURL('/meditations-per-week');

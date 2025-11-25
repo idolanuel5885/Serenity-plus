@@ -15,8 +15,7 @@ test.describe('Notification Redirect Bug', () => {
     });
 
     // Simulate the exact race condition: userId set, then immediate homepage check
-    await page.goto('/');
-    await page.evaluate(() => {
+    await page.addInitScript(() => {
       // Simulate meditation-length page setting userId
       const userId = `user-${Date.now()}`;
       localStorage.setItem('userId', userId);
@@ -25,6 +24,7 @@ test.describe('Notification Redirect Bug', () => {
       localStorage.setItem('userUsualSitLength', '30');
       console.log('Race condition test: userId set to:', userId);
     });
+    await page.goto('/');
 
     // Go to notifications page
     await page.goto('/notifications');
@@ -45,8 +45,14 @@ test.describe('Notification Redirect Bug', () => {
     // Should not redirect to welcome page
     await expect(page).not.toHaveURL('/welcome');
 
-    // Verify userId is still in localStorage
-    const userId = await page.evaluate(() => localStorage.getItem('userId'));
+    // Verify userId is still in localStorage (with error handling)
+    const userId = await page.evaluate(() => {
+      try {
+        return localStorage.getItem('userId');
+      } catch (e) {
+        return null;
+      }
+    });
     expect(userId).toBeTruthy();
     console.log('Race condition test: userId found in localStorage:', userId);
   });

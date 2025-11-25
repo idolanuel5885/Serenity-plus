@@ -2,9 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Complete Onboarding Workflow', () => {
   test('should complete full onboarding without errors', async ({ page }) => {
-    // Clear localStorage first to ensure clean state
+    // Clear localStorage first to ensure clean state using addInitScript
+    await page.addInitScript(() => {
+      localStorage.clear();
+    });
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
     
     // Start from homepage - should redirect to welcome
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -27,6 +29,14 @@ test.describe('Complete Onboarding Workflow', () => {
 
     // Enter nickname
     await page.fill('input[placeholder="e.g., Ido"]', 'TestUser');
+    await page.click('button:has-text("Continue")');
+
+    // Should go to email page (new step in onboarding)
+    await expect(page).toHaveURL('/email');
+    await expect(page.locator('h1')).toContainText('Save your lotus');
+
+    // Enter email
+    await page.fill('input[type="email"]', 'test@example.com');
     await page.click('button:has-text("Continue")');
 
     // Should go to meditations per week page
@@ -52,10 +62,23 @@ test.describe('Complete Onboarding Workflow', () => {
     await expect(page.locator('h2')).toContainText('Partners summary');
 
     // Check that user data was stored
-    const userId = await page.evaluate(() => localStorage.getItem('userId'));
+    // Use evaluateHandle to avoid security errors
+    const userId = await page.evaluate(() => {
+      try {
+        return localStorage.getItem('userId');
+      } catch (e) {
+        return null;
+      }
+    });
     expect(userId).toBeTruthy();
 
-    const userName = await page.evaluate(() => localStorage.getItem('userName'));
+    const userName = await page.evaluate(() => {
+      try {
+        return localStorage.getItem('userName');
+      } catch (e) {
+        return null;
+      }
+    });
     expect(userName).toBe('TestUser');
   });
 
@@ -67,9 +90,11 @@ test.describe('Complete Onboarding Workflow', () => {
       return;
     }
 
-    // Clear localStorage first
+    // Clear localStorage first using addInitScript
+    await page.addInitScript(() => {
+      localStorage.clear();
+    });
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
 
     // Complete onboarding flow
     await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -81,6 +106,11 @@ test.describe('Complete Onboarding Workflow', () => {
     await page.fill('input[placeholder="e.g., Ido"]', 'SessionTestUser');
     await page.click('button:has-text("Continue")');
 
+    // Should go to email page (new step)
+    await expect(page).toHaveURL('/email');
+    await page.fill('input[type="email"]', 'sessiontest@example.com');
+    await page.click('button:has-text("Continue")');
+
     await expect(page).toHaveURL('/meditations-per-week');
     await page.click('button:has-text("Continue")');
 
@@ -89,8 +119,14 @@ test.describe('Complete Onboarding Workflow', () => {
 
     await expect(page).toHaveURL('/');
 
-    // Get userId from localStorage
-    const userId = await page.evaluate(() => localStorage.getItem('userId'));
+    // Get userId from localStorage (with error handling)
+    const userId = await page.evaluate(() => {
+      try {
+        return localStorage.getItem('userId');
+      } catch (e) {
+        return null;
+      }
+    });
     expect(userId).toBeTruthy();
 
     // Navigate to timer page

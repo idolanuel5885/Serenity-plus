@@ -148,9 +148,8 @@ test.describe('Partnership System', () => {
       });
     });
 
-    // Set up existing partnerships
-    await page.goto('/');
-    await page.evaluate(() => {
+    // Set up existing partnerships using addInitScript
+    await page.addInitScript(() => {
       localStorage.clear();
 
       const userId = 'user-persist-123';
@@ -179,6 +178,7 @@ test.describe('Partnership System', () => {
       ];
       localStorage.setItem('partnerships', JSON.stringify(partnerships));
     });
+    await page.goto('/');
 
     // Go to homepage
     await page.goto('/');

@@ -2,13 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Invite Flow', () => {
   test('BR-002: Generate invite link and QR code', async ({ page }) => {
-    // Set up user data first
-    await page.goto('/');
-    await page.evaluate(() => {
+    // Set up user data first using addInitScript
+    await page.addInitScript(() => {
       localStorage.setItem('userId', 'test-user-123');
       localStorage.setItem('userName', 'TestUser');
       localStorage.setItem('userInviteCode', 'test-invite-123');
     });
+    await page.goto('/');
 
     await page.goto('/invite');
     

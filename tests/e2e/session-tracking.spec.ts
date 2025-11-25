@@ -85,8 +85,7 @@ test.describe('Session Tracking E2E', () => {
 
     // Step 4: Set up localStorage and navigate to timer page
     console.log('⏱️ Setting up timer page...');
-    await page.goto(baseUrl);
-    await page.evaluate(
+    await page.addInitScript(
       ({ userId, userName, weeklyTarget, usualSitLength }) => {
         localStorage.setItem('userId', userId);
         localStorage.setItem('userName', userName);
@@ -100,6 +99,7 @@ test.describe('Session Tracking E2E', () => {
         usualSitLength: 30,
       },
     );
+    await page.goto(baseUrl);
 
     // Navigate to timer page
     await page.goto(`${baseUrl}/timer`);
