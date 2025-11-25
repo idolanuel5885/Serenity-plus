@@ -116,15 +116,20 @@ No passwords, no spam — just this link. Keep it safe.
       }
     }
     
-    const emailPayload = {
+    // Build email payload
+    const emailPayload: any = {
       from: fromEmail,
       to: [options.email],
       subject: subject,
       html: htmlBody,
       text: textBody,
-      // Add reply-to for better deliverability
-      reply_to: process.env.RESEND_REPLY_TO || fromEmail,
     };
+    
+    // Add reply-to only if explicitly set (optional field)
+    const replyTo = process.env.RESEND_REPLY_TO;
+    if (replyTo) {
+      emailPayload.reply_to = replyTo;
+    }
 
     console.log('Sending email via Resend API...');
     console.log('Email payload:', {
