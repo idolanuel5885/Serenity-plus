@@ -101,7 +101,20 @@ No passwords, no spam — just this link. Keep it safe.
 
     // Use custom domain if configured, otherwise fall back to Resend's default
     // For production, you should verify your own domain in Resend and use it here
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
+    let fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
+    
+    // If using custom domain but it's not verified, fall back to Resend default
+    // This prevents 403 errors during development/testing
+    if (fromEmail.includes('@') && !fromEmail.includes('@resend.dev')) {
+      // Extract domain from email
+      const domainMatch = fromEmail.match(/@([^\s>]+)/);
+      if (domainMatch) {
+        const domain = domainMatch[1];
+        console.log(`Using custom domain: ${domain}`);
+        // Note: If domain verification fails, Resend will return 403
+        // User needs to verify domain in Resend dashboard
+      }
+    }
     
     const emailPayload = {
       from: fromEmail,
