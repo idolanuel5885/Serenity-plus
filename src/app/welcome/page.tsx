@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function WelcomePage() {
-  const [showLearnMore, setShowLearnMore] = useState(false);
   const [inviteData, setInviteData] = useState<{
     inviterName: string;
     inviterImage?: string;
@@ -135,15 +134,15 @@ export default function WelcomePage() {
         </div>
       </div>
 
-      <div className="px-6 py-8 flex-1">
+      <div className="px-6 py-8 flex-1 flex flex-col items-center justify-center text-center">
         {inviteData ? (
           <>
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
               Meditate to Open The Lotus.
             </h1>
-            <p className="text-lg text-gray-700 mt-4">Together.</p>
+            <p className="text-4xl font-bold text-gray-900 mt-4">Together.</p>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-6 flex items-center justify-center gap-3">
               <div className="w-12 h-12 rounded-full overflow-hidden">
                 {inviteData.inviterImage ? (
                   <Image
@@ -175,34 +174,18 @@ export default function WelcomePage() {
             <h1 className="text-3xl font-bold text-gray-900 leading-tight">
               Meditate to Open The Lotus.
             </h1>
-            <p className="text-lg text-gray-700 mt-4">Together.</p>
+            <p className="text-4xl font-bold text-gray-900 mt-4">Together.</p>
           </>
         )}
 
-        <div className="mt-8 space-y-4">
+        <div className="mt-8 w-full max-w-md">
           <Link
             href="/nickname"
             className="block w-full bg-black text-white text-center py-4 rounded-lg font-medium hover:bg-gray-800 transition-colors cursor-pointer"
           >
             {inviteData ? 'Set up your profile' : 'Get started'}
           </Link>
-
-          <button
-            onClick={() => setShowLearnMore(!showLearnMore)}
-            className="block w-full text-gray-700 text-center py-2 text-sm hover:text-gray-800 transition-colors cursor-pointer"
-          >
-            Learn more
-          </button>
         </div>
-
-        {showLearnMore && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-700">
-              SerenityPlus pairs you with one accountability partner. A short check-in after each
-              sit keeps both of you consistent.
-            </p>
-          </div>
-        )}
       </div>
 
       <div className="px-6 py-4 border-t mt-auto">
