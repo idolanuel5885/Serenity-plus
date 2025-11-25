@@ -31,27 +31,39 @@ export async function POST(request: NextRequest) {
 
     // Send the email
     console.log('Calling sendReturnLinkEmail...');
-    const success = await sendReturnLinkEmail({
-      email,
-      returnToken,
-      userName,
-    });
+    try {
+      const success = await sendReturnLinkEmail({
+        email,
+        returnToken,
+        userName,
+      });
 
-    console.log('Email send result:', success);
+      console.log('Email send result:', success);
 
-    if (success) {
-      return NextResponse.json({ success: true, message: 'Return link email sent successfully' });
-    } else {
+      if (success) {
+        return NextResponse.json({ success: true, message: 'Return link email sent successfully' });
+      } else {
+        console.error('sendReturnLinkEmail returned false - email sending failed');
+        return NextResponse.json(
+          { error: 'Failed to send email. Check server logs for details.' },
+          { status: 500 }
+        );
+      }
+    } catch (emailError: any) {
+      console.error('Exception in sendReturnLinkEmail:', emailError);
+      console.error('Exception message:', emailError?.message);
+      console.error('Exception stack:', emailError?.stack);
       return NextResponse.json(
-        { error: 'Failed to send email. Check server logs for details.' },
+        { error: 'Failed to send email', details: emailError?.message || 'Unknown error' },
         { status: 500 }
       );
     }
   } catch (error: any) {
     console.error('Error in send-return-link API:', error);
-    console.error('Error stack:', error.stack);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: error?.message || 'Unknown error' },
       { status: 500 }
     );
   }

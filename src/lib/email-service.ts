@@ -149,14 +149,33 @@ No passwords, no spam — just this link. Keep it safe.
     if (!response.ok) {
       console.error('Failed to send return link email. Status:', response.status);
       console.error('Error response:', responseText);
+      
+      // Try to parse error response for better logging
+      try {
+        const errorData = JSON.parse(responseText);
+        console.error('Parsed error data:', errorData);
+      } catch (e) {
+        // Response is not JSON, log as-is
+        console.error('Non-JSON error response:', responseText);
+      }
+      
       return false;
     }
 
-    const responseData = JSON.parse(responseText);
-    console.log(`✅ Return link email sent to ${options.email}. Email ID:`, responseData.id);
-    return true;
-  } catch (error) {
+    // Parse successful response
+    try {
+      const responseData = JSON.parse(responseText);
+      console.log(`✅ Return link email sent to ${options.email}. Email ID:`, responseData.id);
+      return true;
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', e);
+      console.error('Response text:', responseText);
+      return false;
+    }
+  } catch (error: any) {
     console.error('Error sending return link email:', error);
+    console.error('Error message:', error?.message);
+    console.error('Error stack:', error?.stack);
     return false;
   }
 }
