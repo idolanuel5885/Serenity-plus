@@ -101,18 +101,18 @@ No passwords, no spam — just this link. Keep it safe.
 
     // Use custom domain if configured, otherwise fall back to Resend's default
     // For production, you should verify your own domain in Resend and use it here
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
+    let fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
     
-    // If using custom domain but it's not verified, fall back to Resend default
-    // This prevents 403 errors during development/testing
-    if (fromEmail.includes('@') && !fromEmail.includes('@resend.dev')) {
+    // If using custom domain, we'll try it first, but fall back to Resend default if it fails
+    // This prevents 403 errors during development/testing when domain isn't verified yet
+    const isCustomDomain = fromEmail.includes('@') && !fromEmail.includes('@resend.dev');
+    if (isCustomDomain) {
       // Extract domain from email
       const domainMatch = fromEmail.match(/@([^\s>]+)/);
       if (domainMatch) {
         const domain = domainMatch[1];
-        console.log(`Using custom domain: ${domain}`);
-        // Note: If domain verification fails, Resend will return 403
-        // User needs to verify domain in Resend dashboard
+        console.log(`Attempting to use custom domain: ${domain}`);
+        console.log('Note: If domain is not verified in Resend, email will fail with 403');
       }
     }
     
@@ -156,12 +156,62 @@ No passwords, no spam — just this link. Keep it safe.
       console.error('Error response:', responseText);
       
       // Try to parse error response for better logging
+      let errorData: any = null;
       try {
-        const errorData = JSON.parse(responseText);
+        errorData = JSON.parse(responseText);
         console.error('Parsed error data:', errorData);
       } catch (e) {
         // Response is not JSON, log as-is
         console.error('Non-JSON error response:', responseText);
+      }
+      
+      // If it's a 403 domain verification error and we're using a custom domain,
+      // automatically retry with Resend's default domain
+      if (response.status === 403 && errorData?.message?.includes('domain is not verified') && isCustomDomain) {
+        console.log('⚠️ Custom domain not verified, retrying with Resend default domain...');
+        const fallbackFromEmail = 'Serenity+ <onboarding@resend.dev>';
+        
+        // Retry with default domain
+        const fallbackPayload: any = {
+          from: fallbackFromEmail,
+          to: [options.email],
+          subject: subject,
+          html: htmlBody,
+          text: textBody,
+        };
+        
+        if (process.env.RESEND_REPLY_TO) {
+          fallbackPayload.reply_to = process.env.RESEND_REPLY_TO;
+        }
+        
+        const fallbackResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(fallbackPayload),
+        });
+        
+        const fallbackResponseText = await fallbackResponse.text();
+        console.log('Fallback email response status:', fallbackResponse.status);
+        console.log('Fallback email response:', fallbackResponseText);
+        
+        if (fallbackResponse.ok) {
+          try {
+            const fallbackData = JSON.parse(fallbackResponseText);
+            console.log(`✅ Return link email sent using fallback domain to ${options.email}. Email ID:`, fallbackData.id);
+            console.log('⚠️ Note: Custom domain not verified. Please verify your domain in Resend to use custom email address.');
+            return true;
+          } catch (e) {
+            console.error('Failed to parse fallback response as JSON:', e);
+            return false;
+          }
+        } else {
+          console.error('Fallback email also failed. Status:', fallbackResponse.status);
+          console.error('Fallback error response:', fallbackResponseText);
+          return false;
+        }
       }
       
       return false;
