@@ -192,22 +192,21 @@ export default function Home() {
           } catch (cacheError) {
             console.warn('Failed to cache partnership data:', cacheError);
           }
-        } else {
-          // No existing partnerships, try to create new ones (fallback for edge cases)
-          // Note: For User2, partnership should already be created during onboarding
-          // This is a fallback in case partnership creation failed during onboarding
-          console.log('No existing partnerships, attempting fallback partnership creation...');
-          const pendingInviteCode = localStorage.getItem('pendingInviteCode');
-          const userInviteCode = localStorage.getItem('userInviteCode');
-          const inviteCode = pendingInviteCode || userInviteCode;
-          
-          if (inviteCode) {
-            console.log('Using invite code for fallback partnership creation:', inviteCode);
-            console.log('All localStorage keys:', Object.keys(localStorage));
-            console.log('pendingInviteCode:', pendingInviteCode);
-            console.log('userInviteCode:', userInviteCode);
-            console.log('=== CALLING createPartnershipsForUser (FALLBACK) ===', { userId, inviteCode });
-            const newPartnerships = await createPartnershipsForUser(userId, inviteCode || undefined);
+               } else {
+                 // No existing partnerships, try to create new ones (fallback for edge cases)
+                 // Note: For User2, partnership should already be created during onboarding
+                 // This is a fallback in case partnership creation failed during onboarding
+                 // IMPORTANT: Only use pendingInviteCode (someone else's invite), not userInviteCode (own invite)
+                 console.log('No existing partnerships, attempting fallback partnership creation...');
+                 const pendingInviteCode = localStorage.getItem('pendingInviteCode');
+                 
+                 // Only try to create partnership if we have a pendingInviteCode (someone else's invite)
+                 // Don't use userInviteCode - that's the user's own invite code, can't partner with yourself
+                 if (pendingInviteCode) {
+                   console.log('Using pendingInviteCode for fallback partnership creation:', pendingInviteCode);
+                   console.log('All localStorage keys:', Object.keys(localStorage));
+                   console.log('=== CALLING createPartnershipsForUser (FALLBACK) ===', { userId, inviteCode: pendingInviteCode });
+                   const newPartnerships = await createPartnershipsForUser(userId, pendingInviteCode);
             
             if (newPartnerships.length > 0) {
               // Clear pendingInviteCode since partnership is now created

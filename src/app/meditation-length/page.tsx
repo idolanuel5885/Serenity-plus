@@ -181,6 +181,10 @@ export default function MeditationLengthPage() {
         console.log('Stored userInviteCode in localStorage:', finalUserInviteCode);
         localStorage.setItem('userId', supabaseUserId); // Keep for compatibility
         localStorage.setItem('userEmail', email); // Store email for future use
+        localStorage.setItem('userName', nickname); // Store userName (homepage expects this)
+        localStorage.setItem('userNickname', nickname); // Also keep userNickname for compatibility
+        localStorage.setItem('userWeeklyTarget', weeklyTarget); // Store weekly target
+        localStorage.setItem('userUsualSitLength', usualSitLength); // Store sit length
         
         // Send return link email via API route (non-blocking - don't wait for it)
         if (returnToken) {
