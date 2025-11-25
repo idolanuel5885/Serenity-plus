@@ -155,9 +155,10 @@ test.describe('Complete Onboarding Workflow', () => {
 
 
   test('should handle missing userId gracefully', async ({ page }) => {
-    // Clear localStorage BEFORE visiting the page
-    await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
+    // Clear localStorage BEFORE visiting the page using addInitScript
+    await page.addInitScript(() => {
+      localStorage.clear();
+    });
     
     // Navigate to homepage - should redirect to welcome
     await page.goto('/', { waitUntil: 'domcontentloaded' });
