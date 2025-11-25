@@ -99,12 +99,18 @@ ${returnLink}
 No passwords, no spam — just this link. Keep it safe.
     `.trim();
 
+    // Use custom domain if configured, otherwise fall back to Resend's default
+    // For production, you should verify your own domain in Resend and use it here
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
+    
     const emailPayload = {
-      from: 'Serenity+ <onboarding@resend.dev>', // Use Resend's default domain for testing
+      from: fromEmail,
       to: [options.email],
       subject: subject,
       html: htmlBody,
       text: textBody,
+      // Add reply-to for better deliverability
+      reply_to: process.env.RESEND_REPLY_TO || fromEmail,
     };
 
     console.log('Sending email via Resend API...');
