@@ -101,7 +101,7 @@ No passwords, no spam — just this link. Keep it safe.
 
     // Use custom domain if configured, otherwise fall back to Resend's default
     // For production, you should verify your own domain in Resend and use it here
-    let fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
+    const fromEmail = process.env.RESEND_FROM_EMAIL || 'Serenity+ <onboarding@resend.dev>';
     
     // If using custom domain, we'll try it first, but fall back to Resend default if it fails
     // This prevents 403 errors during development/testing when domain isn't verified yet
@@ -160,7 +160,7 @@ No passwords, no spam — just this link. Keep it safe.
       try {
         errorData = JSON.parse(responseText);
         console.error('Parsed error data:', errorData);
-      } catch (e) {
+      } catch {
         // Response is not JSON, log as-is
         console.error('Non-JSON error response:', responseText);
       }
