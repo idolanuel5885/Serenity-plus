@@ -33,14 +33,23 @@ function getBaseUrl(): string {
 export async function sendReturnLinkEmail(options: SendReturnLinkOptions): Promise<boolean> {
   const resendApiKey = process.env.RESEND_API_KEY;
 
+  console.log('sendReturnLinkEmail called with:', {
+    email: options.email,
+    returnToken: options.returnToken ? `${options.returnToken.substring(0, 10)}...` : null,
+    userName: options.userName,
+  });
+
   if (!resendApiKey) {
-    console.warn('Email service not configured: RESEND_API_KEY not set');
+    console.error('Email service not configured: RESEND_API_KEY not set');
     return false;
   }
 
   try {
     const baseUrl = getBaseUrl();
     const returnLink = `${baseUrl}/return?token=${options.returnToken}`;
+    
+    console.log('Base URL:', baseUrl);
+    console.log('Return link:', returnLink);
     
     const userName = options.userName || 'there';
     const subject = 'Your SerenityPlus link';
@@ -90,28 +99,42 @@ ${returnLink}
 No passwords, no spam — just this link. Keep it safe.
     `.trim();
 
+    const emailPayload = {
+      from: 'Serenity+ <onboarding@resend.dev>', // Use Resend's default domain for testing
+      to: [options.email],
+      subject: subject,
+      html: htmlBody,
+      text: textBody,
+    };
+
+    console.log('Sending email via Resend API...');
+    console.log('Email payload:', {
+      from: emailPayload.from,
+      to: emailPayload.to,
+      subject: emailPayload.subject,
+    });
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        from: 'Serenity+ <noreply@serenity-plus.app>',
-        to: [options.email],
-        subject: subject,
-        html: htmlBody,
-        text: textBody,
-      }),
+      body: JSON.stringify(emailPayload),
     });
 
+    const responseText = await response.text();
+    console.log('Resend API response status:', response.status);
+    console.log('Resend API response:', responseText);
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Failed to send return link email:', errorText);
+      console.error('Failed to send return link email. Status:', response.status);
+      console.error('Error response:', responseText);
       return false;
     }
 
-    console.log(`✅ Return link email sent to ${options.email}`);
+    const responseData = JSON.parse(responseText);
+    console.log(`✅ Return link email sent to ${options.email}. Email ID:`, responseData.id);
     return true;
   } catch (error) {
     console.error('Error sending return link email:', error);
