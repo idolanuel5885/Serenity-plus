@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
-import { Marcellus, Quicksand } from 'next/font/google';
+import { Raleway, Nunito } from 'next/font/google';
 import './globals.css';
 
-const marcellus = Marcellus({
+const raleway = Raleway({
   variable: '--font-heading',
   subsets: ['latin'],
-  weight: '400',
+  weight: ['400', '500', '600'],
 });
 
-const quicksand = Quicksand({
+const nunito = Nunito({
   variable: '--font-body',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
@@ -42,7 +42,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Serenity Plus" />
         <link rel="apple-touch-icon" href="/icons/meditation-1.svg" />
       </head>
-      <body className={`${marcellus.variable} ${quicksand.variable} antialiased`}>{children}</body>
+      <body className={`${raleway.variable} ${nunito.variable} antialiased`}>{children}</body>
     </html>
   );
 }
