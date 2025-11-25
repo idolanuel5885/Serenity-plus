@@ -5,10 +5,16 @@
 
 import { test, expect } from '@playwright/test';
 
-const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+const baseUrl = process.env.E2E_BASE_URL || process.env.BASE_URL || 'https://serenity-plus-kohl.vercel.app';
 
 test.describe('Solo Meditation Mode E2E', () => {
   test.beforeEach(async ({ page, context }) => {
+    // Skip tests if running against localhost without proper setup
+    if (baseUrl.includes('localhost') && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      test.skip();
+      return;
+    }
+    
     // Clear all storage
     await context.clearCookies();
     

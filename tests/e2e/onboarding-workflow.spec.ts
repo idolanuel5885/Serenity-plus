@@ -18,7 +18,7 @@ test.describe('Complete Onboarding Workflow', () => {
     await expect(page).toHaveURL('/welcome', { timeout: 10000 });
 
     // Welcome page should load
-    await expect(page.locator('h1')).toContainText('Meditate daily with a gentle nudge.');
+    await expect(page.locator('h1')).toContainText('Meditate to Open The Lotus');
 
     // Click "Get started" button
     await page.click('a:has-text("Get started")');
