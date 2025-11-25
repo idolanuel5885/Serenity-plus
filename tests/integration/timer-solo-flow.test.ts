@@ -5,13 +5,14 @@
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
-// Mock fetch globally
-global.fetch = jest.fn();
+// Mock fetch globally with proper typing
+const mockFetch = jest.fn<typeof fetch>();
+global.fetch = mockFetch as typeof fetch;
 
 describe('Solo Meditation Flow Integration', () => {
   beforeEach(() => {
     jest.useFakeTimers();
-    (global.fetch as jest.Mock).mockClear();
+    mockFetch.mockClear();
     
     // Setup localStorage
     localStorage.clear();
@@ -23,7 +24,7 @@ describe('Solo Meditation Flow Integration', () => {
   afterEach(() => {
     jest.useRealTimers();
     localStorage.clear();
-    (global.fetch as jest.Mock).mockClear();
+    mockFetch.mockClear();
   });
 
   describe('No API calls in solo mode', () => {
@@ -53,7 +54,7 @@ describe('Solo Meditation Flow Integration', () => {
       startTimer();
       
       // Verify no API calls were made
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it('should not call session-complete API when completing timer in solo mode', () => {
@@ -82,7 +83,7 @@ describe('Solo Meditation Flow Integration', () => {
       completeSession();
       
       // Verify no API calls were made
-      expect(global.fetch).not.toHaveBeenCalled();
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it('should not call lotus-progress API in solo mode', () => {
@@ -125,8 +126,8 @@ describe('Solo Meditation Flow Integration', () => {
       startTimer();
       
       // Verify API call was made
-      expect(global.fetch).toHaveBeenCalledTimes(1);
-      expect(global.fetch).toHaveBeenCalledWith(
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledWith(
         '/api/session-complete',
         expect.objectContaining({
           method: 'POST',
