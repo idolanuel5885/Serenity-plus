@@ -402,7 +402,7 @@ async function getCurrentWeekFallback(partnershipId: string): Promise<Week | nul
     const now = new Date().toISOString();
 
     // First, try to find a week that contains the current time
-    const { data: currentWeek, error: currentError } = await supabase
+    const { data: currentWeek } = await supabase
       .from('weeks')
       .select('*')
       .eq('partnershipid', partnershipId)

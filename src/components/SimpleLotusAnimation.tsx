@@ -25,6 +25,7 @@ export default function SimpleLotusAnimation({
         
         // Just unhide the layers without modifying scale/opacity
         if (data.layers) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           data.layers.forEach((layer: any, _index: number) => {
             if (layer.hd === true) {
               layer.hd = false;

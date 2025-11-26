@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { createPartnershipsForUser, getUserPartnerships } from '../../src/lib/supabase-database';
+import { getUserPartnerships } from '../../src/lib/supabase-database';
 
 test.describe('Partnership Flow - Direct Function Testing', () => {
       test('Database connectivity check', async ({ request }) => {
@@ -42,8 +42,6 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
           return;
         }
     const timestamp = Date.now();
-    const user1Id = `49d77b58-d86f-4ab3-b38f-${timestamp.toString().slice(-12).padStart(12, '0')}`;
-    const user2Id = `c912a06f-9bab-42f4-b847-${(timestamp + 1).toString().slice(-12).padStart(12, '0')}`;
     const inviteCode = `invite-${timestamp}-${Math.random().toString(36).substr(2, 6)}`;
 
     console.log(`🧪 Testing partnership flow with invite code: ${inviteCode}`);
@@ -74,7 +72,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         console.error('❌ Error code:', errorData.code);
         console.error('❌ Error message:', errorData.details || errorData.error);
         console.error('❌ Error hint:', errorData.hint);
-      } catch (e) {
+      } catch {
         console.error('❌ Could not parse error response as JSON');
         console.error('❌ Raw response:', responseText);
       }
@@ -112,7 +110,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         console.error('❌ Error code:', errorData.code);
         console.error('❌ Error message:', errorData.details || errorData.error);
         console.error('❌ Error hint:', errorData.hint);
-      } catch (e) {
+      } catch {
         console.error('❌ Could not parse error response as JSON');
         console.error('❌ Raw response:', responseText);
       }
@@ -400,7 +398,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         console.error('❌ Error code:', errorData.code);
         console.error('❌ Error message:', errorData.details || errorData.error);
         console.error('❌ Error hint:', errorData.hint);
-      } catch (e) {
+      } catch {
         console.error('❌ Could not parse error response as JSON');
         console.error('❌ Raw response:', responseText);
       }
@@ -436,7 +434,7 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
         console.error('❌ Error code:', errorData.code);
         console.error('❌ Error message:', errorData.details || errorData.error);
         console.error('❌ Error hint:', errorData.hint);
-      } catch (e) {
+      } catch {
         console.error('❌ Could not parse error response as JSON');
         console.error('❌ Raw response:', responseText);
       }

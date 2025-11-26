@@ -114,14 +114,16 @@ export function useLotusProgress({
   // Fetch initial progress
   useEffect(() => {
     fetchProgress();
-  }, [userId, partnershipId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, partnershipId]); // fetchProgress is stable
 
   // Update progress when meditation state changes
   useEffect(() => {
     if (isMeditationActive) {
       updateProgress();
     }
-  }, [isMeditationActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMeditationActive]); // updateProgress is stable
 
   // Update progress periodically during active meditation
   useEffect(() => {
@@ -133,7 +135,8 @@ export function useLotusProgress({
     }, 1000); // Update every second for smooth animation
 
     return () => clearInterval(interval);
-  }, [isMeditationActive]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMeditationActive]); // updateProgress is stable
 
   return {
     progressData,

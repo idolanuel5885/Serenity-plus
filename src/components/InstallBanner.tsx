@@ -92,7 +92,7 @@ export default function InstallBanner({ onInstall }: InstallBannerProps) {
       deferredPrompt.prompt();
 
       // Wait for user response
-      const { outcome } = await deferredPrompt.userChoice;
+      await deferredPrompt.userChoice;
 
       // Clear the deferred prompt
       setDeferredPrompt(null);

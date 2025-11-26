@@ -337,6 +337,7 @@ export default function Home() {
       setPartnershipsLoaded(true);
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty deps - function should be stable
 
   const calculateWeekEndsIn = (weekStart: string) => {

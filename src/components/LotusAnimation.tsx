@@ -13,8 +13,11 @@ interface LotusAnimationProps {
 
 export default function LotusAnimation({ 
   progress, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isActive: _isActive, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   duration: _duration, 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   elapsed: _elapsed 
 }: LotusAnimationProps) {
   const lottieRef = useRef<any>(null);

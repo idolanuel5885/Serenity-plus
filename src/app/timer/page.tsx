@@ -228,7 +228,8 @@ export default function TimerPage() {
       };
 
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - fetch once on mount
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
@@ -253,7 +254,8 @@ export default function TimerPage() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning]); // Removed timeLeft from dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning]); // Removed timeLeft from dependencies to avoid infinite loops
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
