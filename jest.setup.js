@@ -42,11 +42,11 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Save real fetch before mocking (for integration tests that need it)
-// In Node.js 18+, fetch is available globally
+// In Node.js 18+, fetch is available via undici
 // Try multiple ways to get the real fetch
 let realFetch;
 
-// Try to get fetch from globalThis (Node.js 18+)
+// First, try to get fetch from globalThis (Node.js 18+)
 if (typeof globalThis.fetch !== 'undefined' && typeof globalThis.fetch === 'function') {
   realFetch = globalThis.fetch;
 } 
@@ -54,14 +54,25 @@ if (typeof globalThis.fetch !== 'undefined' && typeof globalThis.fetch === 'func
 else if (typeof global.fetch !== 'undefined' && typeof global.fetch === 'function') {
   realFetch = global.fetch;
 }
-// Try to get it from undici (Node.js 18+ internal)
+// Try to get it from undici (Node.js 18+ built-in module)
 else {
   try {
-    // In Node.js 18+, fetch is provided by undici
-    // We can try to access it via require, but it might not be available in all environments
-    const { fetch: undiciFetch } = require('undici');
-    if (typeof undiciFetch === 'function') {
-      realFetch = undiciFetch;
+    // In Node.js 18+, undici is a built-in module that provides fetch
+    // Try both 'undici' and 'node:undici' (Node.js built-in module syntax)
+    let undici;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      undici = require('undici');
+    } catch (e1) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        undici = require('node:undici');
+      } catch (e2) {
+        // Both failed, undici not available
+      }
+    }
+    if (undici && typeof undici.fetch === 'function') {
+      realFetch = undici.fetch;
     }
   } catch (e) {
     // undici might not be available or require might fail
@@ -69,31 +80,15 @@ else {
   }
 }
 
-// If we still don't have fetch, try to get it from the process
-// In Node.js 18+, it should be available on globalThis by default
-if (!realFetch && typeof process !== 'undefined' && process.versions && parseInt(process.versions.node.split('.')[0]) >= 18) {
-  // Node.js 18+ should have fetch, try one more time
-  try {
-    // Force evaluation - sometimes fetch needs to be accessed differently
-    if (typeof globalThis.fetch === 'function') {
-      realFetch = globalThis.fetch;
-    }
-  } catch (e) {
-    // Still not available
-  }
-}
-
 // Store real fetch on global for integration tests to restore if needed
 // Store on both global and globalThis to ensure it's accessible
-// Even if we don't have it now, we'll try to get it in the integration tests
 if (realFetch) {
   global.__REAL_FETCH__ = realFetch;
   globalThis.__REAL_FETCH__ = realFetch;
 } else {
-  // If fetch is not available, store a flag so integration tests know to try getting it themselves
+  // If fetch is not available, store null so integration tests know to try getting it themselves
   global.__REAL_FETCH__ = null;
   globalThis.__REAL_FETCH__ = null;
-  console.warn('⚠️ Warning: Could not save real fetch in jest.setup.js. Integration tests will try to get it themselves.');
 }
 
 // Mock fetch - integration tests will restore using __REAL_FETCH__

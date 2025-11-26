@@ -18,26 +18,30 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
 
   beforeAll(async () => {
     // Restore real fetch for Supabase client to work
-    // (jest.setup.js mocks fetch, but Supabase needs the real one)
-    // jest.setup.js saves the real fetch as __REAL_FETCH__ before mocking
+    // Integration tests run in 'node' environment which has Node.js's built-in fetch
+    // jest.setup.js mocks fetch, but Supabase needs the real one
+    
+    // First, try to get the saved fetch from jest.setup.js
     let realFetch = (global as any).__REAL_FETCH__ || (globalThis as any).__REAL_FETCH__;
     
-    // If fetch wasn't saved in jest.setup.js, try to get it now
+    // If fetch wasn't saved, get it from undici (Node.js 18+ built-in module)
     if (!realFetch || typeof realFetch !== 'function') {
-      // Try to get fetch from globalThis (Node.js 18+)
-      if (typeof globalThis.fetch === 'function' && !(globalThis.fetch as any)?._isMockFunction) {
-        realFetch = globalThis.fetch;
-      }
-      // Try to get it from undici (Node.js 18+ internal)
-      else {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const undici = require('undici');
+        if (undici && typeof undici.fetch === 'function') {
+          realFetch = undici.fetch;
+        }
+      } catch (e) {
+        // undici not available, try node:undici
         try {
           // eslint-disable-next-line @typescript-eslint/no-require-imports
-          const { fetch: undiciFetch } = require('undici');
-          if (typeof undiciFetch === 'function') {
-            realFetch = undiciFetch;
+          const undici = require('node:undici');
+          if (undici && typeof undici.fetch === 'function') {
+            realFetch = undici.fetch;
           }
-        } catch (e) {
-          // undici not available
+        } catch (e2) {
+          // Both failed
         }
       }
     }
@@ -46,20 +50,9 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
       throw new Error('Real fetch not available. Integration tests require real fetch for Supabase. Node.js 18+ is required.');
     }
     
-    // Try to restore using jest.restoreAllMocks() first (works if jest.spyOn was used)
-    jest.restoreAllMocks();
-    
-    // Check if fetch is now restored (jest.restoreAllMocks() worked)
-    const isRestored = typeof global.fetch === 'function' && 
-                       !(global.fetch as any)?._isMockFunction && 
-                       !(global.fetch as any).mock &&
-                       global.fetch === realFetch;
-    
-    if (!isRestored) {
-      // jest.restoreAllMocks() didn't work, restore manually using saved __REAL_FETCH__
-      global.fetch = realFetch;
-      globalThis.fetch = realFetch;
-    }
+    // Restore the real fetch
+    global.fetch = realFetch;
+    globalThis.fetch = realFetch;
     
     // Verify fetch is restored
     if ((global.fetch as any)?._isMockFunction || (global.fetch as any).mock) {
