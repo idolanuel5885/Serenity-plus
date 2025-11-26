@@ -364,7 +364,13 @@ export default function TimerPage() {
     
     // Calculate progress as percentage: (elapsed / totalDuration) * 100
     // Clamp between 0 and 100
+    // When completed (timeLeft = 0), progress should be 100%
     const progress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+    
+    // Ensure progress is 100% when meditation is completed
+    if (isCompleted) {
+      return 100;
+    }
     
     return progress;
   };
@@ -520,11 +526,11 @@ export default function TimerPage() {
     const userName = user.name || localStorage.getItem('userName') || 'You';
     
     if (isSoloMode || !partnership) {
-      return `${userName} Lotus`;
+      return `${userName}'s Lotus`;
     }
     
     const partnerName = partnership.partner.name || 'Partner';
-    return `${userName} and ${partnerName} Lotus`;
+    return `${userName}'s & ${partnerName}'s Lotus`;
   };
 
   const titleText = getTitleText();
@@ -622,7 +628,7 @@ export default function TimerPage() {
           ) : (partnership || isSoloMode) ? (
             <LotusAnimation
               progress={getLotusProgress()}
-              isActive={isRunning}
+              isActive={isRunning || isCompleted}
               duration={user?.usualSitLength ? user.usualSitLength * 60 : 0}
               elapsed={user?.usualSitLength ? (user.usualSitLength * 60) - timeLeft : 0}
             />
