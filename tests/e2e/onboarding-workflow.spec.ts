@@ -66,7 +66,7 @@ test.describe('Complete Onboarding Workflow', () => {
     const userId = await page.evaluate(() => {
       try {
         return localStorage.getItem('userId');
-      } catch (e) {
+      } catch {
         return null;
       }
     });
@@ -75,14 +75,14 @@ test.describe('Complete Onboarding Workflow', () => {
     const userName = await page.evaluate(() => {
       try {
         return localStorage.getItem('userName');
-      } catch (e) {
+      } catch {
         return null;
       }
     });
     expect(userName).toBe('TestUser');
   });
 
-  test('should complete onboarding and allow session creation', async ({ page, request }) => {
+  test('should complete onboarding and allow session creation', async ({ page }) => {
     const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
 
     if (baseUrl.includes('localhost') && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -123,7 +123,7 @@ test.describe('Complete Onboarding Workflow', () => {
     const userId = await page.evaluate(() => {
       try {
         return localStorage.getItem('userId');
-      } catch (e) {
+      } catch {
         return null;
       }
     });

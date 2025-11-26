@@ -30,7 +30,6 @@ describe('Solo Meditation Flow Integration', () => {
   describe('No API calls in solo mode', () => {
     it('should not call session-complete API when starting timer in solo mode', () => {
       // Simulate solo mode: no partnerships
-      const partnerships: any[] = [];
       const partnershipId = '';
       const userId = 'test-user-123';
       
@@ -58,7 +57,6 @@ describe('Solo Meditation Flow Integration', () => {
     });
 
     it('should not call session-complete API when completing timer in solo mode', () => {
-      const partnerships: any[] = [];
       const partnershipId = '';
       const userId = 'test-user-123';
       
@@ -88,7 +86,6 @@ describe('Solo Meditation Flow Integration', () => {
 
     it('should not call lotus-progress API in solo mode', () => {
       const partnershipId = '';
-      const userId = 'test-user-123';
       
       // Simulate useLotusProgress hook logic
       const shouldCallLotusProgress = () => {

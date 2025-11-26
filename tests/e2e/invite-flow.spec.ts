@@ -40,7 +40,7 @@ test.describe('Invite Flow', () => {
       try {
         await copyButton.click();
         await expect(page.locator('text=Copied!')).toBeVisible();
-      } catch (error) {
+      } catch {
         // Copy button click failed, but that's okay
         console.log('Copy button click failed, but invite link is working');
       }
@@ -89,7 +89,7 @@ test.describe('Invite Flow', () => {
     try {
       // Method 1: Click submit button
       await page.click('button[type="submit"]');
-    } catch (error) {
+    } catch {
       console.log('Submit button click failed, trying alternative approach');
       // Method 2: Trigger form submission via evaluate
       await page.evaluate(() => {

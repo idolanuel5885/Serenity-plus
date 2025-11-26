@@ -17,7 +17,6 @@ describe('Weeks API', () => {
 
   describe('Week 1 Creation at Partnership Creation', () => {
     it('should create Week 1 when partnership is established', async () => {
-      const mockPartnership = { id: 'partnership-123' };
       const mockWeek = {
         id: 'week-123',
         partnershipid: 'partnership-123',

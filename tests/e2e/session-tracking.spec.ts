@@ -140,7 +140,7 @@ test.describe('Session Tracking E2E', () => {
     console.log('✅ Session tracking flow completed successfully');
   });
 
-  test('Session ID persistence across timer operations', async ({ page, request }) => {
+  test('Session ID persistence across timer operations', async () => {
     const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
 
     if (baseUrl.includes('localhost') && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
@@ -159,7 +159,7 @@ test.describe('Session Tracking E2E', () => {
     expect(true).toBe(true);
   });
 
-  test('Multiple sessions in same week increment correctly', async ({ page, request }) => {
+  test('Multiple sessions in same week increment correctly', async () => {
     const baseUrl = process.env.E2E_BASE_URL || 'https://serenity-plus-kohl.vercel.app';
 
     if (baseUrl.includes('localhost') && !process.env.NEXT_PUBLIC_SUPABASE_URL) {

@@ -49,7 +49,7 @@ test.describe('Notification Redirect Bug', () => {
     const userId = await page.evaluate(() => {
       try {
         return localStorage.getItem('userId');
-      } catch (e) {
+      } catch {
         return null;
       }
     });
