@@ -46,7 +46,9 @@ export async function sendReturnLinkEmail(options: SendReturnLinkOptions): Promi
 
   try {
     const baseUrl = getBaseUrl();
-    const returnLink = `${baseUrl}/return?token=${options.returnToken}`;
+    // URL-encode the token to ensure it works properly in email clients
+    const encodedToken = encodeURIComponent(options.returnToken);
+    const returnLink = `${baseUrl}/return?token=${encodedToken}`;
     
     console.log('Base URL:', baseUrl);
     console.log('Return link:', returnLink);
@@ -54,7 +56,7 @@ export async function sendReturnLinkEmail(options: SendReturnLinkOptions): Promi
     const userName = options.userName || 'there';
     const subject = 'Your SerenityPlus link';
     
-    // Simple, friendly email template
+    // Simple, friendly email template with only button link
     const htmlBody = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h2 style="color: #1a1a1a; margin-bottom: 20px;">Hi ${userName},</h2>
@@ -63,23 +65,18 @@ export async function sendReturnLinkEmail(options: SendReturnLinkOptions): Promi
           Here's your link to return to your lotus and partner from any device.
         </p>
         
-        <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 20px;">
-          If you ever lose access or change phone, just open this link:
+        <p style="color: #4a4a4a; line-height: 1.6; margin-bottom: 30px;">
+          If you ever lose access or change phone, just click the button below:
         </p>
         
-        <div style="margin: 30px 0;">
+        <div style="margin: 30px 0; text-align: center;">
           <a 
             href="${returnLink}" 
-            style="display: inline-block; background-color: #000000; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 500;"
+            style="display: inline-block; background-color: #000000; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 16px;"
           >
             Return to Serenity+
           </a>
         </div>
-        
-        <p style="color: #8a8a8a; font-size: 14px; line-height: 1.6; margin-top: 30px;">
-          Or copy and paste this link into your browser:<br/>
-          <span style="word-break: break-all; color: #4a4a4a;">${returnLink}</span>
-        </p>
         
         <p style="color: #8a8a8a; font-size: 14px; margin-top: 30px; border-top: 1px solid #e0e0e0; padding-top: 20px;">
           No passwords, no spam — just this link. Keep it safe.
@@ -87,6 +84,7 @@ export async function sendReturnLinkEmail(options: SendReturnLinkOptions): Promi
       </div>
     `;
     
+    // Text version with the link (for email clients that don't support HTML)
     const textBody = `
 Hi ${userName},
 
