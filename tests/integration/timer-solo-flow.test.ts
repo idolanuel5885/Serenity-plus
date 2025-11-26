@@ -3,13 +3,26 @@
  * Tests that solo mode makes no API calls and works correctly
  */
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, jest } from '@jest/globals';
 
-// Mock fetch globally with proper typing
+// Save the original fetch before mocking
+const originalFetch = global.fetch;
+
+// Mock fetch with proper typing
 const mockFetch = jest.fn<typeof fetch>();
-global.fetch = mockFetch as typeof fetch;
 
 describe('Solo Meditation Flow Integration', () => {
+  beforeAll(() => {
+    // Mock fetch only for this test suite
+    global.fetch = mockFetch as typeof fetch;
+  });
+
+  afterAll(() => {
+    // Restore original fetch after this test suite completes
+    // This ensures other test files (like session-week-flow.test.ts) can use real fetch
+    global.fetch = originalFetch;
+  });
+
   beforeEach(() => {
     jest.useFakeTimers();
     mockFetch.mockClear();
