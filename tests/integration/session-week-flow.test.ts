@@ -19,30 +19,19 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
   beforeAll(async () => {
     // Restore real fetch for Supabase client to work
     // (jest.setup.js mocks fetch, but Supabase needs the real one)
-    // In Node.js 18+, fetch is available globally, but jest.setup.js has mocked it
-    // We need to restore the real fetch implementation
+    // jest.setup.js saves the real fetch as __REAL_FETCH__ before mocking
+    const realFetch = (global as any).__REAL_FETCH__;
     
-    // Check if fetch is mocked
-    const isMocked = (global.fetch as any)?._isMockFunction || (global.fetch as any).mock;
-    
-    if (isMocked) {
-      // Try to restore the real fetch
-      // In Node.js 18+, fetch is available via undici
-      try {
-        // Node.js 18+ has fetch built-in, but it's implemented via undici
-        // We can import it from undici to get the real implementation
-        const { fetch: realFetch } = await import('undici');
-        global.fetch = realFetch as typeof fetch;
-      } catch (error) {
-        // If undici import fails, try to use the global fetch if available
-        // (This shouldn't happen in Node.js 18+, but it's a fallback)
-        if (typeof globalThis.fetch !== 'undefined' && !(globalThis.fetch as any)?._isMockFunction) {
-          global.fetch = globalThis.fetch;
-        } else {
-          // Last resort: restore mocks and hope for the best
-          jest.restoreAllMocks();
-          console.warn('⚠️ Could not restore real fetch - integration tests may fail');
-        }
+    if (realFetch) {
+      // Restore the real fetch that was saved before mocking
+      global.fetch = realFetch;
+    } else {
+      // Fallback: try to restore mocks (might work if fetch was mocked with jest.spyOn)
+      jest.restoreAllMocks();
+      
+      // If fetch is still mocked, we have a problem
+      if ((global.fetch as any)?._isMockFunction || (global.fetch as any).mock) {
+        console.warn('⚠️ Warning: Could not restore real fetch. Integration tests may fail.');
       }
     }
 
