@@ -70,6 +70,16 @@ jobs:
       
       - name: Run integration tests
         run: npm run test:integration
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+      
+      - name: Cleanup test data
+        if: always()
+        run: npm run cleanup-test-data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
   build:
     runs-on: ubuntu-latest
@@ -142,6 +152,13 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+      
+      - name: Cleanup test data
+        if: always()
+        run: npm run cleanup-test-data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
   partnership-flow-tests:
     runs-on: ubuntu-latest
@@ -187,6 +204,13 @@ jobs:
         with:
           name: partnership-test-results
           path: test-results/
+      
+      - name: Cleanup test data
+        if: always()
+        run: npm run cleanup-test-data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
   onboarding-workflow-tests:
     runs-on: ubuntu-latest
@@ -240,6 +264,13 @@ jobs:
         with:
           name: onboarding-test-results
           path: test-results/
+      
+      - name: Cleanup test data
+        if: always()
+        run: npm run cleanup-test-data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
   security-scan:
     runs-on: ubuntu-latest
@@ -306,6 +337,13 @@ jobs:
         with:
           name: week-creation-test-results
           path: test-results/
+      
+      - name: Cleanup test data
+        if: always()
+        run: npm run cleanup-test-data
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
   quality-gate:
     runs-on: ubuntu-latest
