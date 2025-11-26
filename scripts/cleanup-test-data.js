@@ -29,6 +29,71 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 /**
+ * Batch an array into smaller chunks
+ */
+function batchArray(array, batchSize) {
+  const batches = [];
+  for (let i = 0; i < array.length; i += batchSize) {
+    batches.push(array.slice(i, i + batchSize));
+  }
+  return batches;
+}
+
+/**
+ * Query with batching to avoid Supabase query size limits
+ */
+async function queryInBatches(table, column, ids, select = '*', batchSize = 100) {
+  if (ids.length === 0) return [];
+  
+  const batches = batchArray(ids, batchSize);
+  const allResults = [];
+  
+  for (const batch of batches) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(select)
+      .in(column, batch);
+    
+    if (error) {
+      console.error(`❌ Error querying ${table} with batch:`, error);
+      throw error;
+    }
+    
+    if (data) {
+      allResults.push(...data);
+    }
+  }
+  
+  return allResults;
+}
+
+/**
+ * Delete in batches to avoid Supabase query size limits
+ */
+async function deleteInBatches(table, column, ids, batchSize = 100) {
+  if (ids.length === 0) return 0;
+  
+  const batches = batchArray(ids, batchSize);
+  let totalDeleted = 0;
+  
+  for (const batch of batches) {
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .in(column, batch);
+    
+    if (error) {
+      console.error(`❌ Error deleting from ${table} with batch:`, error);
+      throw error;
+    }
+    
+    totalDeleted += batch.length;
+  }
+  
+  return totalDeleted;
+}
+
+/**
  * Identify test users by email pattern
  */
 async function findTestUsers() {
@@ -72,8 +137,10 @@ async function findTestUsers() {
   );
   
   console.log(`✅ Found ${uniqueTestUsers.length} test user(s)`);
-  if (uniqueTestUsers.length > 0) {
+  if (uniqueTestUsers.length > 0 && uniqueTestUsers.length <= 10) {
     console.log('Test users:', uniqueTestUsers.map(u => `${u.name} (${u.email})`).join(', '));
+  } else if (uniqueTestUsers.length > 10) {
+    console.log(`Sample users: ${uniqueTestUsers.slice(0, 3).map(u => `${u.name} (${u.email})`).join(', ')}... (and ${uniqueTestUsers.length - 3} more)`);
   }
   
   return uniqueTestUsers.map(u => u.id);
@@ -97,30 +164,14 @@ async function cleanupTestData() {
     // Step 2: Find all partnerships involving test users
     console.log('\n🔍 Finding test partnerships...');
     
-    // Find partnerships where userid is in test users
-    const { data: partnershipsByUser, error: partnershipError1 } = await supabase
-      .from('partnerships')
-      .select('id, userid, partnerid')
-      .in('userid', testUserIds);
+    // Find partnerships where userid is in test users (batched)
+    const partnershipsByUser = await queryInBatches('partnerships', 'userid', testUserIds, 'id, userid, partnerid');
     
-    if (partnershipError1) {
-      console.error('❌ Error finding test partnerships (by userid):', partnershipError1);
-      throw partnershipError1;
-    }
-    
-    // Find partnerships where partnerid is in test users
-    const { data: partnershipsByPartner, error: partnershipError2 } = await supabase
-      .from('partnerships')
-      .select('id, userid, partnerid')
-      .in('partnerid', testUserIds);
-    
-    if (partnershipError2) {
-      console.error('❌ Error finding test partnerships (by partnerid):', partnershipError2);
-      throw partnershipError2;
-    }
+    // Find partnerships where partnerid is in test users (batched)
+    const partnershipsByPartner = await queryInBatches('partnerships', 'partnerid', testUserIds, 'id, userid, partnerid');
     
     // Combine and deduplicate
-    const allPartnerships = [...(partnershipsByUser || []), ...(partnershipsByPartner || [])];
+    const allPartnerships = [...partnershipsByUser, ...partnershipsByPartner];
     const uniquePartnerships = Array.from(
       new Map(allPartnerships.map(p => [p.id, p])).values()
     );
@@ -130,66 +181,34 @@ async function cleanupTestData() {
     
     // Step 3: Find all weeks for test partnerships
     console.log('\n🔍 Finding test weeks...');
-    const { data: testWeeks, error: weekError } = await supabase
-      .from('weeks')
-      .select('id')
-      .in('partnershipid', partnershipIds);
+    const testWeeks = await queryInBatches('weeks', 'partnershipid', partnershipIds, 'id');
     
-    if (weekError) {
-      console.error('❌ Error finding test weeks:', weekError);
-      throw weekError;
-    }
-    
-    const weekIds = (testWeeks || []).map(w => w.id);
+    const weekIds = testWeeks.map(w => w.id);
     console.log(`✅ Found ${weekIds.length} test week(s)`);
     
     // Step 4: Find all sessions for test users, partnerships, or weeks
     console.log('\n🔍 Finding test sessions...');
     
-    // Find sessions by userid
-    const { data: sessionsByUser, error: sessionError1 } = testUserIds.length > 0
-      ? await supabase
-          .from('sessions')
-          .select('id')
-          .in('userid', testUserIds)
-      : { data: [], error: null };
+    // Find sessions by userid (batched)
+    const sessionsByUser = testUserIds.length > 0
+      ? await queryInBatches('sessions', 'userid', testUserIds, 'id')
+      : [];
     
-    if (sessionError1) {
-      console.error('❌ Error finding test sessions (by userid):', sessionError1);
-      throw sessionError1;
-    }
+    // Find sessions by partnershipid (batched)
+    const sessionsByPartnership = partnershipIds.length > 0
+      ? await queryInBatches('sessions', 'partnershipid', partnershipIds, 'id')
+      : [];
     
-    // Find sessions by partnershipid
-    const { data: sessionsByPartnership, error: sessionError2 } = partnershipIds.length > 0
-      ? await supabase
-          .from('sessions')
-          .select('id')
-          .in('partnershipid', partnershipIds)
-      : { data: [], error: null };
-    
-    if (sessionError2) {
-      console.error('❌ Error finding test sessions (by partnershipid):', sessionError2);
-      throw sessionError2;
-    }
-    
-    // Find sessions by weekid
-    const { data: sessionsByWeek, error: sessionError3 } = weekIds.length > 0
-      ? await supabase
-          .from('sessions')
-          .select('id')
-          .in('weekid', weekIds)
-      : { data: [], error: null };
-    
-    if (sessionError3) {
-      console.error('❌ Error finding test sessions (by weekid):', sessionError3);
-      throw sessionError3;
-    }
+    // Find sessions by weekid (batched)
+    const sessionsByWeek = weekIds.length > 0
+      ? await queryInBatches('sessions', 'weekid', weekIds, 'id')
+      : [];
     
     // Combine and deduplicate
     const allSessions = [
-      ...(sessionsByUser || []),
-      ...(sessionsByPartnership || []),
-      ...(sessionsByWeek || [])
+      ...sessionsByUser,
+      ...sessionsByPartnership,
+      ...sessionsByWeek
     ];
     const uniqueSessions = Array.from(
       new Map(allSessions.map(s => [s.id, s])).values()
@@ -201,60 +220,28 @@ async function cleanupTestData() {
     // Step 5: Delete in correct order (respecting foreign key constraints)
     console.log('\n🗑️  Deleting test data...');
     
-    // Delete sessions first
+    // Delete sessions first (batched)
     if (sessionIds.length > 0) {
-      const { error: deleteSessionsError } = await supabase
-        .from('sessions')
-        .delete()
-        .in('id', sessionIds);
-      
-      if (deleteSessionsError) {
-        console.error('❌ Error deleting test sessions:', deleteSessionsError);
-        throw deleteSessionsError;
-      }
-      console.log(`✅ Deleted ${sessionIds.length} session(s)`);
+      const deletedCount = await deleteInBatches('sessions', 'id', sessionIds);
+      console.log(`✅ Deleted ${deletedCount} session(s)`);
     }
     
-    // Delete weeks
+    // Delete weeks (batched)
     if (weekIds.length > 0) {
-      const { error: deleteWeeksError } = await supabase
-        .from('weeks')
-        .delete()
-        .in('id', weekIds);
-      
-      if (deleteWeeksError) {
-        console.error('❌ Error deleting test weeks:', deleteWeeksError);
-        throw deleteWeeksError;
-      }
-      console.log(`✅ Deleted ${weekIds.length} week(s)`);
+      const deletedCount = await deleteInBatches('weeks', 'id', weekIds);
+      console.log(`✅ Deleted ${deletedCount} week(s)`);
     }
     
-    // Delete partnerships
+    // Delete partnerships (batched)
     if (partnershipIds.length > 0) {
-      const { error: deletePartnershipsError } = await supabase
-        .from('partnerships')
-        .delete()
-        .in('id', partnershipIds);
-      
-      if (deletePartnershipsError) {
-        console.error('❌ Error deleting test partnerships:', deletePartnershipsError);
-        throw deletePartnershipsError;
-      }
-      console.log(`✅ Deleted ${partnershipIds.length} partnership(s)`);
+      const deletedCount = await deleteInBatches('partnerships', 'id', partnershipIds);
+      console.log(`✅ Deleted ${deletedCount} partnership(s)`);
     }
     
-    // Delete users last
+    // Delete users last (batched)
     if (testUserIds.length > 0) {
-      const { error: deleteUsersError } = await supabase
-        .from('users')
-        .delete()
-        .in('id', testUserIds);
-      
-      if (deleteUsersError) {
-        console.error('❌ Error deleting test users:', deleteUsersError);
-        throw deleteUsersError;
-      }
-      console.log(`✅ Deleted ${testUserIds.length} user(s)`);
+      const deletedCount = await deleteInBatches('users', 'id', testUserIds);
+      console.log(`✅ Deleted ${deletedCount} user(s)`);
     }
     
     console.log('\n✅ Test data cleanup completed successfully!');
