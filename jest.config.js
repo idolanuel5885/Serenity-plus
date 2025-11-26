@@ -8,23 +8,9 @@ const createJestConfig = nextJest({
 // Add any custom config to be passed to Jest
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testEnvironment: 'jsdom',
   // Use node environment for integration tests (they need real fetch from Node.js)
-  testEnvironmentOptions: {
-    customExportConditions: [''],
-  },
-  projects: [
-    {
-      displayName: 'unit',
-      testMatch: ['<rootDir>/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
-      testEnvironment: 'jsdom',
-    },
-    {
-      displayName: 'integration',
-      testMatch: ['<rootDir>/tests/integration/**/*.test.{js,jsx,ts,tsx}'],
-      testEnvironment: 'node', // Use node environment for integration tests to get real fetch
-    },
-  ],
+  // Use jsdom for unit tests
+  testEnvironment: 'jsdom',
   testPathIgnorePatterns: [
     '<rootDir>/.next/', 
     '<rootDir>/node_modules/',
