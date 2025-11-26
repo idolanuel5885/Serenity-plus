@@ -58,7 +58,7 @@ if (realFetch) {
   globalThis.__REAL_FETCH__ = realFetch;
 }
 
-// Mock fetch - use jest.fn() for now, integration tests will restore the real one
+// Mock fetch - integration tests will restore using __REAL_FETCH__
 global.fetch = jest.fn();
 
 // Mock window.location
