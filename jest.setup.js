@@ -50,7 +50,7 @@ global.fetch = jest.fn();
 
 // Store real fetch on global for integration tests to restore if needed
 if (realFetch) {
-  (global as any).__REAL_FETCH__ = realFetch;
+  global.__REAL_FETCH__ = realFetch;
 }
 
 // Mock window.location
