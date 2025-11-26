@@ -546,7 +546,7 @@ export default function Home() {
 
           {/* Partners Summary */}
           <div className="bg-gray-50 rounded-lg p-4">
-            <h2 className="font-semibold mb-4 text-black">Partners summary</h2>
+            <h2 className="font-semibold mb-4 text-black">This Week Together</h2>
             {pairingStatus === 'paired' && partnerships.length > 0 ? (
               // User is paired - show partnership summary
               <div className="space-y-3">

@@ -422,7 +422,7 @@ export default function MeditationLengthPage() {
             How long do you want each meditation to be?
           </h1>
           <p className="text-sm text-gray-700 mb-8">
-            This will be the time you are accountable to meditating in each sitting
+            Short and consistent is better than long and rare.
           </p>
 
           <div className="flex-1">

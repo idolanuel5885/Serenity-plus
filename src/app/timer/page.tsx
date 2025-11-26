@@ -88,6 +88,8 @@ export default function TimerPage() {
   const [loading, setLoading] = useState(true);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const [titleFontSize, setTitleFontSize] = useState(30);
 
   // Fetch user data and partnerships on component mount
   useEffect(() => {
@@ -511,6 +513,60 @@ export default function TimerPage() {
     }
   }, [isCompleted, completeSession]);
 
+  // Calculate dynamic title and adjust font size to fit one line
+  const getTitleText = () => {
+    if (!user) return 'Sitting in Progress';
+    
+    const userName = user.name || localStorage.getItem('userName') || 'You';
+    
+    if (isSoloMode || !partnership) {
+      return `${userName} Lotus`;
+    }
+    
+    const partnerName = partnership.partner.name || 'Partner';
+    return `${userName} and ${partnerName} Lotus`;
+  };
+
+  const titleText = getTitleText();
+
+  // Adjust font size to fit one line (max 30px)
+  useEffect(() => {
+    if (!titleRef.current) return;
+
+    const container = titleRef.current.parentElement;
+    if (!container) return;
+
+    // Get available width (container width minus back button and spacing)
+    const backButton = container.querySelector('a');
+    const backButtonWidth = backButton ? backButton.offsetWidth : 50;
+    const padding = 32; // 16px padding on each side
+    const gap = 8; // gap between elements
+    const maxWidth = container.offsetWidth - backButtonWidth - padding - gap - 24; // 24px for right spacer
+    
+    const maxFontSize = 30;
+    let fontSize = maxFontSize;
+
+    // Create a temporary element to measure text width
+    const measureElement = document.createElement('span');
+    measureElement.style.visibility = 'hidden';
+    measureElement.style.position = 'absolute';
+    measureElement.style.whiteSpace = 'nowrap';
+    measureElement.style.fontSize = `${fontSize}px`;
+    measureElement.style.fontWeight = 'bold';
+    measureElement.style.fontFamily = getComputedStyle(titleRef.current).fontFamily;
+    measureElement.textContent = titleText;
+    document.body.appendChild(measureElement);
+
+    // Reduce font size until text fits
+    while (measureElement.offsetWidth > maxWidth && fontSize > 12) {
+      fontSize -= 1;
+      measureElement.style.fontSize = `${fontSize}px`;
+    }
+
+    document.body.removeChild(measureElement);
+    setTitleFontSize(fontSize);
+  }, [titleText, partnershipsLoading, partnership, user]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -525,8 +581,8 @@ export default function TimerPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="flex items-center justify-between p-4 border-b gap-2">
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
@@ -536,8 +592,14 @@ export default function TimerPage() {
             />
           </svg>
         </Link>
-        <h1 className="text-lg font-bold">Sitting in Progress</h1>
-        <div></div>
+        <h1 
+          ref={titleRef}
+          className="font-bold text-center flex-1 min-w-0 overflow-hidden text-ellipsis whitespace-nowrap"
+          style={{ fontSize: `${titleFontSize}px`, lineHeight: '1.2' }}
+        >
+          {titleText}
+        </h1>
+        <div className="w-6 flex-shrink-0"></div>
       </div>
 
       <div className="p-6 space-y-8">
