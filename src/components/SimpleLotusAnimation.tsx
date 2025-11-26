@@ -17,7 +17,7 @@ export default function SimpleLotusAnimation({
 
   // Fetch the lotus animation data
   useEffect(() => {
-    fetch('/real_lotus.json')
+    fetch('/shortlotus.json')
       .then(response => response.json())
       .then(data => {
         console.log('Lotus animation data loaded:', data);

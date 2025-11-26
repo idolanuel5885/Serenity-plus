@@ -18,7 +18,7 @@ export function preloadLotusAnimation(): Promise<any> {
   }
 
   // Start loading
-  loadingPromise = fetch('/real_lotus.json')
+  loadingPromise = fetch('/shortlotus.json')
     .then(response => response.json())
     .then(data => {
       console.log('Lotus animation data preloaded:', data);
