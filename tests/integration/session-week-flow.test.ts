@@ -20,18 +20,46 @@ const shouldSkip = !supabaseUrl || !supabaseAnonKey;
     // Restore real fetch for Supabase client to work
     // (jest.setup.js mocks fetch, but Supabase needs the real one)
     // jest.setup.js saves the real fetch as __REAL_FETCH__ before mocking
-    const realFetch = (global as any).__REAL_FETCH__;
+    let realFetch = (global as any).__REAL_FETCH__ || (globalThis as any).__REAL_FETCH__;
     
-    if (realFetch) {
+    // If __REAL_FETCH__ is not available, try to get it from Node.js runtime
+    // In Node.js 18+, fetch is available natively
+    if (!realFetch || typeof realFetch !== 'function') {
+      // Try to get fetch from Node.js built-in (Node.js 18+)
+      // The real fetch should be available on globalThis even if we mocked global.fetch
+      try {
+        // Temporarily remove the mock to access the real fetch
+        const currentFetch = global.fetch;
+        // Delete the property to see if the real one is available
+        delete (global as any).fetch;
+        // Check if globalThis has the real fetch
+        if (typeof globalThis.fetch === 'function' && !(globalThis.fetch as any)?._isMockFunction) {
+          realFetch = globalThis.fetch;
+        }
+        // Restore the mock if we didn't find the real one
+        if (!realFetch) {
+          global.fetch = currentFetch;
+        }
+      } catch (e) {
+        // If that doesn't work, we'll try restoreAllMocks as last resort
+        jest.restoreAllMocks();
+      }
+    }
+    
+    if (realFetch && typeof realFetch === 'function') {
       // Restore the real fetch that was saved before mocking
       global.fetch = realFetch;
+      globalThis.fetch = realFetch;
     } else {
-      // Fallback: try to restore mocks (might work if fetch was mocked with jest.spyOn)
-      jest.restoreAllMocks();
-      
       // If fetch is still mocked, we have a problem
       if ((global.fetch as any)?._isMockFunction || (global.fetch as any).mock) {
         console.warn('⚠️ Warning: Could not restore real fetch. Integration tests may fail.');
+        // Try one more time with restoreAllMocks
+        jest.restoreAllMocks();
+        // Check again
+        if ((global.fetch as any)?._isMockFunction || (global.fetch as any).mock) {
+          throw new Error('Failed to restore real fetch for integration tests. Supabase will not work.');
+        }
       }
     }
 
