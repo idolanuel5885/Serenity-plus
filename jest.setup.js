@@ -44,7 +44,7 @@ Object.defineProperty(window, 'localStorage', {
 // Save real fetch before mocking (for integration tests that need it)
 // In Node.js 18+, fetch is available globally
 // Try multiple ways to get the real fetch
-let realFetch: typeof fetch | undefined;
+let realFetch;
 if (typeof globalThis.fetch !== 'undefined' && typeof globalThis.fetch === 'function') {
   realFetch = globalThis.fetch;
 } else if (typeof global.fetch !== 'undefined' && typeof global.fetch === 'function') {
@@ -59,7 +59,7 @@ if (realFetch) {
 }
 
 // Mock fetch - use jest.fn() for now, integration tests will restore the real one
-global.fetch = jest.fn() as typeof fetch;
+global.fetch = jest.fn();
 
 // Mock window.location
 // JSDOM doesn't allow direct assignment to window.location or setting href
