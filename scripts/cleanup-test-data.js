@@ -275,9 +275,41 @@ async function cleanupTestData() {
     }
     
     // Delete partnerships (batched)
-    if (partnershipIds.length > 0) {
-      const deletedCount = await deleteInBatches('partnerships', 'id', partnershipIds);
-      console.log(`✅ Deleted ${deletedCount} partnership(s)`);
+    // IMPORTANT: Delete partnerships even if we didn't find them via query
+    // Try to delete partnerships by userid/partnerid directly to catch any we missed
+    if (testUserIds.length > 0) {
+      // First, try deleting partnerships we found
+      if (partnershipIds.length > 0) {
+        const deletedCount = await deleteInBatches('partnerships', 'id', partnershipIds);
+        console.log(`✅ Deleted ${deletedCount} partnership(s) by ID`);
+      }
+      
+      // Also try deleting partnerships by userid/partnerid to catch any we missed
+      // This handles the case where partnerships exist but weren't found by the query
+      for (const userId of testUserIds) {
+        // Delete partnerships where user is userid
+        const { error: deleteError1 } = await supabase
+          .from('partnerships')
+          .delete()
+          .eq('userid', userId);
+        
+        if (deleteError1 && deleteError1.code !== 'PGRST116') {
+          // PGRST116 = no rows found, which is fine
+          console.warn(`⚠️ Warning deleting partnerships for userid ${userId}:`, deleteError1.message);
+        }
+        
+        // Delete partnerships where user is partnerid
+        const { error: deleteError2 } = await supabase
+          .from('partnerships')
+          .delete()
+          .eq('partnerid', userId);
+        
+        if (deleteError2 && deleteError2.code !== 'PGRST116') {
+          // PGRST116 = no rows found, which is fine
+          console.warn(`⚠️ Warning deleting partnerships for partnerid ${userId}:`, deleteError2.message);
+        }
+      }
+      console.log(`✅ Attempted to delete all partnerships for ${testUserIds.length} test user(s)`);
     }
     
     // Delete users last (batched)

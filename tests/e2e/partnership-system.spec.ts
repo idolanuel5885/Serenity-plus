@@ -42,7 +42,7 @@ test.describe('Partnership System', () => {
     await page.waitForTimeout(2000);
 
     // Should show no partners yet (only one user)
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    await expect(page.locator('h2')).toContainText('This Week Together');
     await expect(page.locator('text=No partners yet')).toBeVisible();
 
     // Now simulate second user joining
@@ -70,7 +70,7 @@ test.describe('Partnership System', () => {
     await page.waitForTimeout(2000);
 
     // Should now show partnership with Bob (or no partners if Supabase-based)
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    await expect(page.locator('h2')).toContainText('This Week Together');
     
     // Check if partnership data is visible or if it shows "No partners yet"
     const hasPartnershipData = await page.locator('text=Bob').isVisible().catch(() => false);
@@ -119,7 +119,7 @@ test.describe('Partnership System', () => {
     await page.waitForTimeout(2000);
 
     // Should show partnership with inviter (or no partners if Supabase-based)
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    await expect(page.locator('h2')).toContainText('This Week Together');
     
     // Check if partnership data is visible or if it shows "No partners yet"
     const hasPartnershipData = await page.locator('text=Your Partner').isVisible().catch(() => false);
@@ -185,7 +185,7 @@ test.describe('Partnership System', () => {
     await page.waitForTimeout(2000);
 
     // Should show existing partnership (or no partners if Supabase-based)
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    await expect(page.locator('h2')).toContainText('This Week Together');
     
     // Check if partnership data is visible or if it shows "No partners yet"
     const hasPartnershipData = await page.locator('text=Existing Partner').isVisible().catch(() => false);

@@ -117,7 +117,7 @@ test.describe('Invite Flow', () => {
     await page.waitForLoadState('networkidle');
     
     // Wait for partnerships to be displayed
-    await expect(page.locator('text=Partners summary')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=This Week Together')).toBeVisible({ timeout: 10000 });
   });
 
 

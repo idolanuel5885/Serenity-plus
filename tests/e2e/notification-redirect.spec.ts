@@ -40,7 +40,7 @@ test.describe('Notification Redirect Bug', () => {
     await expect(page).toHaveURL('/');
 
     // Should show homepage content
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    await expect(page.locator('h2')).toContainText('This Week Together');
 
     // Should not redirect to welcome page
     await expect(page).not.toHaveURL('/welcome');
