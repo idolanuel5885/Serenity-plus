@@ -243,9 +243,28 @@ async function cleanupTestData() {
     console.log('\n🗑️  Deleting test data...');
     
     // Delete sessions first (batched)
+    // IMPORTANT: Delete sessions by weekid for ALL weeks we find, not just the ones we found initially
+    // This ensures we catch all sessions that reference weeks, even if they weren't found by user/partnership queries
+    if (weekIds.length > 0) {
+      // Delete sessions by weekid for all weeks we found
+      for (const weekId of weekIds) {
+        const { error: deleteError } = await supabase
+          .from('sessions')
+          .delete()
+          .eq('weekid', weekId);
+        
+        if (deleteError && deleteError.code !== 'PGRST116') {
+          // PGRST116 = no rows found, which is fine
+          console.warn(`⚠️ Warning deleting sessions for week ${weekId}:`, deleteError.message);
+        }
+      }
+      console.log(`✅ Attempted to delete all sessions for ${weekIds.length} week(s)`);
+    }
+    
+    // Also delete sessions we found by other methods
     if (sessionIds.length > 0) {
       const deletedCount = await deleteInBatches('sessions', 'id', sessionIds);
-      console.log(`✅ Deleted ${deletedCount} session(s)`);
+      console.log(`✅ Deleted ${deletedCount} session(s) by ID`);
     }
     
     // Delete weeks (batched)
@@ -260,7 +279,28 @@ async function cleanupTestData() {
       
       // Also try deleting weeks by partnershipid to catch any we missed
       // This handles the case where weeks exist but weren't found by the query
+      // But first, delete any sessions that might reference these weeks
       for (const partnershipId of partnershipIds) {
+        // First, find and delete all sessions for weeks in this partnership
+        const { data: partnershipWeeks } = await supabase
+          .from('weeks')
+          .select('id')
+          .eq('partnershipid', partnershipId);
+        
+        if (partnershipWeeks && partnershipWeeks.length > 0) {
+          for (const week of partnershipWeeks) {
+            const { error: sessionDeleteError } = await supabase
+              .from('sessions')
+              .delete()
+              .eq('weekid', week.id);
+            
+            if (sessionDeleteError && sessionDeleteError.code !== 'PGRST116') {
+              console.warn(`⚠️ Warning deleting sessions for week ${week.id}:`, sessionDeleteError.message);
+            }
+          }
+        }
+        
+        // Now delete the weeks
         const { error: deleteError } = await supabase
           .from('weeks')
           .delete()
