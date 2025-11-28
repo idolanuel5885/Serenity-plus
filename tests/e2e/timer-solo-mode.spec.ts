@@ -172,7 +172,10 @@ test.describe('Solo Meditation Mode E2E', () => {
     await page.goto(`${baseUrl}/timer`);
 
     await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
-    await page.waitForTimeout(1000);
+    // Wait for UI to stabilize - use waitForLoadState instead of deprecated waitForTimeout
+    await page.waitForLoadState('networkidle', { timeout: 2000 }).catch(() => {
+      // networkidle might timeout if there are ongoing requests, that's okay
+    });
 
     // Verify completion UI structure exists (even if actual completion text isn't rendered yet)
     await expect(page.locator('h1')).toContainText('Sitting in Progress');

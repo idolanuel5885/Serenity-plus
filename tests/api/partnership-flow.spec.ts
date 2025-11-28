@@ -507,7 +507,8 @@ test.describe('Partnership Flow - Direct Function Testing', () => {
     await expect(sitNowButton).toBeVisible();
     
     // Verify the Partners Summary section is immediately visible with data
-    const partnersSummary = page.locator('text=Partners summary');
+    // The heading is "This Week Together", not "Partners summary"
+    const partnersSummary = page.locator('text=This Week Together');
     await expect(partnersSummary).toBeVisible();
     
     // Check if partnership data is visible or if it shows "No partners yet"

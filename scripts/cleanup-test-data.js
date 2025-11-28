@@ -181,10 +181,32 @@ async function cleanupTestData() {
     
     // Step 3: Find all weeks for test partnerships
     console.log('\n🔍 Finding test weeks...');
-    const testWeeks = await queryInBatches('weeks', 'partnershipid', partnershipIds, 'id');
-    
-    const weekIds = testWeeks.map(w => w.id);
+    let weekIds = [];
+    if (partnershipIds.length > 0) {
+      const testWeeks = await queryInBatches('weeks', 'partnershipid', partnershipIds, 'id');
+      weekIds = testWeeks.map(w => w.id);
+    }
     console.log(`✅ Found ${weekIds.length} test week(s)`);
+    
+    // Also try to find weeks by querying all weeks and filtering (in case RLS or query issues)
+    // This is a fallback to ensure we catch all weeks that reference test partnerships
+    if (partnershipIds.length > 0 && weekIds.length === 0) {
+      console.log('⚠️ No weeks found via partnership query, trying alternative approach...');
+      try {
+        // Try to get all weeks and filter client-side (if RLS allows)
+        const { data: allWeeks, error: weeksError } = await supabase
+          .from('weeks')
+          .select('id, partnershipid');
+        
+        if (!weeksError && allWeeks) {
+          const matchingWeeks = allWeeks.filter(w => partnershipIds.includes(w.partnershipid));
+          weekIds = matchingWeeks.map(w => w.id);
+          console.log(`✅ Found ${weekIds.length} week(s) via alternative query`);
+        }
+      } catch (e) {
+        console.log('⚠️ Alternative week query failed, continuing with existing weekIds');
+      }
+    }
     
     // Step 4: Find all sessions for test users, partnerships, or weeks
     console.log('\n🔍 Finding test sessions...');
@@ -227,9 +249,29 @@ async function cleanupTestData() {
     }
     
     // Delete weeks (batched)
-    if (weekIds.length > 0) {
-      const deletedCount = await deleteInBatches('weeks', 'id', weekIds);
-      console.log(`✅ Deleted ${deletedCount} week(s)`);
+    // IMPORTANT: Delete weeks even if we didn't find them via query
+    // Try to delete weeks by partnershipid directly to catch any we missed
+    if (partnershipIds.length > 0) {
+      // First, try deleting weeks we found
+      if (weekIds.length > 0) {
+        const deletedCount = await deleteInBatches('weeks', 'id', weekIds);
+        console.log(`✅ Deleted ${deletedCount} week(s) by ID`);
+      }
+      
+      // Also try deleting weeks by partnershipid to catch any we missed
+      // This handles the case where weeks exist but weren't found by the query
+      for (const partnershipId of partnershipIds) {
+        const { error: deleteError } = await supabase
+          .from('weeks')
+          .delete()
+          .eq('partnershipid', partnershipId);
+        
+        if (deleteError && deleteError.code !== 'PGRST116') {
+          // PGRST116 = no rows found, which is fine
+          console.warn(`⚠️ Warning deleting weeks for partnership ${partnershipId}:`, deleteError.message);
+        }
+      }
+      console.log(`✅ Attempted to delete all weeks for ${partnershipIds.length} partnership(s)`);
     }
     
     // Delete partnerships (batched)
