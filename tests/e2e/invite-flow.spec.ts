@@ -81,9 +81,17 @@ test.describe('Invite Flow', () => {
     await page.fill('input[placeholder="e.g., Ido"]', 'Partner User');
     await page.click('button:has-text("Continue")');
 
+    // Email step (new step in onboarding flow)
+    // Wait for email page to load
+    await expect(page).toHaveURL('/email', { timeout: 5000 });
+    
+    // Fill in email
+    await page.fill('input[type="email"], input[placeholder*="email" i]', 'partner@test.com');
+    await page.click('button:has-text("Continue")');
+
     // Meditations per week - submit the form properly
     // First, ensure we're on the right page
-    await expect(page).toHaveURL('/meditations-per-week');
+    await expect(page).toHaveURL('/meditations-per-week', { timeout: 5000 });
     
     // Try multiple approaches to submit the form
     try {
