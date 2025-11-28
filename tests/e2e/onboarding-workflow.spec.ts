@@ -59,7 +59,8 @@ test.describe('Complete Onboarding Workflow', () => {
     await expect(page).toHaveURL('/');
 
     // Homepage should show user dashboard
-    await expect(page.locator('h2')).toContainText('Partners summary');
+    // The heading is "This Week Together", not "Partners summary"
+    await expect(page.locator('h2')).toContainText('This Week Together');
 
     // Check that user data was stored
     // Use evaluateHandle to avoid security errors

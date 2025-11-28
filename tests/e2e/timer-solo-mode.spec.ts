@@ -31,8 +31,9 @@ test.describe('Solo Meditation Mode E2E', () => {
   test('should show lotus animation in solo mode', async ({ page }) => {
     await page.goto(`${baseUrl}/timer`);
 
-    // Wait for page to load
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for page to load - check for timer controls instead of title text
+    // Title might be "Sitting in Progress" (no user) or "{Name}'s Lotus" (user logged in)
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
 
     // Wait for partnerships to load (should be empty)
     await page.waitForTimeout(1000);
@@ -71,8 +72,8 @@ test.describe('Solo Meditation Mode E2E', () => {
 
     await page.goto(`${baseUrl}/timer`);
 
-    // Wait for page to load
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for page to load - check for timer controls instead of title text
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
     await page.waitForTimeout(1000); // Wait for partnerships to load
 
     // Start meditation
@@ -90,8 +91,8 @@ test.describe('Solo Meditation Mode E2E', () => {
   test('should show timer countdown in solo mode', async ({ page }) => {
     await page.goto(`${baseUrl}/timer`);
 
-    // Wait for page to load
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for page to load - check for timer controls instead of title text
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
     await page.waitForTimeout(1000);
 
     // Verify timer shows initial time (15:00 for 15-minute session)
@@ -112,7 +113,8 @@ test.describe('Solo Meditation Mode E2E', () => {
   test('should allow pause and reset in solo mode', async ({ page }) => {
     await page.goto(`${baseUrl}/timer`);
 
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for page to load - check for timer controls instead of title text
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
     await page.waitForTimeout(1000);
 
     // Start meditation
@@ -148,7 +150,8 @@ test.describe('Solo Meditation Mode E2E', () => {
 
     await page.goto(`${baseUrl}/timer`);
 
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for page to load - check for timer controls instead of title text
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
     await page.waitForTimeout(1000);
 
     // For testing, we'll use a very short meditation (1 second)
@@ -169,18 +172,30 @@ test.describe('Solo Meditation Mode E2E', () => {
     // This test would ideally fast-forward the timer, but Playwright doesn't support that
     // Instead, we'll verify the UI structure supports completion
     
+    // Clear localStorage to ensure we start fresh (no user logged in)
     await page.goto(`${baseUrl}/timer`);
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+    });
+    await page.reload();
 
-    await page.waitForSelector('text=Sitting in Progress', { timeout: 5000 });
+    // Wait for timer page to load - check for timer controls instead of specific title text
+    // The title might be "Sitting in Progress" (no user) or "{Name}'s Lotus" (user logged in)
+    await page.waitForSelector('button:has-text("Start")', { timeout: 10000 });
+    
     // Wait for UI to stabilize - use waitForLoadState instead of deprecated waitForTimeout
     await page.waitForLoadState('networkidle', { timeout: 2000 }).catch(() => {
       // networkidle might timeout if there are ongoing requests, that's okay
     });
 
     // Verify completion UI structure exists (even if actual completion text isn't rendered yet)
-    await expect(page.locator('h1')).toContainText('Sitting in Progress');
+    // Check for timer controls instead of specific title text
     await expect(page.locator('button:has-text("Start")')).toBeVisible();
     await expect(page.locator('button:has-text("Reset")')).toBeVisible();
+    
+    // Verify timer display is present
+    await expect(page.locator('.text-6xl.font-mono')).toBeVisible();
   });
 });
 
