@@ -30,16 +30,18 @@ jest.mock('next/link', () => {
   };
 });
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-};
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-});
+// Mock localStorage (only in jsdom environment, not in node environment)
+if (typeof window !== 'undefined') {
+  const localStorageMock = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  };
+  Object.defineProperty(window, 'localStorage', {
+    value: localStorageMock,
+  });
+}
 
 // Save real fetch before mocking (for integration tests that need it)
 // In Node.js 18+, fetch is available via undici
@@ -94,34 +96,36 @@ if (realFetch) {
 // Mock fetch - integration tests will restore using __REAL_FETCH__
 global.fetch = jest.fn();
 
-// Mock window.location
-// JSDOM doesn't allow direct assignment to window.location or setting href
-// We create a mock that doesn't trigger navigation by using getters/setters
-const mockLocation = {
-  origin: 'http://localhost:3000',
-  get href() {
-    return 'http://localhost:3000';
-  },
-  set href(value) {
-    // Do nothing - prevent navigation
-  },
-  pathname: '/',
-  search: '',
-  hash: '',
-  assign: jest.fn(),
-  replace: jest.fn(),
-  reload: jest.fn(),
-};
+// Mock window.location (only in jsdom environment, not in node environment)
+if (typeof window !== 'undefined') {
+  // JSDOM doesn't allow direct assignment to window.location or setting href
+  // We create a mock that doesn't trigger navigation by using getters/setters
+  const mockLocation = {
+    origin: 'http://localhost:3000',
+    get href() {
+      return 'http://localhost:3000';
+    },
+    set href(value) {
+      // Do nothing - prevent navigation
+    },
+    pathname: '/',
+    search: '',
+    hash: '',
+    assign: jest.fn(),
+    replace: jest.fn(),
+    reload: jest.fn(),
+  };
 
-// Try to delete and redefine location
-try {
-  delete window.location;
-  Object.defineProperty(window, 'location', {
-    value: mockLocation,
-    writable: false,
-    configurable: true,
-  });
-} catch (e) {
-  // If we can't delete/redefine, location is not configurable
-  // This is fine - the tests should work with the default JSDOM location
+  // Try to delete and redefine location
+  try {
+    delete window.location;
+    Object.defineProperty(window, 'location', {
+      value: mockLocation,
+      writable: false,
+      configurable: true,
+    });
+  } catch (e) {
+    // If we can't delete/redefine, location is not configurable
+    // This is fine - the tests should work with the default JSDOM location
+  }
 }
